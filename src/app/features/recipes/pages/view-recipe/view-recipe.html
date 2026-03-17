@@ -139,11 +139,8 @@
                 <p class="text-[0.78rem] font-extrabold tracking-[0.14em] text-slate-400 uppercase max-[640px]:text-[0.68rem]">
                   Prep
                 </p>
-                <p class="mt-2 text-[22px] font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[1.6rem]">
-                  {{ recipe()?.prepTimeMinutes ?? '—' }}
-                  @if (recipe()?.prepTimeMinutes) {
-                    <span class="text-base font-medium text-slate-500 max-[640px]:block max-[640px]:text-sm">min</span>
-                  }
+                <p class="mt-2 text-[22px] font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[1.35rem]">
+                  {{ durationLabel(recipe()?.prepTimeMinutes) }}
                 </p>
               </div>
 
@@ -154,11 +151,8 @@
                 <p class="text-[0.78rem] font-extrabold tracking-[0.14em] text-slate-400 uppercase max-[640px]:text-[0.68rem]">
                   Cocción
                 </p>
-                <p class="mt-2 text-[22px] font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[1.6rem]">
-                  {{ recipe()?.cookTimeMinutes ?? '—' }}
-                  @if (recipe()?.cookTimeMinutes) {
-                    <span class="text-base font-medium text-slate-500 max-[640px]:block max-[640px]:text-sm">min</span>
-                  }
+                <p class="mt-2 text-[22px] font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[1.35rem]">
+                  {{ durationLabel(recipe()?.cookTimeMinutes) }}
                 </p>
               </div>
 

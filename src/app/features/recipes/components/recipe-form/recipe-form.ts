@@ -1,14 +1,28 @@
-import { Component, ElementRef, HostListener, effect, inject, input, output, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IconComponent } from '../../../../shared/components/icon/icon';
+import { CapitalizeFirstLetterDirective } from '../../../../shared/directives/capitalize-first-letter.directive';
 import { Recipe, RecipeImage } from '../../../../core/models/recipe.model';
 import { RECIPE_CATEGORIES } from '../../../../core/constants/recipe-categories';
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from '../../../../core/constants/image-upload';
-import { RecipeFormIngredientValue, RecipeFormStepValue, RecipeFormSubmitValue } from './recipe-form.model';
+import {
+  RecipeFormIngredientValue,
+  RecipeFormStepValue,
+  RecipeFormSubmitValue,
+} from './recipe-form.model';
 
 @Component({
   selector: 'app-recipe-form',
-  imports: [ReactiveFormsModule, IconComponent],
+  imports: [ReactiveFormsModule, IconComponent, CapitalizeFirstLetterDirective],
   templateUrl: './recipe-form.html',
 })
 export class RecipeFormComponent {
@@ -24,7 +38,7 @@ export class RecipeFormComponent {
   cancelled = output<void>();
 
   categories = RECIPE_CATEGORIES;
-  ingredientUnits = ['gr', 'ml', 'cda', 'cdta'];
+  ingredientUnits = ['gr', 'kg', 'ml', 'cda', 'cdta', 'taza', 'unidad'];
   tagSuggestions = ['rapida', 'facil', 'casera', 'saludable', 'vegetariana', 'picante'];
 
   selectedImageFile: File | null = null;
@@ -306,7 +320,7 @@ export class RecipeFormComponent {
         value.ingredients?.map((ingredient) => ({
           id: ingredient.id ?? crypto.randomUUID(),
           name: ingredient.name ?? '',
-          quantity: ingredient.quantity ?? null,
+          quantity: ingredient.quantity?.trim() ? ingredient.quantity.trim() : null,
           unit: ingredient.unit ?? '',
           notes: ingredient.notes ?? '',
         })) ?? [],
@@ -326,8 +340,13 @@ export class RecipeFormComponent {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (!this.elementRef.nativeElement.contains(event.target as Node)) {
+    const target = event.target as HTMLElement | null;
+
+    if (!this.isClickInsideDropdown(target, '.recipe-form-category-dropdown')) {
       this.categoryDropdownOpen.set(false);
+    }
+
+    if (!this.isClickInsideDropdown(target, '.recipe-form-unit-dropdown')) {
       this.ingredientUnitDropdownIndex.set(null);
     }
   }
@@ -383,6 +402,14 @@ export class RecipeFormComponent {
     return value.trim().replace(/^#/, '').replace(/\s+/g, ' ').toLowerCase();
   }
 
+  private isClickInsideDropdown(target: HTMLElement | null, selector: string): boolean {
+    if (!target) {
+      return false;
+    }
+
+    return Boolean(target.closest(selector));
+  }
+
   private scrollToFirstInvalidField(): void {
     const invalidField = this.elementRef.nativeElement.querySelector(
       'input.ng-invalid, textarea.ng-invalid, select.ng-invalid',
@@ -408,7 +435,9 @@ export class RecipeFormComponent {
       const ingredientGroups = this.elementRef.nativeElement.querySelectorAll(
         '[formarrayname="ingredients"] [formgroupname]',
       );
-      const lastIngredientGroup = ingredientGroups.item(ingredientGroups.length - 1) as HTMLElement | null;
+      const lastIngredientGroup = ingredientGroups.item(
+        ingredientGroups.length - 1,
+      ) as HTMLElement | null;
       const firstInput = lastIngredientGroup?.querySelector(
         'input[formcontrolname="name"]',
       ) as HTMLInputElement | null;

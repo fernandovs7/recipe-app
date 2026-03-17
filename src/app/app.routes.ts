@@ -6,6 +6,7 @@ import { AuthenticatedLayout } from './layout/authenticated-layout/authenticated
 import { CreateRecipe } from './features/recipes/pages/create-recipe/create-recipe';
 import { ViewRecipe } from './features/recipes/pages/view-recipe/view-recipe';
 import { EditRecipe } from './features/recipes/pages/edit-recipe/edit-recipe';
+import { RecipesList } from './features/recipes/pages/recipes-list/recipes-list';
 
 export const routes: Routes = [
   {
@@ -23,7 +24,8 @@ export const routes: Routes = [
       },
       {
         path: 'recipes',
-        component: RecipesHome,
+        canActivate: [authGuard],
+        component: RecipesList,
       },
       {
         path: 'recipes/new',

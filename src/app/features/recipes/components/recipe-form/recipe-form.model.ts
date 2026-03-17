@@ -3,7 +3,7 @@ import { RecipeImage } from '../../../../core/models/recipe.model';
 export interface RecipeFormIngredientValue {
   id: string;
   name: string;
-  quantity: number | null;
+  quantity: string | null;
   unit: string;
   notes: string;
 }

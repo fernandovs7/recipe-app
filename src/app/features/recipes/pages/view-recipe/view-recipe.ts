@@ -4,6 +4,7 @@ import { RecipeService } from '../../services/recipe.service';
 import { Recipe } from '../../../../core/models/recipe.model';
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { RECIPE_CATEGORIES } from '../../../../core/constants/recipe-categories';
+import { formatDuration } from '../../../../core/utils/format-duration';
 
 @Component({
   selector: 'app-view-recipe',
@@ -133,5 +134,9 @@ export class ViewRecipe {
       .filter(Boolean)
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
+  }
+
+  durationLabel(minutes: number | null | undefined): string {
+    return formatDuration(minutes);
   }
 }

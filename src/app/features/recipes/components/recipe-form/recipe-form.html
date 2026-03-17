@@ -109,7 +109,7 @@
           class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
           >Categoría</label
         >
-        <div class="relative">
+        <div class="recipe-form-category-dropdown relative">
           <button
             type="button"
             class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-left text-[1.125rem] text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
@@ -263,10 +263,10 @@
                     Cantidad
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     formControlName="quantity"
                     class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
-                    placeholder="2"
+                    placeholder="2, 1/2, al gusto"
                   />
                 </div>
 
@@ -276,7 +276,7 @@
                   >
                     Unidad
                   </label>
-                  <div class="relative">
+                  <div class="recipe-form-unit-dropdown relative">
                     <button
                       type="button"
                       class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-left text-[18px] text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"

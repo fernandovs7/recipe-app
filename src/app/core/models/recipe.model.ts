@@ -1,7 +1,7 @@
 export interface RecipeIngredient {
   id: string;
   name: string;
-  quantity: number | null;
+  quantity: string | null;
   unit?: string;
   notes?: string;
 }

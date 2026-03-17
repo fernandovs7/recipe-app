@@ -3,6 +3,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { RecipeService } from '../../services/recipe.service';
 import { IconComponent } from '../../../../shared/components/icon/icon';
+import { formatDuration } from '../../../../core/utils/format-duration';
 
 @Component({
   selector: 'app-recipes-home',
@@ -23,7 +24,6 @@ export class RecipesHome {
     this.recipeService
       .recipes()
       .filter((recipe) => recipe.favorite)
-      .slice(0, 3),
   );
 
   randomRecipe = computed(() => {
@@ -80,5 +80,9 @@ export class RecipesHome {
       .filter(Boolean)
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
+  }
+
+  durationLabel(minutes: number | null | undefined): string {
+    return formatDuration(minutes);
   }
 }

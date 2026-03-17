@@ -146,14 +146,14 @@
                         <span
                           class="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600"
                         >
-                          Prep {{ randomRecipe()!.prepTimeMinutes }} min
+                          Prep {{ durationLabel(randomRecipe()!.prepTimeMinutes) }}
                         </span>
                       }
                       @if (randomRecipe()!.cookTimeMinutes) {
                         <span
                           class="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600"
                         >
-                          Cocción {{ randomRecipe()!.cookTimeMinutes }} min
+                          Cocción {{ durationLabel(randomRecipe()!.cookTimeMinutes) }}
                         </span>
                       }
                     </div>
