@@ -1,0 +1,17 @@
+<picture>
+  @if (!hasError()) {
+    <source [srcset]="avifSrc()" type="image/avif" />
+    <source [srcset]="webpSrc()" type="image/webp" />
+  }
+
+  <img
+    [ngSrc]="imgSrc()"
+    [width]="image().width"
+    [height]="image().height"
+    [alt]="resolvedAlt()"
+    [attr.fetchpriority]="fetchPriority()"
+    [loading]="effectiveLoading()"
+    [class]="finalClass()"
+    (error)="onError()"
+  />
+</picture>

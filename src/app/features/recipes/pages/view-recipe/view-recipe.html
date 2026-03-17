@@ -1,0 +1,316 @@
+<div class="min-h-screen">
+  <div class="mx-auto max-w-5xl px-6 py-10 max-[640px]:px-4 max-[640px]:py-6">
+    <div class="mb-6 flex items-center justify-between gap-4">
+      <button
+        type="button"
+        (click)="goBack()"
+        class="inline-flex items-center gap-2 rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition hover:bg-slate-50"
+      >
+        <app-icon name="arrow-left" [size]="18"></app-icon>
+        <span>Volver</span>
+      </button>
+
+      <div class="flex items-center gap-2">
+        <a
+          [routerLink]="['/app/recipes', recipe()?.id, 'edit']"
+          class="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition hover:bg-slate-50"
+        >
+          <app-icon name="pencil" [size]="16"></app-icon>
+          <span class="max-[640px]:hidden">Editar</span>
+        </a>
+        <button
+          type="button"
+          (click)="toggleFavorite()"
+          [disabled]="favoriteSaving()"
+          [attr.aria-label]="recipe()?.favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+          class="inline-flex h-11 w-11 items-center justify-center rounded-full border shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition-all duration-300 ease-out cursor-pointer disabled:opacity-70"
+          [class.scale-110]="recipe()?.favorite && !favoriteSaving()"
+          [class.border-red-500]="recipe()?.favorite"
+          [class.bg-red-500]="recipe()?.favorite"
+          [class.text-white]="recipe()?.favorite"
+          [class.shadow-[0_12px_28px_rgba(239,68,68,0.32)]]="recipe()?.favorite"
+          [class.hover:bg-red-600]="recipe()?.favorite"
+          [class.border-slate-200]="!recipe()?.favorite"
+          [class.bg-white]="!recipe()?.favorite"
+          [class.text-slate-700]="!recipe()?.favorite"
+          [class.hover:bg-slate-50]="!recipe()?.favorite"
+        >
+          <span
+            class="inline-flex items-center justify-center transition-transform duration-300"
+            [class.scale-110]="recipe()?.favorite"
+          >
+            <app-icon name="heart" [size]="18"></app-icon>
+          </span>
+        </button>
+        <button
+          type="button"
+          (click)="openDeleteModal()"
+          class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-red-200 bg-white text-red-500 shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition hover:bg-red-50"
+          aria-label="Borrar receta"
+        >
+          <app-icon name="trash-2" [size]="18"></app-icon>
+        </button>
+        <button
+          type="button"
+          class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition hover:bg-slate-50"
+        >
+          <app-icon name="share-2" [size]="18"></app-icon>
+        </button>
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="rounded-[2rem] border border-white/80 bg-white p-10 text-center shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)]">
+        <p class="text-[18px] text-slate-600">Cargando receta...</p>
+      </div>
+    } @else if (error()) {
+      <div class="rounded-[2rem] border border-red-200 bg-white p-10 text-center shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)]">
+        <p class="text-[18px] text-red-600">{{ error() }}</p>
+      </div>
+    } @else if (recipe()) {
+      <article class="space-y-8">
+        <section class="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)]">
+          <div class="overflow-hidden rounded-t-[2rem]">
+            @if (recipe()?.image?.url) {
+              <img
+                [src]="recipe()!.image!.url"
+                [alt]="recipe()!.image!.alt || recipe()!.title"
+                class="h-[32rem] w-full object-cover max-[640px]:h-[18rem]"
+              />
+            } @else {
+              <div class="flex min-h-[32rem] flex-col items-center justify-center bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_45%,#fde68a_100%)] px-6 text-center max-[640px]:min-h-[18rem]">
+                <span class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/70 text-orange-600 shadow-[0_12px_25px_rgba(249,115,22,0.15)]">
+                  <app-icon name="chef-hat" [size]="30"></app-icon>
+                </span>
+                <p class="text-[22px] font-semibold text-stone-900">Sin imagen todavía</p>
+                <p class="mt-2 max-w-sm text-[18px] text-slate-600 max-[640px]:text-base">
+                  Esta receta aún no tiene foto, pero ya puedes revisar ingredientes, pasos y notas.
+                </p>
+              </div>
+            }
+          </div>
+
+          <div class="p-6 md:p-8">
+            <p class="text-[0.88rem] font-extrabold tracking-[0.2em] text-orange-600 uppercase">
+              {{ categoryLabel(recipe()!.category) }}
+            </p>
+            <h1 class="mt-3 text-[3rem] leading-none font-semibold text-[#18243f] max-[640px]:text-[2.2rem]">
+              {{ recipe()!.title }}
+            </h1>
+
+            @if (recipe()?.description) {
+              <p class="mt-4 max-w-3xl text-[18px] leading-8 text-slate-600 max-[640px]:text-base max-[640px]:leading-7">
+                {{ recipe()!.description }}
+              </p>
+            }
+
+            @if (recipe()?.tags?.length) {
+              <div class="mt-5 flex flex-wrap gap-2.5 max-[640px]:mt-4 max-[640px]:gap-2">
+                @for (tag of recipe()!.tags; track tag) {
+                  <span
+                    class="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-3.5 py-2 text-sm font-semibold text-orange-700 shadow-[0_6px_16px_rgba(249,115,22,0.08)] max-[640px]:px-3 max-[640px]:py-1.5 max-[640px]:text-[0.82rem]"
+                  >
+                    #{{ tagLabel(tag) }}
+                  </span>
+                }
+              </div>
+            }
+
+            <div class="mt-8 grid gap-4 grid-cols-2 lg:grid-cols-4 max-[640px]:gap-3">
+              <div class="rounded-[1.35rem] bg-[#fff7f1] px-5 py-5 text-center max-[640px]:rounded-[1rem] max-[640px]:px-3 max-[640px]:py-4">
+                <div class="mx-auto mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/12 text-orange-600 max-[640px]:mb-2 max-[640px]:h-9 max-[640px]:w-9">
+                  <app-icon name="users" [size]="20"></app-icon>
+                </div>
+                <p class="text-[0.78rem] font-extrabold tracking-[0.14em] text-slate-400 uppercase max-[640px]:text-[0.68rem]">
+                  Porciones
+                </p>
+                <p class="mt-2 text-[22px] font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[1.6rem]">
+                  {{ recipe()?.servings ?? '—' }}
+                  @if (recipe()?.servings) {
+                    <span class="text-base font-medium text-slate-500 max-[640px]:block max-[640px]:text-sm">personas</span>
+                  }
+                </p>
+              </div>
+
+              <div class="rounded-[1.35rem] bg-[#fff7f1] px-5 py-5 text-center max-[640px]:rounded-[1rem] max-[640px]:px-3 max-[640px]:py-4">
+                <div class="mx-auto mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/12 text-orange-600 max-[640px]:mb-2 max-[640px]:h-9 max-[640px]:w-9">
+                  <app-icon name="timer" [size]="20"></app-icon>
+                </div>
+                <p class="text-[0.78rem] font-extrabold tracking-[0.14em] text-slate-400 uppercase max-[640px]:text-[0.68rem]">
+                  Prep
+                </p>
+                <p class="mt-2 text-[22px] font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[1.6rem]">
+                  {{ recipe()?.prepTimeMinutes ?? '—' }}
+                  @if (recipe()?.prepTimeMinutes) {
+                    <span class="text-base font-medium text-slate-500 max-[640px]:block max-[640px]:text-sm">min</span>
+                  }
+                </p>
+              </div>
+
+              <div class="rounded-[1.35rem] bg-[#fff7f1] px-5 py-5 text-center max-[640px]:rounded-[1rem] max-[640px]:px-3 max-[640px]:py-4">
+                <div class="mx-auto mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/12 text-orange-600 max-[640px]:mb-2 max-[640px]:h-9 max-[640px]:w-9">
+                  <app-icon name="flame" [size]="20"></app-icon>
+                </div>
+                <p class="text-[0.78rem] font-extrabold tracking-[0.14em] text-slate-400 uppercase max-[640px]:text-[0.68rem]">
+                  Cocción
+                </p>
+                <p class="mt-2 text-[22px] font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[1.6rem]">
+                  {{ recipe()?.cookTimeMinutes ?? '—' }}
+                  @if (recipe()?.cookTimeMinutes) {
+                    <span class="text-base font-medium text-slate-500 max-[640px]:block max-[640px]:text-sm">min</span>
+                  }
+                </p>
+              </div>
+
+              <div class="rounded-[1.35rem] bg-[#fff7f1] px-5 py-5 text-center max-[640px]:rounded-[1rem] max-[640px]:px-3 max-[640px]:py-4">
+                <div class="mx-auto mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/12 text-orange-600 max-[640px]:mb-2 max-[640px]:h-9 max-[640px]:w-9">
+                  <app-icon name="chef-hat" [size]="20"></app-icon>
+                </div>
+                <p class="text-[0.78rem] font-extrabold tracking-[0.14em] text-slate-400 uppercase max-[640px]:text-[0.68rem]">
+                  Categoría
+                </p>
+                <p class="mt-2 text-[22px] font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[1.6rem]">
+                  {{ categoryLabel(recipe()!.category) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid gap-6 lg:grid-cols-[0.88fr_1.12fr]">
+          <section class="rounded-[2rem] border border-white/80 bg-white p-6 shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] md:p-7">
+            <div class="mb-5">
+              <h2 class="text-[34px] font-semibold text-[#18243f] max-[640px]:text-2xl">Ingredientes</h2>
+            </div>
+
+            @if (recipe()!.ingredients.length > 0) {
+              <ul class="space-y-3">
+                @for (ingredient of recipe()!.ingredients; track ingredient.id) {
+                  <li class="border-b border-slate-200/80 pb-4 last:border-b-0">
+                    <div class="flex items-start justify-between gap-4">
+                      <div>
+                        <p class="text-[18px] font-semibold text-[#18243f] max-[640px]:text-base">{{ ingredient.name }}</p>
+                        @if (ingredient.notes) {
+                          <p class="mt-1 text-sm text-slate-500">{{ ingredient.notes }}</p>
+                        }
+                      </div>
+
+                      @if (ingredient.quantity !== null || ingredient.unit) {
+                        <span class="shrink-0 text-[18px] font-semibold text-orange-600 max-[640px]:text-base">
+                          {{ ingredient.quantity ?? '' }}
+                          {{ ingredient.unit ?? '' }}
+                        </span>
+                      }
+                    </div>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="text-[18px] text-slate-500 max-[640px]:text-base">No hay ingredientes registrados.</p>
+            }
+          </section>
+
+          <section class="rounded-[2rem] border border-white/80 bg-white p-6 shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] md:p-7">
+            <div class="mb-5">
+              <h2 class="text-[34px] font-semibold text-[#18243f] max-[640px]:text-2xl">Preparación</h2>
+            </div>
+
+            @if (recipe()!.steps.length > 0) {
+              <div class="space-y-3">
+                @for (step of recipe()!.steps; track step.id) {
+                  <div class="flex gap-4 rounded-[1.25rem] border border-slate-100 bg-slate-50/70 px-4 py-4 max-[640px]:gap-3 max-[640px]:px-3.5 max-[640px]:py-3.5">
+                    <div class="flex shrink-0 flex-col items-center">
+                      <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-orange-500 px-2 text-sm font-bold text-white shadow-[0_8px_16px_rgba(249,115,22,0.22)]">
+                        {{ step.order }}
+                      </span>
+                      @if (!$last) {
+                        <span class="mt-2 h-full w-px bg-slate-200"></span>
+                      }
+                    </div>
+
+                    <div class="pt-0.5">
+                      <p class="mb-1 text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase">
+                        Paso {{ step.order }}
+                      </p>
+                      <p class="text-[18px] leading-8 text-slate-700 max-[640px]:text-base max-[640px]:leading-7">
+                        {{ step.instruction }}
+                      </p>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="text-[18px] text-slate-500 max-[640px]:text-base">No hay pasos registrados.</p>
+            }
+          </section>
+        </section>
+
+        @if (recipe()?.notes) {
+          <section class="w-full rounded-[1.8rem] border border-orange-200 bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_100%)] p-6 shadow-[0_1.125rem_45px_rgba(249,115,22,0.12)]">
+            <div class="mb-3 flex items-center gap-3">
+              <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/75 text-orange-600 shadow-[0_8px_18px_rgba(249,115,22,0.12)]">
+                <app-icon name="chef-hat" [size]="20"></app-icon>
+              </span>
+              <h2 class="text-[28px] font-semibold text-[#18243f] max-[640px]:text-2xl">Notas del chef</h2>
+            </div>
+
+            <div class="text-[18px] leading-8 text-slate-700 max-[640px]:text-base max-[640px]:leading-7">
+              {{ recipe()!.notes }}
+            </div>
+          </section>
+        }
+      </article>
+    }
+  </div>
+</div>
+
+@if (deleteModalOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm"
+    (click)="closeDeleteModal()"
+  >
+    <div
+      class="w-full max-w-md rounded-[1.75rem] border border-white/80 bg-white p-6 shadow-[0_1.5rem_60px_rgba(15,23,42,0.22)] max-[640px]:rounded-[1.4rem] max-[640px]:p-5"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="mb-4 flex items-start gap-4">
+        <span
+          class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-500 ring-1 ring-red-100"
+        >
+          <app-icon name="triangle-alert" [size]="22"></app-icon>
+        </span>
+
+        <div>
+          <h2 class="text-[1.5rem] font-semibold text-[#18243f] max-[640px]:text-[1.35rem]">
+            ¿Borrar receta?
+          </h2>
+          <p class="mt-2 text-[17px] leading-7 text-slate-600 max-[640px]:text-[15px] max-[640px]:leading-6">
+            Esta acción eliminará
+            <span class="font-semibold text-slate-800">{{ recipe()?.title }}</span>
+            y no se puede deshacer.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          (click)="closeDeleteModal()"
+          [disabled]="deleting()"
+          class="rounded-[1rem] px-4 py-3 text-base font-semibold text-slate-600 transition hover:text-slate-900 disabled:opacity-60"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          (click)="deleteRecipe()"
+          [disabled]="deleting()"
+          class="inline-flex items-center justify-center gap-2 rounded-[1rem] bg-red-500 px-5 py-3 text-base font-semibold text-white shadow-[0_14px_28px_rgba(239,68,68,0.24)] transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          <app-icon name="trash-2" [size]="16"></app-icon>
+          <span>{{ deleting() ? 'Borrando...' : 'Sí, borrar receta' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+}

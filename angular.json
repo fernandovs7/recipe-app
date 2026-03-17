@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "9565cee2-cd53-4abb-a306-0be45136d3ff"
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -26,10 +27,16 @@
             "assets": [
               {
                 "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
+              },
+              {
+                "glob": "**/*",
                 "input": "public"
               }
             ],
             "styles": [
+              "src/tailwind.css",
               "src/styles.scss"
             ]
           },

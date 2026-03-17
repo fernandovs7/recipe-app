@@ -1,0 +1,7 @@
+<app-recipe-form
+  mode="create"
+  [saving]="saving()"
+  [submitError]="submitError()"
+  (submitted)="saveRecipe($event)"
+  (cancelled)="cancel()"
+/>

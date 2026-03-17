@@ -1,0 +1,579 @@
+<div class="min-h-screen">
+  <div class="mx-auto max-w-5xl px-6 py-10 max-[640px]:px-4 max-[640px]:py-6">
+    <div class="mb-8 px-2 max-[640px]:mb-6 max-[640px]:px-0.5">
+      <h1 class="text-4xl font-semibold text-stone-900 max-[640px]:text-[2rem]">{{ formTitle() }}</h1>
+      <p class="mt-2 text-lg text-black max-[640px]:text-base">
+        {{ formSubtitle() }}
+      </p>
+    </div>
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="handleSubmit()"
+      class="space-y-9 rounded-[2rem] border border-white/80 bg-white px-6 py-8 shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] md:px-12 md:py-12 max-[640px]:space-y-7 max-[640px]:rounded-[1.5rem] max-[640px]:px-4 max-[640px]:py-5"
+    >
+      <div>
+        <label
+          class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+          >Título</label
+        >
+        <input
+          type="text"
+          formControlName="title"
+          class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+          placeholder="Ej. Pasta aglio e olio"
+        />
+
+        @if (form.controls.title.touched && form.controls.title.invalid) {
+          <p class="mt-3 text-sm text-red-600">El título es obligatorio.</p>
+        }
+      </div>
+
+      <div>
+        <label
+          class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+          >Descripción</label
+        >
+        <textarea
+          formControlName="description"
+          rows="5"
+          class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+          placeholder="Describe brevemente la receta"
+        ></textarea>
+      </div>
+
+      <div class="grid gap-5 md:grid-cols-3 max-[640px]:gap-4">
+        <div>
+          <label
+            class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+            >Porciones</label
+          >
+          <div class="relative">
+            <span
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6 text-slate-400 max-[640px]:pl-4"
+            >
+              <app-icon name="users" [size]="22"></app-icon>
+            </span>
+            <input
+              type="number"
+              formControlName="servings"
+              class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 py-3 pr-5 pl-16 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:pl-13 max-[640px]:text-base"
+              placeholder="0"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label
+            class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+            >Prep min</label
+          >
+          <div class="relative">
+            <span
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6 text-slate-400 max-[640px]:pl-4"
+            >
+              <app-icon name="timer" [size]="22"></app-icon>
+            </span>
+            <input
+              type="number"
+              formControlName="prepTimeMinutes"
+              class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 py-3 pr-5 pl-16 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:pl-13 max-[640px]:text-base"
+              placeholder="0"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label
+            class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+            >Cocción min</label
+          >
+          <div class="relative">
+            <span
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6 text-slate-400 max-[640px]:pl-4"
+            >
+              <app-icon name="flame" [size]="22"></app-icon>
+            </span>
+            <input
+              type="number"
+              formControlName="cookTimeMinutes"
+              class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 py-3 pr-5 pl-16 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:pl-13 max-[640px]:text-base"
+              placeholder="0"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label
+          class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+          >Categoría</label
+        >
+        <div class="relative">
+          <button
+            type="button"
+            class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-left text-[1.125rem] text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+            (click)="toggleCategoryDropdown()"
+          >
+            <span [class.text-slate-400]="!form.controls.category.value">
+              {{ selectedCategoryLabel() }}
+            </span>
+
+            <span
+              class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+              [class.rotate-180]="categoryDropdownOpen()"
+            >
+              <app-icon name="chevron-down" [size]="22"></app-icon>
+            </span>
+          </button>
+
+          @if (categoryDropdownOpen()) {
+            <div
+              class="absolute top-[calc(100%+0.8rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+            >
+              @for (category of categories; track category.value) {
+                <button
+                  type="button"
+                  class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-[1.125rem] text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 max-[640px]:text-base"
+                  [class.bg-orange-50]="form.controls.category.value === category.value"
+                  [class.text-orange-700]="form.controls.category.value === category.value"
+                  (click)="selectCategory(category.value)"
+                >
+                  <span>{{ category.label }}</span>
+
+                  @if (form.controls.category.value === category.value) {
+                    <app-icon name="check" [size]="18"></app-icon>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <section
+        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4"
+      >
+        <div class="mb-5 max-[640px]:mb-4">
+          <p
+            class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+          >
+            Tags
+          </p>
+          <p class="text-[18px] text-slate-500 max-[640px]:text-sm">
+            Agrega palabras clave para encontrar la receta más rápido. Usa enter o coma para
+            crear cada tag.
+          </p>
+        </div>
+
+        <div
+          class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.08)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5"
+        >
+          <div class="flex flex-wrap gap-2">
+            @for (tag of form.controls.tags.value; track tag) {
+              <button
+                type="button"
+                class="inline-flex items-center gap-2 rounded-full bg-orange-500/12 px-3 py-2 text-sm font-semibold text-orange-700 ring-1 ring-orange-200 transition hover:bg-orange-500/18"
+                (click)="removeTag(tag)"
+              >
+                <span>#{{ tag }}</span>
+                <app-icon name="x" [size]="14"></app-icon>
+              </button>
+            }
+
+            <div class="min-w-[14rem] flex-1 max-[640px]:min-w-full">
+              <label class="sr-only" for="recipe-tags-input">Tags</label>
+              <input
+                #tagInput
+                id="recipe-tags-input"
+                type="text"
+                class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                placeholder="Ej. rapida, vegetariana, pasta"
+                (keydown)="handleTagKeydown($event, tagInput)"
+                (blur)="addTagFromInput(tagInput)"
+              />
+            </div>
+          </div>
+
+          @if (availableTagSuggestions().length) {
+            <div class="mt-4 flex flex-wrap gap-2">
+              @for (tag of availableTagSuggestions(); track tag) {
+                <button
+                  type="button"
+                  class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
+                  (click)="addTag(tag)"
+                >
+                  #{{ tag }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </section>
+
+      <section
+        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4"
+      >
+        <div
+          class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between max-[640px]:mb-4"
+        >
+          <div>
+            <p
+              class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+            >
+              Ingredientes
+            </p>
+            <p class="text-[18px] text-slate-500 max-[640px]:text-sm">
+              Agrega cada ingrediente con cantidad, unidad y notas opcionales.
+            </p>
+          </div>
+        </div>
+
+        <div formArrayName="ingredients" class="space-y-4">
+          @for (ingredient of ingredients.controls; track $index; let i = $index) {
+            <div
+              [formGroupName]="i"
+              class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5"
+            >
+              <div class="grid gap-4 md:grid-cols-12 max-[640px]:gap-3">
+                <div class="md:col-span-4">
+                  <label
+                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
+                  >
+                    Ingrediente
+                  </label>
+                  <input
+                    type="text"
+                    formControlName="name"
+                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                    placeholder="Ej. Pasta, ajo, mantequilla"
+                  />
+
+                  @if (ingredient.get('name')?.touched && ingredient.get('name')?.invalid) {
+                    <p class="mt-2 text-sm text-red-600">
+                      El nombre del ingrediente es obligatorio.
+                    </p>
+                  }
+                </div>
+
+                <div class="md:col-span-2">
+                  <label
+                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
+                  >
+                    Cantidad
+                  </label>
+                  <input
+                    type="number"
+                    formControlName="quantity"
+                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                    placeholder="2"
+                  />
+                </div>
+
+                <div class="md:col-span-2">
+                  <label
+                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
+                  >
+                    Unidad
+                  </label>
+                  <div class="relative">
+                    <button
+                      type="button"
+                      class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-left text-[18px] text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                      (click)="toggleIngredientUnitDropdown(i)"
+                    >
+                      <span [class.text-slate-400]="!ingredient.get('unit')?.value">
+                        {{ selectedIngredientUnitLabel(i) }}
+                      </span>
+
+                      <span
+                        class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+                        [class.rotate-180]="ingredientUnitDropdownIndex() === i"
+                      >
+                        <app-icon name="chevron-down" [size]="18"></app-icon>
+                      </span>
+                    </button>
+
+                    @if (ingredientUnitDropdownIndex() === i) {
+                      <div
+                        class="absolute top-[calc(100%+0.6rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+                      >
+                        @for (unit of ingredientUnits; track unit) {
+                          <button
+                            type="button"
+                            class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-[18px] text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 max-[640px]:text-base"
+                            [class.bg-orange-50]="ingredient.get('unit')?.value === unit"
+                            [class.text-orange-700]="ingredient.get('unit')?.value === unit"
+                            (click)="selectIngredientUnit(i, unit)"
+                          >
+                            <span>{{ unit }}</span>
+
+                            @if (ingredient.get('unit')?.value === unit) {
+                              <app-icon name="check" [size]="18"></app-icon>
+                            }
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <div class="md:col-span-3">
+                  <label
+                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
+                  >
+                    Nota
+                  </label>
+                  <input
+                    type="text"
+                    formControlName="notes"
+                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                    placeholder="Al gusto"
+                  />
+                </div>
+
+                <div class="md:col-span-1 flex items-start max-[640px]:pt-1 md:pt-[2.15rem]">
+                  <button
+                    type="button"
+                    (click)="removeIngredient(i)"
+                    class="flex min-h-[3.25rem] w-full items-center justify-center rounded-[1.2rem] border border-red-200 bg-red-50 text-red-500 transition hover:bg-red-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 max-[640px]:min-h-11 max-[640px]:rounded-[1rem]"
+                    [disabled]="ingredients.length === 1"
+                  >
+                    <app-icon name="trash-2" [size]="18"></app-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="mt-4 flex justify-center">
+          <button
+            type="button"
+            (click)="addIngredient()"
+            class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-orange-200 bg-white px-4 py-3 text-[18px] font-semibold text-orange-600 transition hover:bg-orange-50 max-[640px]:w-full max-[640px]:rounded-[1rem] max-[640px]:text-base"
+          >
+            <app-icon name="plus" [size]="18"></app-icon>
+            <span>Agregar otro ingrediente</span>
+          </button>
+        </div>
+      </section>
+      <section
+        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4"
+      >
+        <div
+          class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between max-[640px]:mb-4"
+        >
+          <div>
+            <p
+              class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+            >
+              Preparación
+            </p>
+            <p class="text-[18px] text-slate-500 max-[640px]:text-sm">
+              Describe paso a paso cómo preparar la receta.
+            </p>
+          </div>
+        </div>
+
+        <div formArrayName="steps" class="space-y-4">
+          @for (step of steps.controls; track $index; let i = $index) {
+            <div
+              [formGroupName]="i"
+              class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5"
+            >
+              <div class="flex items-start gap-4 max-[640px]:gap-3">
+                <div class="flex-1">
+                  <div class="mb-3 flex items-center gap-3 max-[640px]:mb-2">
+                    <span
+                      class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-orange-500/15 px-2 text-sm font-bold text-orange-700 ring-1 ring-orange-200 max-[640px]:h-7 max-[640px]:min-w-7 max-[640px]:text-[0.78rem]"
+                    >
+                      {{ i + 1 }}
+                    </span>
+                    <label
+                      class="text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:text-[0.72rem]"
+                    >
+                      Paso
+                    </label>
+                  </div>
+                  <textarea
+                    formControlName="instruction"
+                    rows="3"
+                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                    placeholder="Describe este paso..."
+                  ></textarea>
+
+                  @if (step.get('instruction')?.touched && step.get('instruction')?.invalid) {
+                    <p class="mt-2 text-sm text-red-600">La instrucción del paso es obligatoria.</p>
+                  }
+                </div>
+
+                <div class="flex items-start pt-[2.15rem] max-[640px]:pt-[1.9rem]">
+                  <button
+                    type="button"
+                    (click)="removeStep(i)"
+                    class="flex min-h-[3.25rem] min-w-[3.25rem] items-center justify-center rounded-[1.2rem] border border-red-200 bg-red-50 text-red-500 transition hover:bg-red-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 max-[640px]:min-h-11 max-[640px]:min-w-11 max-[640px]:rounded-[1rem]"
+                    [disabled]="steps.length === 1"
+                  >
+                    <app-icon name="trash-2" [size]="18"></app-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="mt-4 flex justify-center">
+          <button
+            type="button"
+            (click)="addStep()"
+            class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-orange-200 bg-white px-4 py-3 text-[18px] font-semibold text-orange-600 transition hover:bg-orange-50 max-[640px]:w-full max-[640px]:rounded-[1rem] max-[640px]:text-base"
+          >
+            <app-icon name="plus" [size]="18"></app-icon>
+            <span>Agregar otro paso</span>
+          </button>
+        </div>
+      </section>
+      <section
+        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4"
+      >
+        <div class="mb-5 max-[640px]:mb-4">
+          <p
+            class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+          >
+            Notas
+          </p>
+          <p class="text-[18px] text-slate-500 max-[640px]:text-sm">
+            Agrega tips, observaciones o ajustes personales para esta receta.
+          </p>
+        </div>
+
+        <textarea
+          formControlName="notes"
+          rows="4"
+          class="w-full rounded-[1.2rem] border border-slate-100 bg-white px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+          placeholder="Tips, observaciones o ajustes personales"
+        ></textarea>
+      </section>
+      <section
+        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4"
+      >
+        <div class="mb-5 max-[640px]:mb-4">
+          <p
+            class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+          >
+            Imagen
+          </p>
+          <p class="text-[18px] text-slate-500 max-[640px]:text-sm">
+            Agrega una foto para tu receta. Una imagen atractiva ayuda a identificarla más rápido.
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <input
+            id="recipe-image-input"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            (change)="onImageSelected($event)"
+            class="sr-only"
+          />
+
+          @if (imageError) {
+            <p class="text-sm text-red-600">{{ imageError }}</p>
+          }
+
+          @if (imagePreviewUrl) {
+            <div
+              class="overflow-hidden rounded-[1.4rem] border border-white/90 bg-white shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem]"
+            >
+              <div class="relative">
+                <img
+                  [src]="imagePreviewUrl"
+                  alt="Vista previa de la receta"
+                  class="h-72 w-full object-cover max-[640px]:h-52"
+                />
+                <div
+                  class="pointer-events-none absolute inset-x-0 bottom-0 from-black/50 via-black/10 to-transparent px-5 py-4"
+                >
+                  <p class="text-[18px] font-semibold text-white max-[640px]:text-base">
+                    {{ selectedImageLabel() }}
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="flex flex-col gap-3 border-t border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between max-[640px]:px-3.5"
+              >
+                <p class="text-sm text-slate-500">
+                  Puedes cambiar la imagen o eliminarla antes de guardar la receta.
+                </p>
+
+                <div class="flex flex-col gap-2 sm:flex-row">
+                  <label
+                    for="recipe-image-input"
+                    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-[1rem] border border-orange-200 bg-white px-4 py-3 text-[18px] font-semibold text-orange-600 transition hover:bg-orange-50 max-[640px]:text-base"
+                  >
+                    <app-icon name="image-plus" [size]="18"></app-icon>
+                    <span>Cambiar imagen</span>
+                  </label>
+
+                  <button
+                    type="button"
+                    (click)="removeSelectedImage()"
+                    class="inline-flex items-center justify-center gap-2 rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-[18px] font-semibold text-red-600 transition hover:bg-red-100 max-[640px]:text-base"
+                  >
+                    <app-icon name="trash-2" [size]="18"></app-icon>
+                    <span>Quitar imagen</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <label
+              for="recipe-image-input"
+              class="flex min-h-64 cursor-pointer flex-col items-center justify-center rounded-[1.4rem] border border-dashed border-orange-200 bg-white px-6 py-8 text-center shadow-[0_12px_28px_rgba(148,163,184,0.08)] transition hover:border-orange-300 hover:bg-orange-50/40 max-[640px]:min-h-52 max-[640px]:rounded-[1.1rem] max-[640px]:px-4"
+            >
+              <span
+                class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-orange-500/12 text-orange-600"
+              >
+                <app-icon name="image-plus" [size]="26"></app-icon>
+              </span>
+              <span class="text-[20px] font-semibold text-slate-800 max-[640px]:text-lg">
+                Selecciona una imagen
+              </span>
+              <span class="mt-2 max-w-md text-[18px] text-slate-500 max-[640px]:text-sm">
+                Haz clic para elegir una foto desde tu dispositivo y mostrar una vista previa antes
+                de guardar.
+              </span>
+            </label>
+          }
+        </div>
+      </section>
+      <div
+        class="flex flex-col-reverse gap-4 pt-4 sm:flex-row sm:items-center sm:justify-end max-[640px]:gap-3 max-[640px]:pt-2"
+      >
+        @if (displayedSubmitError()) {
+          <p class="w-full rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 sm:mr-auto sm:max-w-md">
+            {{ displayedSubmitError() }}
+          </p>
+        }
+
+        <button
+          type="button"
+          (click)="cancel()"
+          class="rounded-2xl px-6 py-4 text-lg font-semibold text-slate-600 transition hover:text-slate-900 cursor-pointer max-[640px]:px-4 max-[640px]:py-3 max-[640px]:text-base"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="saving()"
+          class="rounded-[1.2rem] bg-orange-500 px-8 py-4 text-lg font-semibold text-white shadow-[0_14px_28px_rgba(249,115,22,0.28)] transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer max-[640px]:w-full max-[640px]:px-5 max-[640px]:py-3.5 max-[640px]:text-base"
+        >
+          {{ submitLabel() }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

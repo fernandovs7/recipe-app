@@ -1,0 +1,35 @@
+<div class="login__container flex flex-col md:flex-row md:min-h-[686px]">
+  <div class="login__hero">
+    <app-image [image]="heroImage" [priority]="true" />
+    <div class="login__hero-overlay"></div>
+    <div class="login__hero-badge cursor-default">
+      <app-icon name="sparkles" [size]="16" />
+      <span>Sabores que inspiran</span>
+    </div>
+  </div>
+  <div class="login__content">
+    <p class="login__eyebrow">Tu cocina, tu historia</p>
+
+    <div class="login__brand">
+      <h1 class="font-bold">Recetario App</h1>
+      <app-icon name="chef-hat" [size]="40" />
+    </div>
+
+    <h2>Bienvenido!</h2>
+    <p class="login__copy">
+      Guarda tus recetas favoritas, organiza tus ideas y accede a tu recetario desde cualquier
+      lugar.
+    </p>
+
+    <button class="login__cta" (click)="login()">
+      <app-icon name="log-in" [size]="18" />
+      <span>Continuar con Google</span>
+    </button>
+
+    <div class="login__chips">
+      <span>Rapido</span>
+      <span>Visual</span>
+      <span>Personal</span>
+    </div>
+  </div>
+</div>
