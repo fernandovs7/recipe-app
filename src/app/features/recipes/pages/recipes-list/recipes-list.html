@@ -1,27 +1,27 @@
 <div class="min-h-screen">
   <main class="mx-auto max-w-6xl px-6 py-10 max-[640px]:px-4 max-[640px]:py-6">
     <section
-      class="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)]"
+      class="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] max-[640px]:rounded-[1.6rem]"
     >
       <div
-        class="grid gap-6 bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_52%,#fffdf8_100%)] p-6 md:grid-cols-[1.2fr_0.8fr] md:p-8"
+        class="grid gap-5 bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_52%,#fffdf8_100%)] p-6 md:grid-cols-[1.2fr_0.8fr] md:p-8 max-[640px]:gap-4 max-[640px]:p-4"
       >
         <div>
           <p class="text-[0.82rem] font-extrabold tracking-[0.18em] text-orange-600 uppercase">
             Biblioteca de recetas
           </p>
-          <h1 class="mt-3 text-[3rem] leading-none font-semibold text-[#18243f] max-[640px]:text-[2.25rem]">
+          <h1 class="mt-3 text-[3rem] leading-none font-semibold text-[#18243f] max-[640px]:mt-2 max-[640px]:text-[2rem] max-[640px]:leading-[0.95]">
             Todas tus ideas en un solo lugar
           </h1>
-          <p class="mt-4 max-w-2xl text-[18px] leading-8 text-slate-600 max-[640px]:text-base max-[640px]:leading-7">
+          <p class="mt-4 max-w-2xl text-[18px] leading-8 text-slate-600 max-[640px]:mt-3 max-[640px]:text-[0.98rem] max-[640px]:leading-6">
             Explora, filtra y retoma tus recetas favoritas con una vista más clara y consistente
             con el resto del recetario.
           </p>
 
-          <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+          <div class="mt-5 flex flex-col gap-2.5 sm:flex-row max-[640px]:mt-4">
             <button
               type="button"
-              class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(249,115,22,0.28)] transition hover:bg-orange-600"
+              class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(249,115,22,0.28)] transition hover:bg-orange-600 max-[640px]:min-h-12 max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:py-2.5"
               (click)="goToCreateRecipe()"
             >
               <app-icon name="plus" [size]="18"></app-icon>
@@ -30,7 +30,7 @@
 
             <button
               type="button"
-              class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 max-[640px]:min-h-12 max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:py-2.5"
               (click)="goToHome()"
             >
               <app-icon name="arrow-left" [size]="18"></app-icon>
@@ -39,48 +39,52 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 md:grid-cols-1 xl:grid-cols-2">
-          <div class="rounded-[1.35rem] border border-white/70 bg-white/85 p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] backdrop-blur">
-            <span class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-orange-500/12 text-orange-600">
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-1 xl:grid-cols-2 max-[640px]:gap-2.5">
+          <div class="rounded-[1.35rem] border border-white/70 bg-white/85 p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] backdrop-blur max-[640px]:rounded-[1.15rem] max-[640px]:p-3">
+            <span class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-orange-500/12 text-orange-600 max-[640px]:mb-3 max-[640px]:h-9 max-[640px]:w-9">
               <app-icon name="book-open" [size]="22"></app-icon>
             </span>
-            <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase">
+            <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase max-[640px]:text-[0.68rem] max-[640px]:tracking-[0.12em]">
               Recetas
             </p>
-            <p class="mt-2 text-[2rem] leading-none font-semibold text-[#18243f]">
+            <p class="mt-2 text-[2rem] leading-none font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[2.1rem]">
               {{ totalRecipes() }}
             </p>
-            <p class="mt-2 text-sm leading-6 text-slate-500">En tu colección actual</p>
+            <p class="mt-2 text-sm leading-6 text-slate-500 max-[640px]:mt-1.5 max-[640px]:text-[0.92rem] max-[640px]:leading-5">
+              En tu colección
+            </p>
           </div>
 
-          <div class="rounded-[1.35rem] border border-white/70 bg-white/85 p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] backdrop-blur">
-            <span class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-red-500/12 text-red-500">
+          <div class="rounded-[1.35rem] border border-white/70 bg-white/85 p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] backdrop-blur max-[640px]:rounded-[1.15rem] max-[640px]:p-3">
+            <span class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-red-500/12 text-red-500 max-[640px]:mb-3 max-[640px]:h-9 max-[640px]:w-9">
               <app-icon name="heart" [size]="22"></app-icon>
             </span>
-            <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase">
+            <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase max-[640px]:text-[0.68rem] max-[640px]:tracking-[0.12em]">
               Favoritas
             </p>
-            <p class="mt-2 text-[2rem] leading-none font-semibold text-[#18243f]">
+            <p class="mt-2 text-[2rem] leading-none font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[2.1rem]">
               {{ totalFavorites() }}
             </p>
-            <p class="mt-2 text-sm leading-6 text-slate-500">Listas para volver a cocinar</p>
+            <p class="mt-2 text-sm leading-6 text-slate-500 max-[640px]:mt-1.5 max-[640px]:text-[0.92rem] max-[640px]:leading-5">
+              Listas para repetir
+            </p>
           </div>
 
-          <div class="col-span-2 rounded-[1.35rem] border border-white/70 bg-[#18243f] p-5 text-white shadow-[0_16px_32px_rgba(15,23,42,0.22)] md:col-span-1 xl:col-span-2">
+          <div class="col-span-2 rounded-[1.35rem] border border-white/70 bg-[#18243f] p-5 text-white shadow-[0_16px_32px_rgba(15,23,42,0.22)] md:col-span-1 xl:col-span-2 max-[640px]:rounded-[1.15rem] max-[640px]:p-4">
             <div class="flex items-start justify-between gap-4">
               <div>
-                <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-orange-200 uppercase">
+                <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-orange-200 uppercase max-[640px]:text-[0.68rem] max-[640px]:tracking-[0.12em]">
                   Resultado actual
                 </p>
-                <p class="mt-2 text-[2rem] leading-none font-semibold">
+                <p class="mt-2 text-[2rem] leading-none font-semibold max-[640px]:mt-1.5 max-[640px]:text-[2.1rem]">
                   {{ filteredRecipes().length }}
                 </p>
               </div>
-              <span class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-orange-200">
+              <span class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-orange-200 max-[640px]:h-10 max-[640px]:w-10">
                 <app-icon name="search" [size]="20"></app-icon>
               </span>
             </div>
-            <p class="mt-3 text-sm leading-6 text-slate-200">
+            <p class="mt-3 text-sm leading-6 text-slate-200 max-[640px]:mt-2 max-[640px]:text-[0.92rem] max-[640px]:leading-5">
               {{ filteredRecipes().length === totalRecipes() ? 'Mostrando toda la biblioteca.' : 'Mostrando recetas segun tus filtros.' }}
             </p>
           </div>

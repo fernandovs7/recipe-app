@@ -19,9 +19,9 @@ export class FloatingNav {
   profileOpen = signal(false);
 
   readonly navItems = [
-    { label: 'Inicio', link: '/app/home', exact: true },
-    { label: 'Recetas', link: '/app/recipes', exact: true },
-    { label: 'Agregar Receta', link: '/app/recipes/new', exact: true },
+    { label: 'Inicio', link: '/app/home', exact: true, icon: 'house' },
+    { label: 'Recetas', link: '/app/recipes', exact: true, icon: 'book-open' },
+    { label: 'Agregar Receta', link: '/app/recipes/new', exact: true, icon: 'square-pen' },
   ];
 
   readonly user = this.authService.user;

@@ -24,12 +24,13 @@
       <div class="flex items-center gap-2.5">
         @for (item of navItems; track item.link) {
           <a
-            class="inline-flex min-h-[2.5rem] items-center justify-center rounded-full px-5 text-[1rem] font-bold text-stone-700 transition duration-200 hover:-translate-y-0.5 hover:bg-amber-500/10 hover:text-amber-700"
+            class="inline-flex min-h-[2.5rem] items-center justify-center gap-2 rounded-full px-5 text-[1rem] font-bold text-stone-700 transition duration-200 hover:-translate-y-0.5 hover:bg-amber-500/10 hover:text-amber-700"
             [routerLink]="item.link"
             routerLinkActive="bg-amber-500/10 text-amber-600"
             [routerLinkActiveOptions]="{ exact: item.exact }"
             (click)="closeProfile()">
-            {{ item.label }}
+            <app-icon [name]="item.icon" [size]="16"></app-icon>
+            <span>{{ item.label }}</span>
           </a>
         }
 
@@ -78,7 +79,10 @@
             routerLinkActive="bg-amber-500/10 text-amber-600"
             [routerLinkActiveOptions]="{ exact: item.exact }"
             (click)="closeOverlays()">
-            <span>{{ item.label }}</span>
+            <span class="inline-flex items-center gap-3">
+              <app-icon [name]="item.icon" [size]="18"></app-icon>
+              <span>{{ item.label }}</span>
+            </span>
             <app-icon name="arrow-right" [size]="18"></app-icon>
           </a>
         }
