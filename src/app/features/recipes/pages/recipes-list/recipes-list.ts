@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { RECIPE_CATEGORIES } from '../../../../core/constants/recipe-categories';
 import { formatDuration } from '../../../../core/utils/format-duration';
+import { RecipeImage, RecipeImageSizeKey } from '../../../../core/models/recipe.model';
 
 type SortOption = 'newest' | 'oldest' | 'title-asc' | 'title-desc';
 
@@ -176,6 +177,10 @@ export class RecipesList {
 
   durationLabel(minutes: number | null | undefined): string {
     return formatDuration(minutes);
+  }
+
+  imageUrl(image: RecipeImage | null | undefined, size: RecipeImageSizeKey): string | undefined {
+    return image?.variants?.[size]?.url ?? image?.url;
   }
 
   private isClickInsideDropdown(target: HTMLElement | null, selector: string): boolean {

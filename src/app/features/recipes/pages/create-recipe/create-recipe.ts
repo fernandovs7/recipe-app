@@ -3,8 +3,7 @@ import { Router } from '@angular/router';
 import { RecipeService } from '../../services/recipe.service';
 import { RecipeFormComponent } from '../../components/recipe-form/recipe-form';
 import { RecipeFormSubmitValue } from '../../components/recipe-form/recipe-form.model';
-import { optimizeImage } from '../../../../core/utils/optimize-image';
-import { IMAGE_OPTIMIZATION_OPTIONS } from '../../../../core/constants/image-upload';
+import { RecipeImage } from '../../../../core/models/recipe.model';
 import { mapRecipeFormToRecipeData } from '../../utils/map-recipe-form-to-recipe-data';
 
 @Component({
@@ -24,25 +23,17 @@ export class CreateRecipe {
     this.submitError.set(null);
     this.saving.set(true);
 
-    let uploadedImagePath: string | null = null;
+    let uploadedImage: RecipeImage | null = null;
 
     try {
       let image = undefined;
 
       if (value.selectedImageFile) {
-        const optimizedImage = await optimizeImage(
+        uploadedImage = await this.recipeService.uploadRecipeImageVariants(
           value.selectedImageFile,
-          IMAGE_OPTIMIZATION_OPTIONS,
+          value.title || 'Imagen de receta',
         );
-
-        const uploadedImage = await this.recipeService.uploadRecipeImage(optimizedImage.blob, 'webp');
-        uploadedImagePath = uploadedImage.path;
-
-        image = {
-          url: uploadedImage.url,
-          path: uploadedImage.path,
-          alt: value.title || 'Imagen de receta',
-        };
+        image = uploadedImage;
       }
 
       await this.recipeService.createRecipe(
@@ -53,9 +44,16 @@ export class CreateRecipe {
     } catch (error) {
       console.error('Error creating recipe:', error);
 
-      if (uploadedImagePath) {
+      if (uploadedImage) {
         try {
-          await this.recipeService.deleteRecipeImage(uploadedImagePath);
+          const imagePaths = [
+            uploadedImage.path,
+            ...Object.values(uploadedImage.variants ?? {}).map((variant) => variant.path),
+          ];
+
+          for (const imagePath of new Set(imagePaths)) {
+            await this.recipeService.deleteRecipeImage(imagePath);
+          }
         } catch (cleanupError) {
           console.error('Error cleaning up uploaded image:', cleanupError);
         }

@@ -285,7 +285,7 @@
             <div class="relative">
               @if (recipe.image?.url) {
                 <img
-                  [src]="recipe.image!.url"
+                  [src]="imageUrl(recipe.image, 'medium')"
                   [alt]="recipe.image!.alt || recipe.title"
                   class="h-56 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                 />

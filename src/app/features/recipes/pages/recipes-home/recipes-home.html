@@ -96,7 +96,7 @@
                 <div class="grid h-full md:grid-cols-[0.95fr_1.05fr]">
                   @if (randomRecipe()!.image?.url) {
                     <img
-                      [src]="randomRecipe()!.image!.url"
+                      [src]="imageUrl(randomRecipe()!.image, 'medium')"
                       [alt]="randomRecipe()!.image!.alt || randomRecipe()!.title"
                       class="h-72 w-full object-cover md:h-full"
                     />
@@ -190,7 +190,7 @@
                       <div class="flex items-start gap-4">
                         @if (recipe.image?.url) {
                           <img
-                            [src]="recipe.image?.url"
+                            [src]="imageUrl(recipe.image, 'thumbnail')"
                             [alt]="recipe.image?.alt || recipe.title"
                             class="h-20 w-20 rounded-[1rem] object-cover"
                           />
@@ -249,7 +249,7 @@
                   <div class="relative">
                     @if (recipe.image?.url) {
                       <img
-                        [src]="recipe.image?.url"
+                        [src]="imageUrl(recipe.image, 'medium')"
                         [alt]="recipe.image?.alt || recipe.title"
                         class="h-52 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                       />

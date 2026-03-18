@@ -1,3 +1,12 @@
+export type RecipeImageSizeKey = 'thumbnail' | 'medium' | 'full';
+
+export interface RecipeImageVariant {
+  url: string;
+  path: string;
+  width: number;
+  height: number;
+}
+
 export interface RecipeIngredient {
   id: string;
   name: string;
@@ -16,6 +25,9 @@ export interface RecipeImage {
   url: string;
   path: string;
   alt?: string;
+  width?: number;
+  height?: number;
+  variants?: Partial<Record<RecipeImageSizeKey, RecipeImageVariant>>;
 }
 
 export interface Recipe {

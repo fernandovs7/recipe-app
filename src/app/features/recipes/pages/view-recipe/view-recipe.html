@@ -73,7 +73,7 @@
           <div class="overflow-hidden rounded-t-[2rem]">
             @if (recipe()?.image?.url) {
               <img
-                [src]="recipe()!.image!.url"
+                [src]="imageUrl(recipe()!.image, 'full')"
                 [alt]="recipe()!.image!.alt || recipe()!.title"
                 class="h-[32rem] w-full object-cover max-[640px]:h-[18rem]"
               />

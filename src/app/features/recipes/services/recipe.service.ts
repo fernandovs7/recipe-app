@@ -1,8 +1,13 @@
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
-import { Recipe } from '../../../core/models/recipe.model';
+import { Recipe, RecipeImage } from '../../../core/models/recipe.model';
 
 import { removeUndefinedFields } from '../../../core/utils/remove-undefined-fields';
+import {
+  IMAGE_SIZES,
+  ImageSizeKey,
+  optimizeImageVariants,
+} from '../../../core/utils/optimize-image';
 
 import {
   doc,
@@ -119,11 +124,13 @@ export class RecipeService {
 
     await updateDoc(recipeRef, updatedRecipe);
 
-    const previousImagePath = existingRecipe.image?.path;
-    const nextImagePath = recipeData.image?.path;
+    const previousImagePaths = this.collectRecipeImagePaths(existingRecipe.image);
+    const nextImagePaths = new Set(this.collectRecipeImagePaths(recipeData.image));
 
-    if (previousImagePath && previousImagePath !== nextImagePath) {
-      await this.deleteRecipeImage(previousImagePath);
+    for (const previousImagePath of previousImagePaths) {
+      if (!nextImagePaths.has(previousImagePath)) {
+        await this.deleteRecipeImage(previousImagePath);
+      }
     }
 
     this.recipes.update((recipes) =>
@@ -142,6 +149,7 @@ export class RecipeService {
   async uploadRecipeImage(
     file: Blob,
     fileExtension = 'webp',
+    fileName?: string,
   ): Promise<{ url: string; path: string }> {
     const user = this.authService.user();
 
@@ -149,8 +157,8 @@ export class RecipeService {
       throw new Error('User not authenticated');
     }
 
-    const fileName = `${crypto.randomUUID()}.${fileExtension}`;
-    const path = `recipes/${user.uid}/${fileName}`;
+    const resolvedFileName = fileName ?? crypto.randomUUID();
+    const path = `recipes/${user.uid}/${resolvedFileName}.${fileExtension}`;
 
     const storageRef = ref(storage, path);
 
@@ -161,6 +169,54 @@ export class RecipeService {
     const url = await getDownloadURL(storageRef);
 
     return { url, path };
+  }
+
+  async uploadRecipeImageVariants(
+    file: File,
+    alt?: string,
+  ): Promise<RecipeImage> {
+    const optimizedVariants = await optimizeImageVariants(file);
+    const assetId = crypto.randomUUID();
+
+    const uploadedEntries = await Promise.all(
+      (Object.keys(IMAGE_SIZES) as ImageSizeKey[]).map(async (sizeKey) => {
+        const optimizedImage = optimizedVariants[sizeKey];
+        const uploadedImage = await this.uploadRecipeImage(
+          optimizedImage.blob,
+          'webp',
+          `${assetId}-${sizeKey}`,
+        );
+
+        return [
+          sizeKey,
+          {
+            url: uploadedImage.url,
+            path: uploadedImage.path,
+            width: optimizedImage.width,
+            height: optimizedImage.height,
+          },
+        ] as const;
+      }),
+    );
+
+    const variants = Object.fromEntries(uploadedEntries) as Record<
+      ImageSizeKey,
+      NonNullable<RecipeImage['variants']>[ImageSizeKey]
+    >;
+    const fullVariant = variants.full;
+
+    if (!fullVariant) {
+      throw new Error('No se pudo generar la variante full de la imagen');
+    }
+
+    return {
+      url: fullVariant.url,
+      path: fullVariant.path,
+      alt,
+      width: fullVariant.width,
+      height: fullVariant.height,
+      variants,
+    };
   }
 
   async getRecipeById(recipeId: string): Promise<Recipe | null> {
@@ -232,8 +288,8 @@ export class RecipeService {
 
     await deleteDoc(recipeRef);
 
-    if (existingRecipe.image?.path) {
-      await this.deleteRecipeImage(existingRecipe.image.path);
+    for (const imagePath of this.collectRecipeImagePaths(existingRecipe.image)) {
+      await this.deleteRecipeImage(imagePath);
     }
 
     this.recipes.update((recipes) => recipes.filter((recipe) => recipe.id !== recipeId));
@@ -247,5 +303,21 @@ export class RecipeService {
       console.error('Error deleting recipe image:', error);
       throw error;
     }
+  }
+
+  private collectRecipeImagePaths(image?: RecipeImage): string[] {
+    if (!image) {
+      return [];
+    }
+
+    const paths = [image.path];
+
+    for (const variant of Object.values(image.variants ?? {})) {
+      if (variant?.path) {
+        paths.push(variant.path);
+      }
+    }
+
+    return [...new Set(paths.filter(Boolean))];
   }
 }

@@ -38,7 +38,7 @@ export class RecipeFormComponent {
   cancelled = output<void>();
 
   categories = RECIPE_CATEGORIES;
-  ingredientUnits = ['gr', 'kg', 'ml', 'cda', 'cdta', 'taza', 'unidad'];
+  ingredientUnits = ['gr', 'kg', 'ml', 'cda', 'cdta', 'taza', 'unidad(s)'];
   tagSuggestions = ['rapida', 'facil', 'casera', 'saludable', 'vegetariana', 'picante'];
 
   selectedImageFile: File | null = null;
@@ -425,7 +425,7 @@ export class RecipeFormComponent {
         '[formarrayname="steps"] textarea:last-of-type',
       ) as HTMLTextAreaElement | null;
 
-      lastStepTextarea?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // lastStepTextarea?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       lastStepTextarea?.focus();
     });
   }
@@ -442,7 +442,7 @@ export class RecipeFormComponent {
         'input[formcontrolname="name"]',
       ) as HTMLInputElement | null;
 
-      lastIngredientGroup?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // lastIngredientGroup?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       firstInput?.focus();
     });
   }

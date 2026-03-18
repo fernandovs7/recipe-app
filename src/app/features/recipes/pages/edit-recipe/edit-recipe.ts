@@ -1,8 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Recipe } from '../../../../core/models/recipe.model';
-import { IMAGE_OPTIMIZATION_OPTIONS } from '../../../../core/constants/image-upload';
-import { optimizeImage } from '../../../../core/utils/optimize-image';
+import { Recipe, RecipeImage } from '../../../../core/models/recipe.model';
 import { RecipeFormComponent } from '../../components/recipe-form/recipe-form';
 import { RecipeFormSubmitValue } from '../../components/recipe-form/recipe-form.model';
 import { RecipeService } from '../../services/recipe.service';
@@ -65,25 +63,17 @@ export class EditRecipe {
     this.submitError.set(null);
     this.saving.set(true);
 
-    let uploadedImagePath: string | null = null;
+    let uploadedImage: RecipeImage | null = null;
 
     try {
       let image = value.existingImage ?? undefined;
 
       if (value.selectedImageFile) {
-        const optimizedImage = await optimizeImage(
+        uploadedImage = await this.recipeService.uploadRecipeImageVariants(
           value.selectedImageFile,
-          IMAGE_OPTIMIZATION_OPTIONS,
+          value.title || 'Imagen de receta',
         );
-
-        const uploadedImage = await this.recipeService.uploadRecipeImage(optimizedImage.blob, 'webp');
-        uploadedImagePath = uploadedImage.path;
-
-        image = {
-          url: uploadedImage.url,
-          path: uploadedImage.path,
-          alt: value.title || 'Imagen de receta',
-        };
+        image = uploadedImage;
       } else if (image) {
         image = {
           ...image,
@@ -99,9 +89,16 @@ export class EditRecipe {
     } catch (error) {
       console.error('Error updating recipe:', error);
 
-      if (uploadedImagePath) {
+      if (uploadedImage) {
         try {
-          await this.recipeService.deleteRecipeImage(uploadedImagePath);
+          const imagePaths = [
+            uploadedImage.path,
+            ...Object.values(uploadedImage.variants ?? {}).map((variant) => variant.path),
+          ];
+
+          for (const imagePath of new Set(imagePaths)) {
+            await this.recipeService.deleteRecipeImage(imagePath);
+          }
         } catch (cleanupError) {
           console.error('Error cleaning up uploaded image:', cleanupError);
         }

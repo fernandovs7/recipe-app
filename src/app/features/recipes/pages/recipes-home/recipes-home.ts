@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { RecipeService } from '../../services/recipe.service';
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { formatDuration } from '../../../../core/utils/format-duration';
+import { RecipeImage, RecipeImageSizeKey } from '../../../../core/models/recipe.model';
 
 @Component({
   selector: 'app-recipes-home',
@@ -84,5 +85,9 @@ export class RecipesHome {
 
   durationLabel(minutes: number | null | undefined): string {
     return formatDuration(minutes);
+  }
+
+  imageUrl(image: RecipeImage | null | undefined, size: RecipeImageSizeKey): string | undefined {
+    return image?.variants?.[size]?.url ?? image?.url;
   }
 }

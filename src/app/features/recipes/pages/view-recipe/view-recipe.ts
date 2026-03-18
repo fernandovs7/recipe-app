@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RecipeService } from '../../services/recipe.service';
-import { Recipe } from '../../../../core/models/recipe.model';
+import { Recipe, RecipeImage, RecipeImageSizeKey } from '../../../../core/models/recipe.model';
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { RECIPE_CATEGORIES } from '../../../../core/constants/recipe-categories';
 import { formatDuration } from '../../../../core/utils/format-duration';
@@ -138,5 +138,9 @@ export class ViewRecipe {
 
   durationLabel(minutes: number | null | undefined): string {
     return formatDuration(minutes);
+  }
+
+  imageUrl(image: RecipeImage | null | undefined, size: RecipeImageSizeKey): string | undefined {
+    return image?.variants?.[size]?.url ?? image?.url;
   }
 }
