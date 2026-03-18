@@ -159,6 +159,34 @@ export class ViewRecipe {
       width,
       height,
       fallback: 'assets/images/shared/image-fallback.png',
+      srcset: this.imageSrcSet(image),
+      sizes: this.imageSizes(size),
     };
+  }
+
+  private imageSrcSet(image: RecipeImage | null | undefined): string | undefined {
+    const variants = image?.variants;
+
+    if (!variants) {
+      return image?.url;
+    }
+
+    const entries = Object.values(variants)
+      .filter((variant): variant is NonNullable<typeof variant> => Boolean(variant?.url && variant?.width))
+      .sort((left, right) => left.width - right.width)
+      .map((variant) => `${variant.url} ${variant.width}w`);
+
+    return entries.length > 0 ? entries.join(', ') : image?.url;
+  }
+
+  private imageSizes(size: RecipeImageSizeKey): string {
+    switch (size) {
+      case 'thumbnail':
+        return '(max-width: 640px) 72px, 112px';
+      case 'medium':
+        return '(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw';
+      case 'full':
+        return '(max-width: 640px) 100vw, 1600px';
+    }
   }
 }

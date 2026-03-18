@@ -9,12 +9,14 @@
   @if (!hasTerminalError()) {
     <picture class="image-picture">
       @if (!hasError() && usesGeneratedSources()) {
-        <source [srcset]="avifSrc()" type="image/avif" />
-        <source [srcset]="webpSrc()" type="image/webp" />
+        <source [srcset]="avifSrc()" [attr.sizes]="resolvedSizes()" type="image/avif" />
+        <source [srcset]="webpSrc()" [attr.sizes]="resolvedSizes()" type="image/webp" />
       }
 
       <img
         [src]="imgSrc()"
+        [attr.srcset]="imgSrcSet()"
+        [attr.sizes]="resolvedSizes()"
         [attr.width]="image().width"
         [attr.height]="image().height"
         [alt]="resolvedAlt()"

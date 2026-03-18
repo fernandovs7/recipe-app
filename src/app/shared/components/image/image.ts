@@ -31,6 +31,7 @@ export class ImageComponent {
   primarySrc = computed(() =>
     this.usesGeneratedSources() ? `${this.image().src}.jpg` : this.image().src,
   );
+  resolvedSizes = computed(() => this.image().sizes ?? '100vw');
   effectiveLoading = computed<'lazy' | 'eager'>(() =>
     this.priority() ? 'eager' : this.loading(),
   );
@@ -43,6 +44,7 @@ export class ImageComponent {
 
   // Builds the image sources assuming the same base path exists in multiple formats.
   imgSrc = computed(() => (this.hasError() ? this.fallbackSrc() : this.primarySrc()));
+  imgSrcSet = computed(() => (this.hasError() ? null : (this.image().srcset ?? null)));
   avifSrc = computed(() => `${this.image().src}.avif`);
   webpSrc = computed(() => `${this.image().src}.webp`);
 

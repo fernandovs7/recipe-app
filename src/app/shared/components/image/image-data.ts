@@ -4,4 +4,6 @@ export interface ImageData {
   height: number;
   alt?: string;
   fallback?: string;
+  srcset?: string;
+  sizes?: string;
 }
