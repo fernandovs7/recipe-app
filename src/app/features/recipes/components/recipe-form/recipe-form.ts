@@ -421,8 +421,11 @@ export class RecipeFormComponent {
 
   private focusLastStep(): void {
     queueMicrotask(() => {
-      const lastStepTextarea = this.elementRef.nativeElement.querySelector(
-        '[formarrayname="steps"] textarea:last-of-type',
+      const stepTextareas = this.elementRef.nativeElement.querySelectorAll(
+        '[formarrayname="steps"] textarea[formcontrolname="instruction"]',
+      );
+      const lastStepTextarea = stepTextareas.item(
+        stepTextareas.length - 1,
       ) as HTMLTextAreaElement | null;
 
       // lastStepTextarea?.scrollIntoView({ behavior: 'smooth', block: 'center' });

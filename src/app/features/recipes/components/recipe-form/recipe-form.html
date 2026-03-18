@@ -129,7 +129,7 @@
 
           @if (categoryDropdownOpen()) {
             <div
-              class="absolute top-[calc(100%+0.8rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+              class="absolute top-[calc(100%+0.8rem)] z-20 max-h-[20rem] w-full overflow-y-auto rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
             >
               @for (category of categories; track category.value) {
                 <button

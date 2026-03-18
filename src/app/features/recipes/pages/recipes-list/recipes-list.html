@@ -107,7 +107,7 @@
 
         <button
           type="button"
-          class="inline-flex items-center justify-center gap-2 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white"
+          class="hidden items-center justify-center gap-2 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white md:inline-flex"
           (click)="clearFilters()"
         >
           <app-icon name="x" [size]="16"></app-icon>
@@ -115,7 +115,7 @@
         </button>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-3">
+      <div class="grid gap-4">
         <label class="block">
           <span class="mb-2 block text-sm font-semibold text-slate-600">Buscar</span>
           <div class="flex items-center gap-3 rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-3 transition focus-within:border-orange-300 focus-within:bg-white">
@@ -132,98 +132,225 @@
           </div>
         </label>
 
-        <label class="block">
-          <span class="mb-2 block text-sm font-semibold text-slate-600">Categoria</span>
-          <div class="recipes-list-category-dropdown relative">
+        <div class="flex flex-col gap-3 md:hidden">
+          <div class="flex items-center gap-2">
             <button
               type="button"
-              class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white"
-              (click)="toggleCategoryDropdown()"
+              class="inline-flex flex-1 items-center justify-center gap-2 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white"
+              (click)="toggleMobileFilters()"
             >
-              <span [class.text-slate-400]="!selectedCategory()">{{ selectedCategoryLabel() }}</span>
-              <span
-                class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
-                [class.rotate-180]="categoryDropdownOpen()"
-              >
-                <app-icon name="chevron-down" [size]="18"></app-icon>
-              </span>
+              <app-icon name="chevron-down" [size]="16"></app-icon>
+              <span>{{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Más filtros' }}</span>
+              @if (activeFilterCount() > 0) {
+                <span class="inline-flex min-w-6 items-center justify-center rounded-full bg-orange-500 px-1.5 py-0.5 text-[0.72rem] font-bold text-white">
+                  {{ activeFilterCount() }}
+                </span>
+              }
             </button>
 
-            @if (categoryDropdownOpen()) {
-              <div
-                class="absolute top-[calc(100%+0.8rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
-              >
-                <button
-                  type="button"
-                  class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
-                  [class.bg-orange-50]="!selectedCategory()"
-                  [class.text-orange-700]="!selectedCategory()"
-                  (click)="selectCategory('')"
-                >
-                  <span>Todas</span>
-                  @if (!selectedCategory()) {
-                    <app-icon name="check" [size]="16"></app-icon>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center gap-2 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white"
+              (click)="clearFilters()"
+            >
+              <app-icon name="x" [size]="16"></app-icon>
+            </button>
+          </div>
+
+          @if (mobileFiltersOpen()) {
+            <div class="grid gap-4 rounded-[1.4rem] border border-slate-100 bg-slate-50/70 p-4">
+              <label class="block">
+                <span class="mb-2 block text-sm font-semibold text-slate-600">Categoria</span>
+                <div class="recipes-list-category-dropdown relative">
+                  <button
+                    type="button"
+                    class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200"
+                    (click)="toggleCategoryDropdown()"
+                  >
+                    <span [class.text-slate-400]="!selectedCategory()">{{
+                      selectedCategoryLabel()
+                    }}</span>
+                    <span
+                      class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+                      [class.rotate-180]="categoryDropdownOpen()"
+                    >
+                      <app-icon name="chevron-down" [size]="18"></app-icon>
+                    </span>
+                  </button>
+
+                  @if (categoryDropdownOpen()) {
+                    <div
+                      class="absolute top-[calc(100%+0.8rem)] z-20 max-h-[20rem] w-full overflow-y-auto rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+                    >
+                      <button
+                        type="button"
+                        class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+                        [class.bg-orange-50]="!selectedCategory()"
+                        [class.text-orange-700]="!selectedCategory()"
+                        (click)="selectCategory('')"
+                      >
+                        <span>Todas</span>
+                        @if (!selectedCategory()) {
+                          <app-icon name="check" [size]="16"></app-icon>
+                        }
+                      </button>
+
+                      @for (category of categories(); track category) {
+                        <button
+                          type="button"
+                          class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+                          [class.bg-orange-50]="selectedCategory() === category"
+                          [class.text-orange-700]="selectedCategory() === category"
+                          (click)="selectCategory(category)"
+                        >
+                          <span>{{ categoryLabel(category) }}</span>
+                          @if (selectedCategory() === category) {
+                            <app-icon name="check" [size]="16"></app-icon>
+                          }
+                        </button>
+                      }
+                    </div>
                   }
-                </button>
+                </div>
+              </label>
 
-                @for (category of categories(); track category) {
+              <label class="block">
+                <span class="mb-2 block text-sm font-semibold text-slate-600">Ordenar por</span>
+                <div class="recipes-list-sort-dropdown relative">
+                  <button
+                    type="button"
+                    class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200"
+                    (click)="toggleSortDropdown()"
+                  >
+                    <span>{{ selectedSortLabel() }}</span>
+                    <span
+                      class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+                      [class.rotate-180]="sortDropdownOpen()"
+                    >
+                      <app-icon name="chevron-down" [size]="18"></app-icon>
+                    </span>
+                  </button>
+
+                  @if (sortDropdownOpen()) {
+                    <div
+                      class="absolute top-[calc(100%+0.8rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+                    >
+                      @for (option of sortOptions; track option.value) {
+                        <button
+                          type="button"
+                          class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+                          [class.bg-orange-50]="sortBy() === option.value"
+                          [class.text-orange-700]="sortBy() === option.value"
+                          (click)="selectSort(option.value)"
+                        >
+                          <span>{{ option.label }}</span>
+                          @if (sortBy() === option.value) {
+                            <app-icon name="check" [size]="16"></app-icon>
+                          }
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              </label>
+            </div>
+          }
+        </div>
+
+        <div class="hidden gap-4 md:grid md:grid-cols-3">
+          <label class="block">
+            <span class="mb-2 block text-sm font-semibold text-slate-600">Categoria</span>
+            <div class="recipes-list-category-dropdown relative">
+              <button
+                type="button"
+                class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white"
+                (click)="toggleCategoryDropdown()"
+              >
+                <span [class.text-slate-400]="!selectedCategory()">{{ selectedCategoryLabel() }}</span>
+                <span
+                  class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+                  [class.rotate-180]="categoryDropdownOpen()"
+                >
+                  <app-icon name="chevron-down" [size]="18"></app-icon>
+                </span>
+              </button>
+
+              @if (categoryDropdownOpen()) {
+                <div
+                  class="absolute top-[calc(100%+0.8rem)] z-20 max-h-[20rem] w-full overflow-y-auto rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+                >
                   <button
                     type="button"
                     class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
-                    [class.bg-orange-50]="selectedCategory() === category"
-                    [class.text-orange-700]="selectedCategory() === category"
-                    (click)="selectCategory(category)"
+                    [class.bg-orange-50]="!selectedCategory()"
+                    [class.text-orange-700]="!selectedCategory()"
+                    (click)="selectCategory('')"
                   >
-                    <span>{{ categoryLabel(category) }}</span>
-                    @if (selectedCategory() === category) {
+                    <span>Todas</span>
+                    @if (!selectedCategory()) {
                       <app-icon name="check" [size]="16"></app-icon>
                     }
                   </button>
-                }
-              </div>
-            }
-          </div>
-        </label>
 
-        <label class="block">
-          <span class="mb-2 block text-sm font-semibold text-slate-600">Ordenar por</span>
-          <div class="recipes-list-sort-dropdown relative">
-            <button
-              type="button"
-              class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white"
-              (click)="toggleSortDropdown()"
-            >
-              <span>{{ selectedSortLabel() }}</span>
-              <span
-                class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
-                [class.rotate-180]="sortDropdownOpen()"
-              >
-                <app-icon name="chevron-down" [size]="18"></app-icon>
-              </span>
-            </button>
+                  @for (category of categories(); track category) {
+                    <button
+                      type="button"
+                      class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+                      [class.bg-orange-50]="selectedCategory() === category"
+                      [class.text-orange-700]="selectedCategory() === category"
+                      (click)="selectCategory(category)"
+                    >
+                      <span>{{ categoryLabel(category) }}</span>
+                      @if (selectedCategory() === category) {
+                        <app-icon name="check" [size]="16"></app-icon>
+                      }
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          </label>
 
-            @if (sortDropdownOpen()) {
-              <div
-                class="absolute top-[calc(100%+0.8rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+          <label class="block">
+            <span class="mb-2 block text-sm font-semibold text-slate-600">Ordenar por</span>
+            <div class="recipes-list-sort-dropdown relative">
+              <button
+                type="button"
+                class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white"
+                (click)="toggleSortDropdown()"
               >
-                @for (option of sortOptions; track option.value) {
-                  <button
-                    type="button"
-                    class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
-                    [class.bg-orange-50]="sortBy() === option.value"
-                    [class.text-orange-700]="sortBy() === option.value"
-                    (click)="selectSort(option.value)"
-                  >
-                    <span>{{ option.label }}</span>
-                    @if (sortBy() === option.value) {
-                      <app-icon name="check" [size]="16"></app-icon>
-                    }
-                  </button>
-                }
-              </div>
-            }
-          </div>
-        </label>
+                <span>{{ selectedSortLabel() }}</span>
+                <span
+                  class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+                  [class.rotate-180]="sortDropdownOpen()"
+                >
+                  <app-icon name="chevron-down" [size]="18"></app-icon>
+                </span>
+              </button>
+
+              @if (sortDropdownOpen()) {
+                <div
+                  class="absolute top-[calc(100%+0.8rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+                >
+                  @for (option of sortOptions; track option.value) {
+                    <button
+                      type="button"
+                      class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+                      [class.bg-orange-50]="sortBy() === option.value"
+                      [class.text-orange-700]="sortBy() === option.value"
+                      (click)="selectSort(option.value)"
+                    >
+                      <span>{{ option.label }}</span>
+                      @if (sortBy() === option.value) {
+                        <app-icon name="check" [size]="16"></app-icon>
+                      }
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          </label>
+        </div>
       </div>
     </section>
 

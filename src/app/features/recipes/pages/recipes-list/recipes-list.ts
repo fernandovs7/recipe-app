@@ -24,6 +24,7 @@ export class RecipesList {
   searchTerm = signal('');
   selectedCategory = signal('');
   sortBy = signal<SortOption>('newest');
+  mobileFiltersOpen = signal(false);
   categoryDropdownOpen = signal(false);
   sortDropdownOpen = signal(false);
   loading = this.recipeService.loading;
@@ -35,14 +36,13 @@ export class RecipesList {
   ];
 
   categories = computed(() => {
-    const categorySet = new Set(
-      this.recipeService
-        .recipes()
-        .map((recipe) => recipe.category)
-        .filter((category): category is string => !!category),
-    );
+    const catalogValues = this.categoriesCatalog.map((category) => category.value);
+    const existingValues = this.recipeService
+      .recipes()
+      .map((recipe) => recipe.category)
+      .filter((category): category is string => !!category && !catalogValues.includes(category));
 
-    return [...categorySet].sort((a, b) => a.localeCompare(b));
+    return [...catalogValues, ...existingValues];
   });
 
   filteredRecipes = computed(() => {
@@ -89,6 +89,19 @@ export class RecipesList {
   totalFavorites = computed(
     () => this.recipeService.recipes().filter((recipe) => recipe.favorite).length,
   );
+  activeFilterCount = computed(() => {
+    let count = 0;
+
+    if (this.selectedCategory()) {
+      count += 1;
+    }
+
+    if (this.sortBy() !== 'newest') {
+      count += 1;
+    }
+
+    return count;
+  });
 
   onSearch(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
@@ -109,8 +122,13 @@ export class RecipesList {
     this.searchTerm.set('');
     this.selectedCategory.set('');
     this.sortBy.set('newest');
+    this.mobileFiltersOpen.set(false);
     this.categoryDropdownOpen.set(false);
     this.sortDropdownOpen.set(false);
+  }
+
+  toggleMobileFilters(): void {
+    this.mobileFiltersOpen.update((value) => !value);
   }
 
   toggleCategoryDropdown(): void {
