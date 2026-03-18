@@ -72,10 +72,10 @@
         <section class="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)]">
           <div class="overflow-hidden rounded-t-[2rem]">
             @if (recipe()?.image?.url) {
-              <img
-                [src]="imageUrl(recipe()!.image, 'full')"
-                [alt]="recipe()!.image!.alt || recipe()!.title"
-                class="h-[32rem] w-full object-cover max-[640px]:h-[18rem]"
+              <app-image
+                [image]="imageData(recipe()!.image, 'full', recipe()!.image!.alt || recipe()!.title, 1600, 960)"
+                [priority]="true"
+                class="h-[32rem] w-full max-[640px]:h-[18rem]"
               />
             } @else {
               <div class="flex min-h-[32rem] flex-col items-center justify-center bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_45%,#fde68a_100%)] px-6 text-center max-[640px]:min-h-[18rem]">

@@ -164,6 +164,7 @@ export class RecipeService {
 
     await uploadBytes(storageRef, file, {
       contentType: 'image/webp',
+      cacheControl: 'public,max-age=31536000,immutable',
     });
 
     const url = await getDownloadURL(storageRef);
@@ -171,10 +172,7 @@ export class RecipeService {
     return { url, path };
   }
 
-  async uploadRecipeImageVariants(
-    file: File,
-    alt?: string,
-  ): Promise<RecipeImage> {
+  async uploadRecipeImageVariants(file: File, alt?: string): Promise<RecipeImage> {
     const optimizedVariants = await optimizeImageVariants(file);
     const assetId = crypto.randomUUID();
 

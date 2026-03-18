@@ -3,12 +3,14 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { RecipeService } from '../../services/recipe.service';
 import { IconComponent } from '../../../../shared/components/icon/icon';
+import { ImageComponent } from '../../../../shared/components/image/image';
+import { ImageData } from '../../../../shared/components/image/image-data';
 import { formatDuration } from '../../../../core/utils/format-duration';
 import { RecipeImage, RecipeImageSizeKey } from '../../../../core/models/recipe.model';
 
 @Component({
   selector: 'app-recipes-home',
-  imports: [IconComponent],
+  imports: [IconComponent, ImageComponent],
   templateUrl: './recipes-home.html',
   styleUrl: './recipes-home.scss',
 })
@@ -89,5 +91,21 @@ export class RecipesHome {
 
   imageUrl(image: RecipeImage | null | undefined, size: RecipeImageSizeKey): string | undefined {
     return image?.variants?.[size]?.url ?? image?.url;
+  }
+
+  imageData(
+    image: RecipeImage | null | undefined,
+    size: RecipeImageSizeKey,
+    alt: string,
+    width: number,
+    height: number,
+  ): ImageData {
+    return {
+      src: this.imageUrl(image, size) ?? 'assets/images/shared/image-fallback.png',
+      alt,
+      width,
+      height,
+      fallback: 'assets/images/shared/image-fallback.png',
+    };
   }
 }

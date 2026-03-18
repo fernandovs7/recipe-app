@@ -1,17 +1,30 @@
-<picture>
-  @if (!hasError()) {
-    <source [srcset]="avifSrc()" type="image/avif" />
-    <source [srcset]="webpSrc()" type="image/webp" />
-  }
+<div class="image-frame" [class.image-frame--rounded]="rounded()">
+  <div
+    class="image-placeholder"
+    [class.image-placeholder--hidden]="isLoaded() || hasTerminalError()"
+  >
+    <div class="image-shimmer"></div>
+  </div>
 
-  <img
-    [ngSrc]="imgSrc()"
-    [width]="image().width"
-    [height]="image().height"
-    [alt]="resolvedAlt()"
-    [attr.fetchpriority]="fetchPriority()"
-    [loading]="effectiveLoading()"
-    [class]="finalClass()"
-    (error)="onError()"
-  />
-</picture>
+  @if (!hasTerminalError()) {
+    <picture class="image-picture">
+      @if (!hasError() && usesGeneratedSources()) {
+        <source [srcset]="avifSrc()" type="image/avif" />
+        <source [srcset]="webpSrc()" type="image/webp" />
+      }
+
+      <img
+        [src]="imgSrc()"
+        [attr.width]="image().width"
+        [attr.height]="image().height"
+        [alt]="resolvedAlt()"
+        [attr.fetchpriority]="fetchPriority()"
+        [loading]="effectiveLoading()"
+        [class]="finalClass()"
+        [class.image-element--loaded]="isLoaded()"
+        (load)="onLoad()"
+        (error)="onError()"
+      />
+    </picture>
+  }
+</div>

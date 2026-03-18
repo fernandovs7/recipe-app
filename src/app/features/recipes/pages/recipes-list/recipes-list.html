@@ -284,11 +284,12 @@
           >
             <div class="relative">
               @if (recipe.image?.url) {
-                <img
-                  [src]="imageUrl(recipe.image, 'medium')"
-                  [alt]="recipe.image!.alt || recipe.title"
-                  class="h-56 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                />
+                <div class="h-56 w-full overflow-hidden">
+                  <app-image
+                    [image]="imageData(recipe.image, 'medium', recipe.image!.alt || recipe.title, 640, 448)"
+                    class="h-full w-full transition duration-500 group-hover:scale-[1.03]"
+                  />
+                </div>
               } @else {
                 <div
                   class="flex h-56 items-center justify-center bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_52%,#fde68a_100%)] text-slate-500"

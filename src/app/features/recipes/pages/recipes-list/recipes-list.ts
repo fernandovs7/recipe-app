@@ -2,6 +2,8 @@ import { Component, HostListener, computed, inject, signal } from '@angular/core
 import { RecipeService } from '../../services/recipe.service';
 import { Router } from '@angular/router';
 import { IconComponent } from '../../../../shared/components/icon/icon';
+import { ImageComponent } from '../../../../shared/components/image/image';
+import { ImageData } from '../../../../shared/components/image/image-data';
 import { RECIPE_CATEGORIES } from '../../../../core/constants/recipe-categories';
 import { formatDuration } from '../../../../core/utils/format-duration';
 import { RecipeImage, RecipeImageSizeKey } from '../../../../core/models/recipe.model';
@@ -10,7 +12,7 @@ type SortOption = 'newest' | 'oldest' | 'title-asc' | 'title-desc';
 
 @Component({
   selector: 'app-recipes-list',
-  imports: [IconComponent],
+  imports: [IconComponent, ImageComponent],
   templateUrl: './recipes-list.html',
   styleUrl: './recipes-list.scss',
 })
@@ -181,6 +183,22 @@ export class RecipesList {
 
   imageUrl(image: RecipeImage | null | undefined, size: RecipeImageSizeKey): string | undefined {
     return image?.variants?.[size]?.url ?? image?.url;
+  }
+
+  imageData(
+    image: RecipeImage | null | undefined,
+    size: RecipeImageSizeKey,
+    alt: string,
+    width: number,
+    height: number,
+  ): ImageData {
+    return {
+      src: this.imageUrl(image, size) ?? 'assets/images/shared/image-fallback.png',
+      alt,
+      width,
+      height,
+      fallback: 'assets/images/shared/image-fallback.png',
+    };
   }
 
   private isClickInsideDropdown(target: HTMLElement | null, selector: string): boolean {

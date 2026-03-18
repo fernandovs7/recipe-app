@@ -14,6 +14,7 @@ import { IconComponent } from '../../../shared/components/icon/icon';
 export class Login {
   private authService = inject(AuthService);
   private router = inject(Router);
+  readonly currentYear = new Date().getFullYear();
 
   heroImage: ImageData = {
     src: 'assets/images/shared/login-hero-image',
