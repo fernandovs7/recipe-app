@@ -7,6 +7,8 @@ import { ImageData } from './image-data';
   styleUrl: './image.scss',
 })
 export class ImageComponent {
+  private static readonly loadedImageUrls = new Set<string>();
+
   // Core image data travels together as a single object.
   image = input.required<ImageData>();
 
@@ -59,12 +61,13 @@ export class ImageComponent {
 
       this.lastImageKey = nextImageKey;
       this.hasError.set(false);
-      this.isLoaded.set(false);
       this.hasTerminalError.set(false);
+      this.isLoaded.set(ImageComponent.loadedImageUrls.has(this.primarySrc()));
     });
   }
 
   onLoad(): void {
+    ImageComponent.loadedImageUrls.add(this.imgSrc());
     this.isLoaded.set(true);
   }
 

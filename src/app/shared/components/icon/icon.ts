@@ -1,9 +1,67 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import * as lucideIcons from 'lucide';
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Check,
+  ChefHat,
+  ChevronDown,
+  Clock3,
+  Flame,
+  Heart,
+  House,
+  ImagePlus,
+  LogIn,
+  LogOut,
+  Menu,
+  Pencil,
+  Plus,
+  RotateCcw,
+  Search,
+  SearchX,
+  Share2,
+  Sparkles,
+  SquarePen,
+  Timer,
+  Trash2,
+  TriangleAlert,
+  Users,
+  X,
+} from 'lucide';
 
-type LucideIconNode = [tag: string, attrs: Record<string, string>][];
+type LucideIconNode = [tag: string, attrs: Record<string, string | number | undefined>][];
+
+const ICONS: Record<string, LucideIconNode> = {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Check,
+  ChefHat,
+  ChevronDown,
+  Clock3,
+  Flame,
+  Heart,
+  House,
+  ImagePlus,
+  LogIn,
+  LogOut,
+  Menu,
+  Pencil,
+  Plus,
+  RotateCcw,
+  Search,
+  SearchX,
+  Share2,
+  Sparkles,
+  SquarePen,
+  Timer,
+  Trash2,
+  TriangleAlert,
+  Users,
+  X,
+};
 
 @Component({
   selector: 'app-icon',
@@ -26,7 +84,7 @@ export class IconComponent {
 
   private readonly iconDefinition = computed<LucideIconNode | null>(() => {
     const normalizedName = this.normalizeName(this.name());
-    const candidate = (lucideIcons as Record<string, unknown>)[normalizedName];
+    const candidate = ICONS[normalizedName];
 
     if (!Array.isArray(candidate)) {
       console.warn(`[app-icon] Icon "${this.name()}" was not found in lucide.`);
@@ -55,7 +113,8 @@ export class IconComponent {
     const nodesMarkup = iconNode
       .map(([tag, attrs]) => {
         const attrsMarkup = Object.entries(attrs)
-          .map(([key, value]) => `${key}="${this.escapeAttribute(value)}"`)
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => `${key}="${this.escapeAttribute(String(value))}"`)
           .join(' ');
 
         return `<${tag} ${attrsMarkup}></${tag}>`;
