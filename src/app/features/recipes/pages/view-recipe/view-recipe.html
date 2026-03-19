@@ -70,15 +70,15 @@
     } @else if (recipe()) {
       <article class="space-y-8">
         <section class="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)]">
-          <div class="overflow-hidden rounded-t-[2rem]">
+          <div class="h-[28rem] max-h-[52vh] overflow-hidden rounded-t-[2rem] max-[640px]:h-[20rem] max-[640px]:max-h-[38vh]">
             @if (recipe()?.image?.url) {
               <app-image
                 [image]="imageData(recipe()!.image, 'full', recipe()!.image!.alt || recipe()!.title, 1600, 960)"
                 [priority]="true"
-                class="h-[32rem] w-full max-[640px]:h-[18rem]"
+                class="h-full w-full"
               />
             } @else {
-              <div class="flex min-h-[32rem] flex-col items-center justify-center bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_45%,#fde68a_100%)] px-6 text-center max-[640px]:min-h-[18rem]">
+              <div class="flex h-full flex-col items-center justify-center bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_45%,#fde68a_100%)] px-6 text-center">
                 <span class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/70 text-orange-600 shadow-[0_12px_25px_rgba(249,115,22,0.15)]">
                   <app-icon name="chef-hat" [size]="30"></app-icon>
                 </span>

@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   ElementRef,
   HostListener,
   effect,
@@ -7,7 +8,9 @@ import {
   input,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { CapitalizeFirstLetterDirective } from '../../../../shared/directives/capitalize-first-letter.directive';
@@ -19,6 +22,7 @@ import {
   RecipeFormStepValue,
   RecipeFormSubmitValue,
 } from './recipe-form.model';
+import { PLATFORM_ID } from '@angular/core';
 
 @Component({
   selector: 'app-recipe-form',
@@ -28,6 +32,9 @@ import {
 export class RecipeFormComponent {
   private fb = inject(FormBuilder);
   private elementRef = inject(ElementRef<HTMLElement>);
+  private destroyRef = inject(DestroyRef);
+  private platformId = inject(PLATFORM_ID);
+  private formActionsRef = viewChild<ElementRef<HTMLElement>>('formActions');
 
   mode = input<'create' | 'edit'>('create');
   saving = input(false);
@@ -48,6 +55,7 @@ export class RecipeFormComponent {
   categoryDropdownOpen = signal(false);
   ingredientUnitDropdownIndex = signal<number | null>(null);
   localSubmitError = signal<string | null>(null);
+  formActionsVisible = signal(false);
 
   private objectPreviewUrl: string | null = null;
   private syncedRecipeId: string | null = null;
@@ -79,6 +87,34 @@ export class RecipeFormComponent {
 
       this.populateForm(recipe);
       this.syncedRecipeId = recipe.id;
+    });
+
+    effect((onCleanup) => {
+      if (!isPlatformBrowser(this.platformId)) {
+        return;
+      }
+
+      const actionsElement = this.formActionsRef()?.nativeElement;
+
+      if (!actionsElement) {
+        return;
+      }
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          this.formActionsVisible.set(entry?.isIntersecting ?? false);
+        },
+        {
+          threshold: 0.15,
+        },
+      );
+
+      observer.observe(actionsElement);
+      onCleanup(() => observer.disconnect());
+    });
+
+    this.destroyRef.onDestroy(() => {
+      this.formActionsVisible.set(false);
     });
   }
 

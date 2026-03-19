@@ -172,17 +172,31 @@
     padding: 1rem;
   }
 
-  .login__container {
-    grid-template-columns: 1fr;
-    min-height: unset;
-  }
-
   .login__hero {
+    width: 100%;
     min-height: 18rem;
   }
 
   .login__content {
     padding: 2rem 1.5rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  :host {
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+
+  .login__container {
+    width: min(100%, 54rem);
+    margin: 0 auto;
+  }
+
+  .login__content {
+    padding: 2.25rem 2rem;
   }
 }
 
