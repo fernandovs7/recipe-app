@@ -235,8 +235,8 @@
               [formGroupName]="i"
               class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5"
             >
-              <div class="grid gap-4 md:grid-cols-12 max-[640px]:gap-3">
-                <div class="md:col-span-4">
+              <div class="grid gap-4 min-[922px]:grid-cols-12 max-[640px]:gap-3">
+                <div class="min-[922px]:col-span-4">
                   <label
                     class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
                   >
@@ -256,7 +256,7 @@
                   }
                 </div>
 
-                <div class="md:col-span-2">
+                <div class="min-[922px]:col-span-2">
                   <label
                     class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
                   >
@@ -266,11 +266,11 @@
                     type="text"
                     formControlName="quantity"
                     class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
-                    placeholder="2, 1/2, al gusto"
+                    placeholder="2, 1/2"
                   />
                 </div>
 
-                <div class="md:col-span-2">
+                <div class="min-[922px]:col-span-2">
                   <label
                     class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
                   >
@@ -318,7 +318,7 @@
                   </div>
                 </div>
 
-                <div class="md:col-span-3">
+                <div class="min-[922px]:col-span-3">
                   <label
                     class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
                   >
@@ -332,7 +332,7 @@
                   />
                 </div>
 
-                <div class="md:col-span-1 flex items-start max-[640px]:pt-1 md:pt-[2.15rem]">
+                <div class="min-[922px]:col-span-1 flex items-start max-[640px]:pt-1 min-[922px]:pt-[2.15rem]">
                   <button
                     type="button"
                     (click)="removeIngredient(i)"

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './features/auth/login/login';
-import { authGuard } from './core/guads/auth-guard';
+import { authGuard, guestGuard } from './core/guads/auth-guard';
 import { RecipesHome } from './features/recipes/pages/recipes-home/recipes-home';
 import { AuthenticatedLayout } from './layout/authenticated-layout/authenticated-layout';
 import { CreateRecipe } from './features/recipes/pages/create-recipe/create-recipe';
@@ -11,6 +11,7 @@ import { RecipesList } from './features/recipes/pages/recipes-list/recipes-list'
 export const routes: Routes = [
   {
     path: 'login',
+    canActivate: [guestGuard],
     component: Login,
     title: 'Inicia sesion',
     data: {

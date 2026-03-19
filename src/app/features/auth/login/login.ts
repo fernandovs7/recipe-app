@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { ImageComponent } from '../../../shared/components/image/image';
@@ -24,9 +24,33 @@ export class Login {
     fallback: 'assets/images/shared/login.jpeg',
   };
 
+  constructor() {
+    effect(() => {
+      console.log('[auth-flow]', 'login:effect', {
+        loading: this.authService.loading(),
+        hasUser: Boolean(this.authService.user()),
+        path: window.location.pathname,
+      });
+
+      if (this.authService.loading()) {
+        return;
+      }
+
+      if (this.authService.user()) {
+        console.log('[auth-flow]', 'login:effect:navigate-app');
+        this.router.navigate(['/app']);
+      }
+    });
+  }
+
   async login() {
-    await this.authService.loginWithGoogle();
-    this.router.navigate(['/app']);
+    console.log('[auth-flow]', 'login:click');
+    const result = await this.authService.loginWithGoogle();
+
+    if (result === 'popup') {
+      console.log('[auth-flow]', 'login:popup:navigate-app');
+      this.router.navigate(['/app']);
+    }
   }
 
   logout() {
