@@ -1,7 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RecipeService } from '../../services/recipe.service';
-import { Recipe, RecipeImage, RecipeImageSizeKey } from '../../../../core/models/recipe.model';
+import {
+  Recipe,
+  RecipeImage,
+  RecipeImageSizeKey,
+  RecipeIngredient,
+} from '../../../../core/models/recipe.model';
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { ImageComponent } from '../../../../shared/components/image/image';
 import { ImageData } from '../../../../shared/components/image/image-data';
@@ -25,7 +30,13 @@ export class ViewRecipe {
   deleteModalOpen = signal(false);
   deleting = signal(false);
   error = signal('');
+  adjustedServings = signal<number | null>(null);
   categories = RECIPE_CATEGORIES;
+  readonly displayedServings = computed(() => this.adjustedServings() ?? this.recipe()?.servings ?? null);
+  readonly canAdjustServings = computed(() => {
+    const servings = this.recipe()?.servings;
+    return typeof servings === 'number' && servings > 0;
+  });
 
   constructor() {
     this.loadRecipe();
@@ -49,6 +60,7 @@ export class ViewRecipe {
       }
 
       this.recipe.set(recipe);
+      this.adjustedServings.set(recipe.servings);
     } catch (error) {
       console.error(error);
       this.error.set('Ocurrió un error cargando la receta.');
@@ -142,6 +154,36 @@ export class ViewRecipe {
     return formatDuration(minutes);
   }
 
+  decreaseServings(): void {
+    if (!this.canAdjustServings()) {
+      return;
+    }
+
+    const nextValue = Math.max(1, (this.displayedServings() ?? 1) - 1);
+    this.adjustedServings.set(nextValue);
+  }
+
+  increaseServings(): void {
+    if (!this.canAdjustServings()) {
+      return;
+    }
+
+    this.adjustedServings.set((this.displayedServings() ?? 0) + 1);
+  }
+
+  ingredientQuantityLabel(ingredient: RecipeIngredient): string {
+    const quantity = ingredient.quantity?.trim();
+    const unit = ingredient.unit?.trim();
+
+    if (!quantity && !unit) {
+      return '';
+    }
+
+    const scaledQuantity = quantity ? this.scaleQuantity(quantity) : '';
+
+    return [scaledQuantity, unit].filter(Boolean).join(' ');
+  }
+
   imageUrl(image: RecipeImage | null | undefined, size: RecipeImageSizeKey): string | undefined {
     return image?.variants?.[size]?.url ?? image?.url;
   }
@@ -188,5 +230,49 @@ export class ViewRecipe {
       case 'full':
         return '(max-width: 640px) 100vw, 1600px';
     }
+  }
+
+  private scaleQuantity(quantity: string): string {
+    const baseServings = this.recipe()?.servings;
+    const currentServings = this.displayedServings();
+
+    if (!baseServings || !currentServings || baseServings <= 0) {
+      return quantity;
+    }
+
+    const parsedQuantity = this.parseQuantity(quantity);
+
+    if (parsedQuantity === null) {
+      return quantity;
+    }
+
+    const scaledValue = (parsedQuantity * currentServings) / baseServings;
+    return this.formatScaledQuantity(scaledValue);
+  }
+
+  private parseQuantity(value: string): number | null {
+    const normalizedValue = value.trim().replace(',', '.');
+
+    const mixedFractionMatch = normalizedValue.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+    if (mixedFractionMatch) {
+      const [, whole, numerator, denominator] = mixedFractionMatch;
+      return Number(whole) + Number(numerator) / Number(denominator);
+    }
+
+    const fractionMatch = normalizedValue.match(/^(\d+)\/(\d+)$/);
+    if (fractionMatch) {
+      const [, numerator, denominator] = fractionMatch;
+      return Number(numerator) / Number(denominator);
+    }
+
+    const numericValue = Number(normalizedValue);
+    return Number.isFinite(numericValue) ? numericValue : null;
+  }
+
+  private formatScaledQuantity(value: number): string {
+    const roundedValue = Math.round(value * 100) / 100;
+    return new Intl.NumberFormat('es-ES', {
+      maximumFractionDigits: 2,
+    }).format(roundedValue);
   }
 }

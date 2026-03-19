@@ -125,11 +125,35 @@
                   Porciones
                 </p>
                 <p class="mt-2 text-[22px] font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[1.6rem]">
-                  {{ recipe()?.servings ?? '—' }}
-                  @if (recipe()?.servings) {
+                  {{ displayedServings() ?? '—' }}
+                  @if (displayedServings()) {
                     <span class="text-base font-medium text-slate-500 max-[640px]:block max-[640px]:text-sm">personas</span>
                   }
                 </p>
+                @if (canAdjustServings()) {
+                  <div class="mt-3 flex items-center justify-center gap-2 max-[640px]:mt-2">
+                    <button
+                      type="button"
+                      (click)="decreaseServings()"
+                      [disabled]="displayedServings() === 1"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-orange-200 bg-white text-orange-600 transition hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-40"
+                      aria-label="Reducir porciones"
+                    >
+                      −
+                    </button>
+                    <span class="text-[0.78rem] font-semibold text-slate-500 max-[640px]:text-[0.72rem]">
+                      Ajustar
+                    </span>
+                    <button
+                      type="button"
+                      (click)="increaseServings()"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-orange-200 bg-white text-orange-600 transition hover:bg-orange-50"
+                      aria-label="Aumentar porciones"
+                    >
+                      +
+                    </button>
+                  </div>
+                }
               </div>
 
               <div class="rounded-[1.35rem] bg-[#fff7f1] px-5 py-5 text-center max-[640px]:rounded-[1rem] max-[640px]:px-3 max-[640px]:py-4">
@@ -191,8 +215,7 @@
 
                       @if (ingredient.quantity !== null || ingredient.unit) {
                         <span class="shrink-0 text-[18px] font-semibold text-orange-600 max-[640px]:text-base">
-                          {{ ingredient.quantity ?? '' }}
-                          {{ ingredient.unit ?? '' }}
+                          {{ ingredientQuantityLabel(ingredient) }}
                         </span>
                       }
                     </div>
