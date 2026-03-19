@@ -1,10 +1,14 @@
 import { Injectable, signal } from '@angular/core';
 import {
   GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithPopup,
-  signOut,
   User,
+  browserLocalPersistence,
+  getRedirectResult,
+  onAuthStateChanged,
+  setPersistence,
+  signInWithPopup,
+  signInWithRedirect,
+  signOut,
 } from 'firebase/auth';
 import { auth } from '../firebase.config';
 
@@ -16,19 +20,50 @@ export class AuthService {
   loading = signal(true);
 
   constructor() {
-    onAuthStateChanged(auth, (user) => {
-      this.user.set(user);
-      this.loading.set(false);
-      console.log('Auth state changed:', user);
-    });
+    this.initAuth();
   }
 
-  async loginWithGoogle() {
+  private async initAuth(): Promise<void> {
+    try {
+      await setPersistence(auth, browserLocalPersistence);
+
+      // Importante para completar correctamente el flujo redirect
+      await getRedirectResult(auth).catch((error) => {
+        console.error('Redirect result error:', error);
+      });
+    } catch (error) {
+      console.error('Auth init error:', error);
+    } finally {
+      onAuthStateChanged(auth, (user) => {
+        this.user.set(user);
+        this.loading.set(false);
+        console.log('Auth state changed:', user);
+      });
+    }
+  }
+
+  async loginWithGoogle(): Promise<void> {
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
+
+    provider.setCustomParameters({
+      prompt: 'select_account',
+    });
+
+    if (this.isMobileOrTablet()) {
+      await signInWithRedirect(auth, provider);
+      return;
+    }
+
+    await signInWithPopup(auth, provider);
   }
 
-  async logout() {
-    return signOut(auth);
+  async logout(): Promise<void> {
+    await signOut(auth);
+  }
+
+  private isMobileOrTablet(): boolean {
+    const userAgent = navigator.userAgent || navigator.vendor;
+
+    return /iPhone|iPad|iPod|Android/i.test(userAgent);
   }
 }
