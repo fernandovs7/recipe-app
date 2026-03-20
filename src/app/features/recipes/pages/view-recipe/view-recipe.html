@@ -37,6 +37,10 @@
           [class.hover:bg-slate-50]="!recipe()?.favorite"
         >
           <span
+            class="favorite-button__ripple"
+            [class.favorite-button__ripple--active]="favoriteBounceActive()"
+          ></span>
+          <span
             class="favorite-button__icon inline-flex items-center justify-center transition-transform duration-300"
             [class.scale-110]="recipe()?.favorite"
             [class.favorite-button__icon--bounce]="favoriteBounceActive()"

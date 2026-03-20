@@ -13,6 +13,13 @@ import { ImageData } from '../../../../shared/components/image/image-data';
 import { RECIPE_CATEGORIES, getRecipeCategoryLabel } from '../../../../core/constants/recipe-categories';
 import { formatDuration } from '../../../../core/utils/format-duration';
 
+type QuantityFormatStyle =
+  | 'integer'
+  | 'decimal-comma'
+  | 'decimal-dot'
+  | 'fraction'
+  | 'mixed-fraction';
+
 @Component({
   selector: 'app-view-recipe',
   imports: [IconComponent, RouterLink, ImageComponent],
@@ -257,39 +264,163 @@ export class ViewRecipe {
       return quantity;
     }
 
+    if (baseServings === currentServings) {
+      return quantity.trim();
+    }
+
     const parsedQuantity = this.parseQuantity(quantity);
 
     if (parsedQuantity === null) {
       return quantity;
     }
 
-    const scaledValue = (parsedQuantity * currentServings) / baseServings;
-    return this.formatScaledQuantity(scaledValue);
+    const scaledValue = (parsedQuantity.value * currentServings) / baseServings;
+    return this.formatScaledQuantity(scaledValue, parsedQuantity.style);
   }
 
-  private parseQuantity(value: string): number | null {
+  private parseQuantity(
+    value: string,
+  ): { value: number; style: QuantityFormatStyle } | null {
     const normalizedValue = value.trim().replace(',', '.');
 
     const mixedFractionMatch = normalizedValue.match(/^(\d+)\s+(\d+)\/(\d+)$/);
     if (mixedFractionMatch) {
       const [, whole, numerator, denominator] = mixedFractionMatch;
-      return Number(whole) + Number(numerator) / Number(denominator);
+      return {
+        value: Number(whole) + Number(numerator) / Number(denominator),
+        style: 'mixed-fraction',
+      };
     }
 
     const fractionMatch = normalizedValue.match(/^(\d+)\/(\d+)$/);
     if (fractionMatch) {
       const [, numerator, denominator] = fractionMatch;
-      return Number(numerator) / Number(denominator);
+      return {
+        value: Number(numerator) / Number(denominator),
+        style: 'fraction',
+      };
+    }
+
+    if (/^\d+[.,]\d+$/.test(value.trim())) {
+      const numericValue = Number(normalizedValue);
+      return Number.isFinite(numericValue)
+        ? {
+            value: numericValue,
+            style: value.includes(',') ? 'decimal-comma' : 'decimal-dot',
+          }
+        : null;
     }
 
     const numericValue = Number(normalizedValue);
-    return Number.isFinite(numericValue) ? numericValue : null;
+    return Number.isFinite(numericValue)
+      ? {
+          value: numericValue,
+          style: Number.isInteger(numericValue) ? 'integer' : 'decimal-comma',
+        }
+      : null;
   }
 
-  private formatScaledQuantity(value: number): string {
+  private formatScaledQuantity(value: number, style: QuantityFormatStyle): string {
+    if (style === 'fraction' || style === 'mixed-fraction') {
+      const fractionValue = this.formatAsFraction(value);
+
+      if (fractionValue) {
+        return fractionValue;
+      }
+    }
+
+    if (style === 'integer') {
+      if (Number.isInteger(value)) {
+        return String(value);
+      }
+
+      const fractionValue = this.formatAsFraction(value);
+
+      if (fractionValue) {
+        return fractionValue;
+      }
+    }
+
     const roundedValue = Math.round(value * 100) / 100;
-    return new Intl.NumberFormat('es-ES', {
+    const formattedValue = new Intl.NumberFormat('es-ES', {
+      minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     }).format(roundedValue);
+
+    return style === 'decimal-dot' ? formattedValue.replace(',', '.') : formattedValue;
+  }
+
+  private formatAsFraction(value: number): string | null {
+    const roundedInteger = Math.round(value);
+
+    if (Math.abs(value - roundedInteger) < 0.01) {
+      return String(roundedInteger);
+    }
+
+    const whole = Math.floor(value);
+    const fraction = value - whole;
+    const approximation = this.approximateFraction(fraction);
+
+    if (!approximation) {
+      return null;
+    }
+
+    let normalizedWhole = whole;
+    let numerator = approximation.numerator;
+    const denominator = approximation.denominator;
+
+    if (numerator === denominator) {
+      normalizedWhole += 1;
+      numerator = 0;
+    }
+
+    if (numerator === 0) {
+      return String(normalizedWhole);
+    }
+
+    return normalizedWhole > 0
+      ? `${normalizedWhole} ${numerator}/${denominator}`
+      : `${numerator}/${denominator}`;
+  }
+
+  private approximateFraction(
+    value: number,
+  ): { numerator: number; denominator: number } | null {
+    const candidateDenominators = [2, 3, 4, 5, 6, 8];
+    let bestMatch: { numerator: number; denominator: number; error: number } | null = null;
+
+    for (const denominator of candidateDenominators) {
+      const numerator = Math.round(value * denominator);
+      const approximation = numerator / denominator;
+      const error = Math.abs(value - approximation);
+
+      if (!bestMatch || error < bestMatch.error) {
+        bestMatch = { numerator, denominator, error };
+      }
+    }
+
+    if (!bestMatch || bestMatch.error > 0.04) {
+      return null;
+    }
+
+    const divisor = this.greatestCommonDivisor(bestMatch.numerator, bestMatch.denominator);
+
+    return {
+      numerator: bestMatch.numerator / divisor,
+      denominator: bestMatch.denominator / divisor,
+    };
+  }
+
+  private greatestCommonDivisor(a: number, b: number): number {
+    let left = Math.abs(a);
+    let right = Math.abs(b);
+
+    while (right !== 0) {
+      const remainder = left % right;
+      left = right;
+      right = remainder;
+    }
+
+    return left || 1;
   }
 }
