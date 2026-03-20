@@ -87,7 +87,6 @@ export class IconComponent {
     const candidate = ICONS[normalizedName];
 
     if (!Array.isArray(candidate)) {
-      console.warn(`[app-icon] Icon "${this.name()}" was not found in lucide.`);
       return null;
     }
 

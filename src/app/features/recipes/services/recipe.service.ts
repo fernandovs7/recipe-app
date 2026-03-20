@@ -71,8 +71,7 @@ export class RecipeService {
         this.recipes.set(recipes);
         this.loading.set(false);
       },
-      (error) => {
-        console.error('Error loading recipes:', error);
+      () => {
         this.recipes.set([]);
         this.loading.set(false);
       },
@@ -298,12 +297,15 @@ export class RecipeService {
       const imageRef = ref(storage, imagePath);
       await deleteObject(imageRef);
     } catch (error) {
-      console.error('Error deleting recipe image:', error);
+      if (this.isStorageObjectMissing(error)) {
+        return;
+      }
+
       throw error;
     }
   }
 
-  private collectRecipeImagePaths(image?: RecipeImage): string[] {
+  private collectRecipeImagePaths(image?: RecipeImage | null): string[] {
     if (!image) {
       return [];
     }
@@ -317,5 +319,14 @@ export class RecipeService {
     }
 
     return [...new Set(paths.filter(Boolean))];
+  }
+
+  private isStorageObjectMissing(error: unknown): boolean {
+    if (!error || typeof error !== 'object') {
+      return false;
+    }
+
+    const code = 'code' in error ? String(error.code) : '';
+    return code === 'storage/object-not-found';
   }
 }

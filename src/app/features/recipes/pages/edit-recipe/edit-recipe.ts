@@ -45,8 +45,7 @@ export class EditRecipe {
       }
 
       this.recipe.set(recipe);
-    } catch (error) {
-      console.error(error);
+    } catch {
       this.error.set('Ocurrió un error cargando la receta.');
     } finally {
       this.loading.set(false);
@@ -66,7 +65,7 @@ export class EditRecipe {
     let uploadedImage: RecipeImage | null = null;
 
     try {
-      let image = value.existingImage ?? undefined;
+      let image: RecipeImage | null | undefined = value.existingImage;
 
       if (value.selectedImageFile) {
         uploadedImage = await this.recipeService.uploadRecipeImageVariants(
@@ -86,9 +85,7 @@ export class EditRecipe {
       await this.recipeService.updateRecipe(currentRecipe.id, recipeData);
 
       await this.router.navigate(['/app/recipes', currentRecipe.id]);
-    } catch (error) {
-      console.error('Error updating recipe:', error);
-
+    } catch {
       if (uploadedImage) {
         try {
           const imagePaths = [
@@ -99,8 +96,7 @@ export class EditRecipe {
           for (const imagePath of new Set(imagePaths)) {
             await this.recipeService.deleteRecipeImage(imagePath);
           }
-        } catch (cleanupError) {
-          console.error('Error cleaning up uploaded image:', cleanupError);
+        } catch {
         }
       }
 

@@ -15,7 +15,11 @@ import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { CapitalizeFirstLetterDirective } from '../../../../shared/directives/capitalize-first-letter.directive';
 import { Recipe, RecipeImage } from '../../../../core/models/recipe.model';
-import { RECIPE_CATEGORIES } from '../../../../core/constants/recipe-categories';
+import {
+  RECIPE_CATEGORIES,
+  getRecipeCategoryLabel,
+  normalizeRecipeCategoryValue,
+} from '../../../../core/constants/recipe-categories';
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE_BYTES } from '../../../../core/constants/image-upload';
 import {
   RecipeFormIngredientValue,
@@ -52,6 +56,7 @@ export class RecipeFormComponent {
   existingImage: RecipeImage | null = null;
   imagePreviewUrl: string | null = null;
   imageError = '';
+  imageDragActive = signal(false);
   categoryDropdownOpen = signal(false);
   ingredientUnitDropdownIndex = signal<number | null>(null);
   localSubmitError = signal<string | null>(null);
@@ -59,6 +64,7 @@ export class RecipeFormComponent {
 
   private objectPreviewUrl: string | null = null;
   private syncedRecipeId: string | null = null;
+  private imageDragDepth = 0;
 
   form = this.fb.group({
     title: ['', [Validators.required, Validators.maxLength(120)]],
@@ -198,29 +204,68 @@ export class RecipeFormComponent {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
 
-    this.imageError = '';
+    if (!file) {
+      return;
+    }
+
+    if (!this.processSelectedImage(file)) {
+      input.value = '';
+    }
+  }
+
+  onImageDragEnter(event: DragEvent): void {
+    if (!this.hasDraggedImage(event)) {
+      return;
+    }
+
+    event.preventDefault();
+    this.imageDragDepth += 1;
+    this.imageDragActive.set(true);
+  }
+
+  onImageDragOver(event: DragEvent): void {
+    if (!this.hasDraggedImage(event)) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'copy';
+    }
+
+    this.imageDragActive.set(true);
+  }
+
+  onImageDragLeave(event: DragEvent): void {
+    if (!this.hasDraggedImage(event)) {
+      return;
+    }
+
+    event.preventDefault();
+    this.imageDragDepth = Math.max(0, this.imageDragDepth - 1);
+
+    if (this.imageDragDepth === 0) {
+      this.imageDragActive.set(false);
+    }
+  }
+
+  onImageDropped(event: DragEvent): void {
+    if (!this.hasDraggedImage(event)) {
+      return;
+    }
+
+    event.preventDefault();
+    this.imageDragDepth = 0;
+    this.imageDragActive.set(false);
+
+    const file = event.dataTransfer?.files?.[0] ?? null;
 
     if (!file) {
       return;
     }
 
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      input.value = '';
-      this.imageError = 'Formato no permitido. Usa JPG, PNG o WebP.';
-      return;
-    }
-
-    if (file.size > MAX_IMAGE_SIZE_BYTES) {
-      input.value = '';
-      this.imageError = 'La imagen supera el tamaño máximo de 10 MB.';
-      return;
-    }
-
-    this.clearObjectPreview();
-    this.selectedImageFile = file;
-    this.existingImage = null;
-    this.objectPreviewUrl = URL.createObjectURL(file);
-    this.imagePreviewUrl = this.objectPreviewUrl;
+    this.processSelectedImage(file);
   }
 
   removeSelectedImage(): void {
@@ -269,10 +314,7 @@ export class RecipeFormComponent {
   selectedCategoryLabel(): string {
     const selectedValue = this.form.controls.category.value;
 
-    return (
-      this.categories.find((category) => category.value === selectedValue)?.label ??
-      'Selecciona una categoría'
-    );
+    return getRecipeCategoryLabel(selectedValue) ?? 'Selecciona una categoría';
   }
 
   addTag(value: string): void {
@@ -350,7 +392,7 @@ export class RecipeFormComponent {
       servings: value.servings ?? null,
       prepTimeMinutes: value.prepTimeMinutes ?? null,
       cookTimeMinutes: value.cookTimeMinutes ?? null,
-      category: value.category ?? '',
+      category: normalizeRecipeCategoryValue(value.category ?? ''),
       tags: value.tags ?? [],
       ingredients:
         value.ingredients?.map((ingredient) => ({
@@ -396,7 +438,7 @@ export class RecipeFormComponent {
       servings: recipe.servings ?? null,
       prepTimeMinutes: recipe.prepTimeMinutes ?? null,
       cookTimeMinutes: recipe.cookTimeMinutes ?? null,
-      category: recipe.category ?? '',
+      category: normalizeRecipeCategoryValue(recipe.category ?? ''),
       tags: recipe.tags ?? [],
     });
 
@@ -446,6 +488,33 @@ export class RecipeFormComponent {
     return Boolean(target.closest(selector));
   }
 
+  private hasDraggedImage(event: DragEvent): boolean {
+    const types = event.dataTransfer?.types;
+
+    return Boolean(types && Array.from(types).includes('Files'));
+  }
+
+  private processSelectedImage(file: File): boolean {
+    this.imageError = '';
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      this.imageError = 'Formato no permitido. Usa JPG, PNG o WebP.';
+      return false;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      this.imageError = 'La imagen supera el tamaño máximo de 10 MB.';
+      return false;
+    }
+
+    this.clearObjectPreview();
+    this.selectedImageFile = file;
+    this.existingImage = null;
+    this.objectPreviewUrl = URL.createObjectURL(file);
+    this.imagePreviewUrl = this.objectPreviewUrl;
+    return true;
+  }
+
   private scrollToFirstInvalidField(): void {
     const invalidField = this.elementRef.nativeElement.querySelector(
       'input.ng-invalid, textarea.ng-invalid, select.ng-invalid',
@@ -456,16 +525,21 @@ export class RecipeFormComponent {
   }
 
   private focusLastStep(): void {
-    queueMicrotask(() => {
-      const stepTextareas = this.elementRef.nativeElement.querySelectorAll(
-        '[formarrayname="steps"] textarea[formcontrolname="instruction"]',
-      );
-      const lastStepTextarea = stepTextareas.item(
-        stepTextareas.length - 1,
-      ) as HTMLTextAreaElement | null;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const stepTextareas = this.elementRef.nativeElement.querySelectorAll(
+          '[formarrayname="steps"] textarea[formcontrolname="instruction"]',
+        );
+        const lastStepTextarea = stepTextareas.item(
+          stepTextareas.length - 1,
+        ) as HTMLTextAreaElement | null;
 
-      // lastStepTextarea?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      lastStepTextarea?.focus();
+        lastStepTextarea?.focus();
+        lastStepTextarea?.setSelectionRange(
+          lastStepTextarea.value.length,
+          lastStepTextarea.value.length,
+        );
+      });
     });
   }
 

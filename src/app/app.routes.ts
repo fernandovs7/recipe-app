@@ -1,18 +1,11 @@
 import { Routes } from '@angular/router';
-import { Login } from './features/auth/login/login';
 import { authGuard, guestGuard } from './core/guads/auth-guard';
-import { RecipesHome } from './features/recipes/pages/recipes-home/recipes-home';
-import { AuthenticatedLayout } from './layout/authenticated-layout/authenticated-layout';
-import { CreateRecipe } from './features/recipes/pages/create-recipe/create-recipe';
-import { ViewRecipe } from './features/recipes/pages/view-recipe/view-recipe';
-import { EditRecipe } from './features/recipes/pages/edit-recipe/edit-recipe';
-import { RecipesList } from './features/recipes/pages/recipes-list/recipes-list';
 
 export const routes: Routes = [
   {
     path: 'login',
     canActivate: [guestGuard],
-    component: Login,
+    loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
     title: 'Inicia sesion',
     data: {
       seo: {
@@ -24,12 +17,18 @@ export const routes: Routes = [
   {
     path: 'app',
     canActivate: [authGuard],
-    component: AuthenticatedLayout,
+    loadComponent: () =>
+      import('./layout/authenticated-layout/authenticated-layout').then(
+        (m) => m.AuthenticatedLayout,
+      ),
     title: 'Recetario',
     children: [
       {
         path: 'home',
-        component: RecipesHome,
+        loadComponent: () =>
+          import('./features/recipes/pages/recipes-home/recipes-home').then(
+            (m) => m.RecipesHome,
+          ),
         title: 'Inicio',
         data: {
           seo: {
@@ -41,7 +40,8 @@ export const routes: Routes = [
       {
         path: 'recipes',
         canActivate: [authGuard],
-        component: RecipesList,
+        loadComponent: () =>
+          import('./features/recipes/pages/recipes-list/recipes-list').then((m) => m.RecipesList),
         title: 'Todas las recetas',
         data: {
           seo: {
@@ -53,7 +53,10 @@ export const routes: Routes = [
       {
         path: 'recipes/new',
         canActivate: [authGuard],
-        component: CreateRecipe,
+        loadComponent: () =>
+          import('./features/recipes/pages/create-recipe/create-recipe').then(
+            (m) => m.CreateRecipe,
+          ),
         title: 'Nueva receta',
         data: {
           seo: {
@@ -65,7 +68,8 @@ export const routes: Routes = [
       {
         path: 'recipes/:id',
         canActivate: [authGuard],
-        component: ViewRecipe,
+        loadComponent: () =>
+          import('./features/recipes/pages/view-recipe/view-recipe').then((m) => m.ViewRecipe),
         title: 'Detalle de receta',
         data: {
           seo: {
@@ -77,7 +81,8 @@ export const routes: Routes = [
       {
         path: 'recipes/:id/edit',
         canActivate: [authGuard],
-        component: EditRecipe,
+        loadComponent: () =>
+          import('./features/recipes/pages/edit-recipe/edit-recipe').then((m) => m.EditRecipe),
         title: 'Editar receta',
         data: {
           seo: {

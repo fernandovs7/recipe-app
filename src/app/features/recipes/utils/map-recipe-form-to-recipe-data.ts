@@ -3,7 +3,7 @@ import { RecipeFormSubmitValue } from '../components/recipe-form/recipe-form.mod
 
 export function mapRecipeFormToRecipeData(
   value: RecipeFormSubmitValue,
-  image: RecipeImage | undefined,
+  image: RecipeImage | null | undefined,
   favorite: boolean,
 ): Omit<Recipe, 'id' | 'userId' | 'createdAt' | 'updatedAt'> {
   return {
@@ -22,7 +22,7 @@ export function mapRecipeFormToRecipeData(
       order: index + 1,
       instruction: step.instruction,
     })),
-    image,
+    image: image === undefined ? undefined : image,
     servings: value.servings,
     prepTimeMinutes: value.prepTimeMinutes,
     cookTimeMinutes: value.cookTimeMinutes,

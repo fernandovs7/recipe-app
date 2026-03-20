@@ -2,6 +2,8 @@ export interface OptimizeImageOptions {
   maxWidth: number;
   maxHeight?: number;
   quality: number;
+  minQuality?: number;
+  maxBytes?: number;
   outputType?: 'image/webp' | 'image/jpeg';
 }
 
@@ -11,17 +13,22 @@ export interface OptimizedImageResult {
   height: number;
 }
 
+const KiB = 1024;
+const QUALITY_STEP = 0.06;
+const RESIZE_STEP = 0.9;
+const MIN_DIMENSION_RATIO = 0.82;
+
 export const IMAGE_SIZES = {
-  thumbnail: { maxWidth: 400, quality: 0.7 },
-  medium: { maxWidth: 800, quality: 0.75 },
-  full: { maxWidth: 1600, quality: 0.8 },
+  thumbnail: { maxWidth: 320, quality: 0.72, minQuality: 0.58, maxBytes: 45 * KiB },
+  medium: { maxWidth: 720, quality: 0.74, minQuality: 0.6, maxBytes: 140 * KiB },
+  full: { maxWidth: 1280, quality: 0.76, minQuality: 0.62, maxBytes: 280 * KiB },
 } as const;
 
 export type ImageSizeKey = keyof typeof IMAGE_SIZES;
 
 export async function optimizeImage(
   file: File | Blob,
-  options: OptimizeImageOptions
+  options: OptimizeImageOptions,
 ): Promise<OptimizedImageResult> {
   const imageBitmap = await createImageBitmap(file);
 
@@ -62,55 +69,158 @@ async function optimizeImageBitmap(
   imageBitmap: ImageBitmap,
   options: OptimizeImageOptions,
 ): Promise<OptimizedImageResult> {
+  const outputType = options.outputType ?? 'image/webp';
   const maxHeight = options.maxHeight ?? options.maxWidth;
-  const { width, height } = resizeDimensions(
+  const targetDimensions = resizeDimensions(
     imageBitmap.width,
     imageBitmap.height,
     options.maxWidth,
     maxHeight,
   );
 
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
+  let currentDimensions = targetDimensions;
+  let currentQuality = options.quality;
+  const minQuality = options.minQuality ?? Math.min(options.quality, 0.6);
+  const minDimensions = {
+    width: Math.max(1, Math.round(targetDimensions.width * MIN_DIMENSION_RATIO)),
+    height: Math.max(1, Math.round(targetDimensions.height * MIN_DIMENSION_RATIO)),
+  };
 
-  const ctx = canvas.getContext('2d');
+  let bestBlob = await renderOptimizedBlob(imageBitmap, currentDimensions, currentQuality, outputType);
 
-  if (!ctx) {
-    throw new Error('No se pudo crear el contexto del canvas');
+  while (
+    options.maxBytes &&
+    bestBlob.size > options.maxBytes &&
+    currentQuality - QUALITY_STEP >= minQuality
+  ) {
+    currentQuality = roundQuality(currentQuality - QUALITY_STEP);
+    bestBlob = await renderOptimizedBlob(imageBitmap, currentDimensions, currentQuality, outputType);
   }
 
-  ctx.drawImage(imageBitmap, 0, 0, width, height);
+  while (
+    options.maxBytes &&
+    bestBlob.size > options.maxBytes &&
+    (currentDimensions.width > minDimensions.width || currentDimensions.height > minDimensions.height)
+  ) {
+    currentDimensions = {
+      width: Math.max(minDimensions.width, Math.round(currentDimensions.width * RESIZE_STEP)),
+      height: Math.max(minDimensions.height, Math.round(currentDimensions.height * RESIZE_STEP)),
+    };
 
-  const outputType = options.outputType ?? 'image/webp';
+    bestBlob = await renderOptimizedBlob(imageBitmap, currentDimensions, currentQuality, outputType);
+
+    while (
+      bestBlob.size > options.maxBytes &&
+      currentQuality - QUALITY_STEP >= minQuality
+    ) {
+      currentQuality = roundQuality(currentQuality - QUALITY_STEP);
+      bestBlob = await renderOptimizedBlob(imageBitmap, currentDimensions, currentQuality, outputType);
+    }
+  }
+
+  return {
+    blob: bestBlob,
+    width: currentDimensions.width,
+    height: currentDimensions.height,
+  };
+}
+
+async function renderOptimizedBlob(
+  imageBitmap: ImageBitmap,
+  dimensions: { width: number; height: number },
+  quality: number,
+  outputType: 'image/webp' | 'image/jpeg',
+): Promise<Blob> {
+  const canvas = drawBitmapToCanvas(imageBitmap, dimensions.width, dimensions.height);
 
   const blob = await new Promise<Blob | null>((resolve) => {
-    canvas.toBlob(resolve, outputType, options.quality);
+    canvas.toBlob(resolve, outputType, quality);
   });
 
   if (!blob) {
     throw new Error('No se pudo optimizar la imagen');
   }
 
-  return {
-    blob,
-    width,
-    height,
-  };
+  return blob;
+}
+
+function drawBitmapToCanvas(
+  imageBitmap: ImageBitmap,
+  targetWidth: number,
+  targetHeight: number,
+): HTMLCanvasElement {
+  let sourceCanvas = document.createElement('canvas');
+  sourceCanvas.width = imageBitmap.width;
+  sourceCanvas.height = imageBitmap.height;
+
+  let sourceContext = sourceCanvas.getContext('2d');
+
+  if (!sourceContext) {
+    throw new Error('No se pudo crear el contexto del canvas');
+  }
+
+  sourceContext.imageSmoothingEnabled = true;
+  sourceContext.imageSmoothingQuality = 'high';
+  sourceContext.drawImage(imageBitmap, 0, 0);
+
+  while (
+    sourceCanvas.width * 0.5 > targetWidth &&
+    sourceCanvas.height * 0.5 > targetHeight
+  ) {
+    const nextCanvas = document.createElement('canvas');
+    nextCanvas.width = Math.max(targetWidth, Math.round(sourceCanvas.width * 0.5));
+    nextCanvas.height = Math.max(targetHeight, Math.round(sourceCanvas.height * 0.5));
+
+    const nextContext = nextCanvas.getContext('2d');
+
+    if (!nextContext) {
+      throw new Error('No se pudo crear el contexto del canvas');
+    }
+
+    nextContext.imageSmoothingEnabled = true;
+    nextContext.imageSmoothingQuality = 'high';
+    nextContext.drawImage(sourceCanvas, 0, 0, nextCanvas.width, nextCanvas.height);
+    sourceCanvas = nextCanvas;
+    sourceContext = nextContext;
+  }
+
+  if (sourceCanvas.width === targetWidth && sourceCanvas.height === targetHeight) {
+    return sourceCanvas;
+  }
+
+  const targetCanvas = document.createElement('canvas');
+  targetCanvas.width = targetWidth;
+  targetCanvas.height = targetHeight;
+
+  const targetContext = targetCanvas.getContext('2d');
+
+  if (!targetContext) {
+    throw new Error('No se pudo crear el contexto del canvas');
+  }
+
+  targetContext.imageSmoothingEnabled = true;
+  targetContext.imageSmoothingQuality = 'high';
+  targetContext.drawImage(sourceCanvas, 0, 0, targetWidth, targetHeight);
+
+  return targetCanvas;
 }
 
 function resizeDimensions(
   originalWidth: number,
   originalHeight: number,
   maxWidth: number,
-  maxHeight: number
+  maxHeight: number,
 ): { width: number; height: number } {
   const widthRatio = maxWidth / originalWidth;
   const heightRatio = maxHeight / originalHeight;
   const ratio = Math.min(widthRatio, heightRatio, 1);
 
   return {
-    width: Math.round(originalWidth * ratio),
-    height: Math.round(originalHeight * ratio),
+    width: Math.max(1, Math.round(originalWidth * ratio)),
+    height: Math.max(1, Math.round(originalHeight * ratio)),
   };
+}
+
+function roundQuality(value: number): number {
+  return Math.round(value * 100) / 100;
 }

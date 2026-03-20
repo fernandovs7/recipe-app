@@ -4,7 +4,11 @@ import { Router } from '@angular/router';
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { ImageComponent } from '../../../../shared/components/image/image';
 import { ImageData } from '../../../../shared/components/image/image-data';
-import { RECIPE_CATEGORIES } from '../../../../core/constants/recipe-categories';
+import {
+  RECIPE_CATEGORIES,
+  getRecipeCategoryLabel,
+  normalizeRecipeCategoryValue,
+} from '../../../../core/constants/recipe-categories';
 import { formatDuration } from '../../../../core/utils/format-duration';
 import { RecipeImage, RecipeImageSizeKey } from '../../../../core/models/recipe.model';
 
@@ -39,8 +43,8 @@ export class RecipesList {
     const catalogValues = this.categoriesCatalog.map((category) => category.value);
     const existingValues = this.recipeService
       .recipes()
-      .map((recipe) => recipe.category)
-      .filter((category): category is string => !!category && !catalogValues.includes(category));
+      .map((recipe) => normalizeRecipeCategoryValue(recipe.category))
+      .filter((category): category is string => Boolean(category) && !catalogValues.includes(category));
 
     return [...catalogValues, ...existingValues];
   });
@@ -63,7 +67,9 @@ export class RecipesList {
     }
 
     if (category) {
-      recipes = recipes.filter((recipe) => recipe.category === category);
+      recipes = recipes.filter(
+        (recipe) => normalizeRecipeCategoryValue(recipe.category) === category,
+      );
     }
 
     switch (sortBy) {
@@ -189,10 +195,7 @@ export class RecipesList {
       return 'Sin categoria';
     }
 
-    return (
-      this.categoriesCatalog.find((category) => category.value === categoryValue)?.label ??
-      categoryValue
-    );
+    return getRecipeCategoryLabel(categoryValue) ?? categoryValue;
   }
 
   durationLabel(minutes: number | null | undefined): string {

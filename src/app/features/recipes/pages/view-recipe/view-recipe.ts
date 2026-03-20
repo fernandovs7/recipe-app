@@ -10,7 +10,7 @@ import {
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { ImageComponent } from '../../../../shared/components/image/image';
 import { ImageData } from '../../../../shared/components/image/image-data';
-import { RECIPE_CATEGORIES } from '../../../../core/constants/recipe-categories';
+import { RECIPE_CATEGORIES, getRecipeCategoryLabel } from '../../../../core/constants/recipe-categories';
 import { formatDuration } from '../../../../core/utils/format-duration';
 
 @Component({
@@ -61,8 +61,7 @@ export class ViewRecipe {
 
       this.recipe.set(recipe);
       this.adjustedServings.set(recipe.servings);
-    } catch (error) {
-      console.error(error);
+    } catch {
       this.error.set('Ocurrió un error cargando la receta.');
     } finally {
       this.loading.set(false);
@@ -90,8 +89,7 @@ export class ViewRecipe {
 
     try {
       await this.recipeService.updateRecipeFavorite(currentRecipe.id, nextFavoriteValue);
-    } catch (error) {
-      console.error(error);
+    } catch {
       this.recipe.set(currentRecipe);
     } finally {
       this.favoriteSaving.set(false);
@@ -123,8 +121,7 @@ export class ViewRecipe {
       await this.recipeService.deleteRecipe(currentRecipe.id);
       this.deleteModalOpen.set(false);
       await this.router.navigate(['/app']);
-    } catch (error) {
-      console.error(error);
+    } catch {
       this.error.set('No pudimos borrar la receta. Intenta de nuevo.');
       this.deleteModalOpen.set(false);
     } finally {
@@ -137,9 +134,7 @@ export class ViewRecipe {
       return 'Sin categoría';
     }
 
-    return (
-      this.categories.find((category) => category.value === categoryValue)?.label ?? categoryValue
-    );
+    return getRecipeCategoryLabel(categoryValue) ?? categoryValue;
   }
 
   tagLabel(tag: string): string {

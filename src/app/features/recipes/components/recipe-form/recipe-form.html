@@ -465,11 +465,18 @@
             Imagen
           </p>
           <p class="text-[18px] text-slate-500 max-[640px]:text-sm">
-            Agrega una foto para tu receta. Una imagen atractiva ayuda a identificarla más rápido.
+            Agrega una foto para tu receta. Puedes seleccionarla desde tu dispositivo o arrastrarla
+            y soltarla aqui para verla antes de guardar.
           </p>
         </div>
 
-        <div class="space-y-4">
+        <div
+          class="space-y-4"
+          (dragenter)="onImageDragEnter($event)"
+          (dragover)="onImageDragOver($event)"
+          (dragleave)="onImageDragLeave($event)"
+          (drop)="onImageDropped($event)"
+        >
           <input
             id="recipe-image-input"
             type="file"
@@ -484,7 +491,11 @@
 
           @if (imagePreviewUrl) {
             <div
-              class="overflow-hidden rounded-[1.4rem] border border-white/90 bg-white shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem]"
+              class="overflow-hidden rounded-[1.4rem] border border-white/90 bg-white shadow-[0_12px_28px_rgba(148,163,184,0.12)] transition max-[640px]:rounded-[1.1rem]"
+              [class.border-orange-300]="imageDragActive()"
+              [class.bg-orange-50]="imageDragActive()"
+              [class.ring-4]="imageDragActive()"
+              [class.ring-orange-100]="imageDragActive()"
             >
               <div class="relative">
                 <img
@@ -492,6 +503,19 @@
                   alt="Vista previa de la receta"
                   class="h-72 w-full object-cover max-[640px]:h-52"
                 />
+                @if (imageDragActive()) {
+                  <div
+                    class="absolute inset-0 flex items-center justify-center bg-[#18243f]/42 px-6 text-center"
+                  >
+                    <div
+                      class="rounded-[1.2rem] border border-white/30 bg-white/12 px-5 py-4 backdrop-blur-sm"
+                    >
+                      <p class="text-lg font-semibold text-white max-[640px]:text-base">
+                        Suelta la imagen para reemplazarla
+                      </p>
+                    </div>
+                  </div>
+                }
                 <div
                   class="pointer-events-none absolute inset-x-0 bottom-0 from-black/50 via-black/10 to-transparent px-5 py-4"
                 >
@@ -532,18 +556,26 @@
             <label
               for="recipe-image-input"
               class="flex min-h-64 cursor-pointer flex-col items-center justify-center rounded-[1.4rem] border border-dashed border-orange-200 bg-white px-6 py-8 text-center shadow-[0_12px_28px_rgba(148,163,184,0.08)] transition hover:border-orange-300 hover:bg-orange-50/40 max-[640px]:min-h-52 max-[640px]:rounded-[1.1rem] max-[640px]:px-4"
+              [class.border-orange-400]="imageDragActive()"
+              [class.bg-orange-50]="imageDragActive()"
+              [class.ring-4]="imageDragActive()"
+              [class.ring-orange-100]="imageDragActive()"
             >
               <span
                 class="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-orange-500/12 text-orange-600"
+                [class.scale-110]="imageDragActive()"
               >
                 <app-icon name="image-plus" [size]="26"></app-icon>
               </span>
               <span class="text-[20px] font-semibold text-slate-800 max-[640px]:text-lg">
-                Selecciona una imagen
+                {{ imageDragActive() ? 'Suelta la imagen aquí' : 'Selecciona una imagen' }}
               </span>
               <span class="mt-2 max-w-md text-[18px] text-slate-500 max-[640px]:text-sm">
-                Haz clic para elegir una foto desde tu dispositivo y mostrar una vista previa antes
-                de guardar.
+                {{
+                  imageDragActive()
+                    ? 'Puedes arrastrar un archivo JPG, PNG o WebP y lo mostraremos como vista previa.'
+                    : 'Haz clic o arrastra una imagen JPG, PNG o WebP para mostrar una vista previa antes de guardar.'
+                }}
               </span>
             </label>
           }
@@ -578,7 +610,7 @@
     </form>
 
     <div
-      class="fixed inset-x-0 bottom-0 z-30 px-4 pb-[calc(env(safe-area-inset-bottom)+0.9rem)] transition duration-250 ease-out md:hidden"
+      class="fixed inset-x-0 bottom-0 z-30 px-4 pb-[calc(env(safe-area-inset-bottom)+0.9rem)] transition duration-250 ease-out xl:hidden"
       [class.pointer-events-none]="formActionsVisible()"
       [class.opacity-0]="formActionsVisible()"
       [class.translate-y-4]="formActionsVisible()"

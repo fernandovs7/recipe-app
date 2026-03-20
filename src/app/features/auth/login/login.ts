@@ -26,29 +26,20 @@ export class Login {
 
   constructor() {
     effect(() => {
-      console.log('[auth-flow]', 'login:effect', {
-        loading: this.authService.loading(),
-        hasUser: Boolean(this.authService.user()),
-        path: window.location.pathname,
-      });
-
       if (this.authService.loading()) {
         return;
       }
 
       if (this.authService.user()) {
-        console.log('[auth-flow]', 'login:effect:navigate-app');
         this.router.navigate(['/app']);
       }
     });
   }
 
   async login() {
-    console.log('[auth-flow]', 'login:click');
     const result = await this.authService.loginWithGoogle();
 
     if (result === 'popup') {
-      console.log('[auth-flow]', 'login:popup:navigate-app');
       this.router.navigate(['/app']);
     }
   }

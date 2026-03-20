@@ -41,9 +41,7 @@ export class CreateRecipe {
       );
 
       await this.router.navigate(['/app']);
-    } catch (error) {
-      console.error('Error creating recipe:', error);
-
+    } catch {
       if (uploadedImage) {
         try {
           const imagePaths = [
@@ -54,8 +52,7 @@ export class CreateRecipe {
           for (const imagePath of new Set(imagePaths)) {
             await this.recipeService.deleteRecipeImage(imagePath);
           }
-        } catch (cleanupError) {
-          console.error('Error cleaning up uploaded image:', cleanupError);
+        } catch {
         }
       }
 

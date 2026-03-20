@@ -7,6 +7,7 @@ import { ImageComponent } from '../../../../shared/components/image/image';
 import { ImageData } from '../../../../shared/components/image/image-data';
 import { formatDuration } from '../../../../core/utils/format-duration';
 import { RecipeImage, RecipeImageSizeKey } from '../../../../core/models/recipe.model';
+import { getRecipeCategoryLabel } from '../../../../core/constants/recipe-categories';
 
 @Component({
   selector: 'app-recipes-home',
@@ -76,6 +77,12 @@ export class RecipesHome {
   categoryLabel(category?: string): string {
     if (!category) {
       return 'Sin categoría';
+    }
+
+    const translatedLabel = getRecipeCategoryLabel(category);
+
+    if (translatedLabel) {
+      return translatedLabel;
     }
 
     return category
