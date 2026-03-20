@@ -23,10 +23,12 @@ export class ViewRecipe {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private recipeService = inject(RecipeService);
+  private favoriteBounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
   recipe = signal<Recipe | null>(null);
   loading = signal(true);
   favoriteSaving = signal(false);
+  favoriteBounceActive = signal(false);
   deleteModalOpen = signal(false);
   deleting = signal(false);
   error = signal('');
@@ -87,6 +89,10 @@ export class ViewRecipe {
       favorite: nextFavoriteValue,
     });
 
+    if (nextFavoriteValue) {
+      this.triggerFavoriteBounce();
+    }
+
     try {
       await this.recipeService.updateRecipeFavorite(currentRecipe.id, nextFavoriteValue);
     } catch {
@@ -94,6 +100,22 @@ export class ViewRecipe {
     } finally {
       this.favoriteSaving.set(false);
     }
+  }
+
+  private triggerFavoriteBounce(): void {
+    if (this.favoriteBounceTimeout) {
+      clearTimeout(this.favoriteBounceTimeout);
+    }
+
+    this.favoriteBounceActive.set(false);
+
+    requestAnimationFrame(() => {
+      this.favoriteBounceActive.set(true);
+      this.favoriteBounceTimeout = setTimeout(() => {
+        this.favoriteBounceActive.set(false);
+        this.favoriteBounceTimeout = null;
+      }, 650);
+    });
   }
 
   openDeleteModal(): void {

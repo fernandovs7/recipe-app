@@ -23,8 +23,9 @@
           (click)="toggleFavorite()"
           [disabled]="favoriteSaving()"
           [attr.aria-label]="recipe()?.favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'"
-          class="inline-flex h-11 w-11 items-center justify-center rounded-full border shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition-all duration-300 ease-out cursor-pointer disabled:opacity-70"
+          class="favorite-button inline-flex h-11 w-11 items-center justify-center rounded-full border shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition-all duration-300 ease-out cursor-pointer disabled:opacity-70"
           [class.scale-110]="recipe()?.favorite && !favoriteSaving()"
+          [class.favorite-button--bounce]="favoriteBounceActive()"
           [class.border-red-500]="recipe()?.favorite"
           [class.bg-red-500]="recipe()?.favorite"
           [class.text-white]="recipe()?.favorite"
@@ -36,8 +37,9 @@
           [class.hover:bg-slate-50]="!recipe()?.favorite"
         >
           <span
-            class="inline-flex items-center justify-center transition-transform duration-300"
+            class="favorite-button__icon inline-flex items-center justify-center transition-transform duration-300"
             [class.scale-110]="recipe()?.favorite"
+            [class.favorite-button__icon--bounce]="favoriteBounceActive()"
           >
             <app-icon name="heart" [size]="18"></app-icon>
           </span>

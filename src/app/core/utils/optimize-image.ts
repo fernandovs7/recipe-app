@@ -13,6 +13,14 @@ export interface OptimizedImageResult {
   height: number;
 }
 
+interface ImageSizeConfig {
+  maxWidth: number;
+  maxHeight?: number;
+  quality: number;
+  minQuality: number;
+  maxBytes: number;
+}
+
 const KiB = 1024;
 const QUALITY_STEP = 0.06;
 const RESIZE_STEP = 0.9;
@@ -21,8 +29,14 @@ const MIN_DIMENSION_RATIO = 0.82;
 export const IMAGE_SIZES = {
   thumbnail: { maxWidth: 320, quality: 0.72, minQuality: 0.58, maxBytes: 45 * KiB },
   medium: { maxWidth: 720, quality: 0.74, minQuality: 0.6, maxBytes: 140 * KiB },
-  full: { maxWidth: 1280, quality: 0.76, minQuality: 0.62, maxBytes: 280 * KiB },
-} as const;
+  full: {
+    maxWidth: 1800,
+    maxHeight: 2200,
+    quality: 0.84,
+    minQuality: 0.74,
+    maxBytes: 700 * KiB,
+  },
+} as const satisfies Record<string, ImageSizeConfig>;
 
 export type ImageSizeKey = keyof typeof IMAGE_SIZES;
 
@@ -52,7 +66,7 @@ export async function optimizeImageVariants(
           sizeKey,
           await optimizeImageBitmap(imageBitmap, {
             ...sizeOptions,
-            maxHeight: sizeOptions.maxWidth,
+            maxHeight: 'maxHeight' in sizeOptions ? sizeOptions.maxHeight : sizeOptions.maxWidth,
             outputType,
           }),
         ],
