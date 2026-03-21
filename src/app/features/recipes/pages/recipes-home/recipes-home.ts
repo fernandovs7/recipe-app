@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { RecipeService } from '../../services/recipe.service';
+import { Recipe } from '../../../../core/models/recipe.model';
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { ImageComponent } from '../../../../shared/components/image/image';
 import { ImageData } from '../../../../shared/components/image/image-data';

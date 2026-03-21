@@ -20,6 +20,8 @@ type QuantityFormatStyle =
   | 'fraction'
   | 'mixed-fraction';
 
+const FRACTION_FRIENDLY_UNITS = new Set(['taza', 'cda', 'cdta', 'unidad', 'unidads', 'unidad(s)']);
+
 @Component({
   selector: 'app-view-recipe',
   imports: [IconComponent, RouterLink, ImageComponent],
@@ -203,7 +205,7 @@ export class ViewRecipe {
       return '';
     }
 
-    const scaledQuantity = quantity ? this.scaleQuantity(quantity) : '';
+    const scaledQuantity = quantity ? this.scaleQuantity(quantity, unit) : '';
 
     return [scaledQuantity, unit].filter(Boolean).join(' ');
   }
@@ -256,7 +258,7 @@ export class ViewRecipe {
     }
   }
 
-  private scaleQuantity(quantity: string): string {
+  private scaleQuantity(quantity: string, unit?: string): string {
     const baseServings = this.recipe()?.servings;
     const currentServings = this.displayedServings();
 
@@ -275,7 +277,7 @@ export class ViewRecipe {
     }
 
     const scaledValue = (parsedQuantity.value * currentServings) / baseServings;
-    return this.formatScaledQuantity(scaledValue, parsedQuantity.style);
+    return this.formatScaledQuantity(scaledValue, parsedQuantity.style, unit);
   }
 
   private parseQuantity(
@@ -320,8 +322,17 @@ export class ViewRecipe {
       : null;
   }
 
-  private formatScaledQuantity(value: number, style: QuantityFormatStyle): string {
-    if (style === 'fraction' || style === 'mixed-fraction') {
+  private formatScaledQuantity(
+    value: number,
+    style: QuantityFormatStyle,
+    unit?: string,
+  ): string {
+    const shouldUseFraction =
+      style === 'fraction' ||
+      style === 'mixed-fraction' ||
+      (style === 'integer' && this.isFractionFriendlyUnit(unit));
+
+    if (shouldUseFraction) {
       const fractionValue = this.formatAsFraction(value);
 
       if (fractionValue) {
@@ -333,12 +344,6 @@ export class ViewRecipe {
       if (Number.isInteger(value)) {
         return String(value);
       }
-
-      const fractionValue = this.formatAsFraction(value);
-
-      if (fractionValue) {
-        return fractionValue;
-      }
     }
 
     const roundedValue = Math.round(value * 100) / 100;
@@ -348,6 +353,21 @@ export class ViewRecipe {
     }).format(roundedValue);
 
     return style === 'decimal-dot' ? formattedValue.replace(',', '.') : formattedValue;
+  }
+
+  private isFractionFriendlyUnit(unit?: string): boolean {
+    if (!unit) {
+      return false;
+    }
+
+    const normalizedUnit = unit
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[().]/g, '');
+
+    return FRACTION_FRIENDLY_UNITS.has(normalizedUnit);
   }
 
   private formatAsFraction(value: number): string | null {
