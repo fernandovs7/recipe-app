@@ -230,7 +230,7 @@
         </div>
 
         <div formArrayName="ingredients" class="space-y-4">
-          @for (ingredient of ingredients.controls; track $index; let i = $index) {
+          @for (ingredient of ingredients.controls; track trackByControlId($index, ingredient); let i = $index) {
             <div
               [formGroupName]="i"
               class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5"
@@ -377,7 +377,7 @@
         </div>
 
         <div formArrayName="steps" class="space-y-4">
-          @for (step of steps.controls; track $index; let i = $index) {
+          @for (step of steps.controls; track trackByControlId($index, step); let i = $index) {
             <div
               [formGroupName]="i"
               class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5"

@@ -11,7 +11,13 @@ import {
   viewChild,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { CapitalizeFirstLetterDirective } from '../../../../shared/directives/capitalize-first-letter.directive';
 import { Recipe, RecipeImage } from '../../../../core/models/recipe.model';
@@ -181,6 +187,10 @@ export class RecipeFormComponent {
     }
 
     this.steps.removeAt(index);
+  }
+
+  trackByControlId(index: number, control: AbstractControl): string | number {
+    return control.get('id')?.value ?? index;
   }
 
   createIngredientGroup(value?: Partial<RecipeFormIngredientValue>) {
