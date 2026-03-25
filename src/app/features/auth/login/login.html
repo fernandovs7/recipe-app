@@ -8,18 +8,6 @@
     </div>
   </div>
   <div class="login__content">
-    <div class="login__toolbar">
-      <button
-        type="button"
-        class="login__theme-toggle"
-        (click)="themeService.toggleTheme()"
-        [attr.aria-label]="themeService.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"
-      >
-        <app-icon [name]="themeService.isDark() ? 'sun' : 'moon'" [size]="18" />
-        <span>{{ themeService.isDark() ? 'Modo claro' : 'Modo oscuro' }}</span>
-      </button>
-    </div>
-
     <p class="login__eyebrow">Tu cocina, tu historia</p>
 
     <div class="login__brand">
