@@ -2,8 +2,44 @@
   font-size: 16px;
 }
 
+:host {
+  display: block;
+}
+
+:host main {
+  animation: warm-page-in 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:host ::ng-deep .recipes-list-category-dropdown,
+:host ::ng-deep .recipes-list-sort-dropdown {
+  isolation: isolate;
+}
+
+.metric-number {
+  letter-spacing: -0.04em;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+@keyframes warm-page-in {
+  0% {
+    opacity: 0;
+    transform: translateY(0.85rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (min-width: 768px) {
   .recipe-search-input {
     font-size: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host main {
+    animation: none;
   }
 }

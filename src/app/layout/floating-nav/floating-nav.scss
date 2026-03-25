@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+nav {
+  animation: nav-float-in 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes nav-float-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -0.7rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

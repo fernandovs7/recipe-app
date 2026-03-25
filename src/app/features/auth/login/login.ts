@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ImageComponent } from '../../../shared/components/image/image';
 import { ImageData } from '../../../shared/components/image/image-data';
 import { IconComponent } from '../../../shared/components/icon/icon';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ import { IconComponent } from '../../../shared/components/icon/icon';
 export class Login {
   private authService = inject(AuthService);
   private router = inject(Router);
+  readonly themeService = inject(ThemeService);
   readonly currentYear = new Date().getFullYear();
 
   heroImage: ImageData = {

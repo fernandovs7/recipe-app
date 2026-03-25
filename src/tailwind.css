@@ -1,13 +1,27 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Lato', sans-serif;
   --font-display: 'Playfair', serif;
 }
 
 @layer base {
+  html,
+  body {
+    min-height: 100%;
+  }
+
   body {
     font-family: var(--font-sans);
+    background:
+      radial-gradient(circle at top, rgba(245, 158, 11, 0.18), transparent 28%),
+      linear-gradient(180deg, #fffaf4 0%, #f7efe7 100%);
+    color: #241815;
+    transition:
+      background 220ms ease,
+      color 220ms ease;
   }
 
   h1,
@@ -17,5 +31,90 @@
   h5,
   h6 {
     font-family: var(--font-display);
+  }
+
+  .dark body {
+    background:
+      radial-gradient(circle at top, rgba(217, 119, 6, 0.18), transparent 24%),
+      linear-gradient(180deg, #17110f 0%, #241815 100%);
+    color: #f8ede3;
+  }
+
+  ::selection {
+    background: rgba(217, 119, 6, 0.22);
+    color: #2b1d17;
+  }
+
+  .dark ::selection {
+    background: rgba(251, 191, 36, 0.26);
+    color: #fff7ed;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+  }
+
+  :where(button, a, input, textarea, select, [role='button']):focus-visible {
+    outline: 2px solid rgba(217, 119, 6, 0.42);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 0.35rem rgba(245, 158, 11, 0.14);
+  }
+
+  .dark :where(button, a, input, textarea, select, [role='button']):focus-visible {
+    outline-color: rgba(246, 200, 145, 0.58);
+    box-shadow: 0 0 0 0.35rem rgba(198, 132, 75, 0.16);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(145, 102, 77, 0.45) transparent;
+  }
+
+  .dark * {
+    scrollbar-color: rgba(240, 176, 107, 0.38) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 0.72rem;
+    height: 0.72rem;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    border: 0.18rem solid transparent;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(196, 140, 95, 0.72) 0%, rgba(120, 83, 63, 0.72) 100%);
+    background-clip: padding-box;
+  }
+
+  .dark *::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(240, 176, 107, 0.58) 0%, rgba(123, 87, 69, 0.74) 100%);
+    background-clip: padding-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(180, 118, 73, 0.84) 0%, rgba(99, 68, 52, 0.84) 100%);
+    background-clip: padding-box;
+  }
+
+  .dark *::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(246, 200, 145, 0.72) 0%, rgba(145, 102, 77, 0.82) 100%);
+    background-clip: padding-box;
+  }
+
+  app-root {
+    display: block;
+    min-height: 100vh;
   }
 }

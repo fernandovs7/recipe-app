@@ -2,6 +2,20 @@
   position: relative;
   overflow: hidden;
   transform-origin: center;
+  backdrop-filter: blur(10px);
+}
+
+:host {
+  display: block;
+}
+
+:host > div {
+  animation: warm-detail-in 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.metric-number {
+  letter-spacing: -0.04em;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
 .favorite-button__icon {
@@ -13,10 +27,14 @@
   position: absolute;
   inset: 0.2rem;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(248, 113, 113, 0.35) 0%, rgba(248, 113, 113, 0) 72%);
+  background: radial-gradient(circle, rgba(248, 113, 113, 0.32) 0%, rgba(248, 113, 113, 0) 72%);
   opacity: 0;
   transform: scale(0.35);
   pointer-events: none;
+}
+
+:host-context(.dark) .favorite-button__ripple {
+  background: radial-gradient(circle, rgba(244, 163, 168, 0.26) 0%, rgba(244, 163, 168, 0) 74%);
 }
 
 .favorite-button__ripple--active {
@@ -88,5 +106,26 @@
   100% {
     opacity: 0;
     transform: scale(1.5);
+  }
+}
+
+@keyframes warm-detail-in {
+  0% {
+    opacity: 0;
+    transform: translateY(0.9rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host > div,
+  .favorite-button--bounce,
+  .favorite-button__icon--bounce,
+  .favorite-button__ripple--active {
+    animation: none;
   }
 }

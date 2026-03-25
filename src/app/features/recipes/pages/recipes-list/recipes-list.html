@@ -1,19 +1,19 @@
 <div class="min-h-screen">
   <main class="mx-auto max-w-7xl px-6 py-10 max-[640px]:px-4 max-[640px]:py-6">
     <section
-      class="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] max-[640px]:rounded-[1.6rem]"
+      class="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] max-[640px]:rounded-[1.6rem] dark:border-[#5c4438]/70 dark:bg-[#241815]/84 dark:shadow-[0_24px_60px_rgba(9,6,5,0.42)]"
     >
       <div
-        class="grid gap-5 bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_52%,#fffdf8_100%)] p-6 md:grid-cols-[1.2fr_0.8fr] md:p-8 max-[640px]:gap-4 max-[640px]:p-4"
+        class="grid gap-5 bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_52%,#fffdf8_100%)] p-6 md:grid-cols-[1.2fr_0.8fr] md:p-8 max-[640px]:gap-4 max-[640px]:p-4 dark:bg-[linear-gradient(135deg,#2e221d_0%,#241815_52%,#1a1210_100%)]"
       >
         <div>
-          <p class="text-[0.82rem] font-extrabold tracking-[0.18em] text-orange-600 uppercase">
+          <p class="text-[0.82rem] font-extrabold tracking-[0.18em] text-orange-600 uppercase dark:text-[#f0b06b]">
             Biblioteca de recetas
           </p>
-          <h1 class="mt-3 text-[3rem] leading-none font-semibold text-[#18243f] max-[640px]:mt-2 max-[640px]:text-[2rem] max-[640px]:leading-[0.95]">
+          <h1 class="mt-3 text-[3rem] leading-none font-semibold text-[#18243f] max-[640px]:mt-2 max-[640px]:text-[2rem] max-[640px]:leading-[0.95] dark:text-[#f8ede3]">
             Todas tus ideas en un solo lugar
           </h1>
-          <p class="mt-4 max-w-2xl text-[18px] leading-8 text-slate-600 max-[640px]:mt-3 max-[640px]:text-[0.98rem] max-[640px]:leading-6">
+          <p class="mt-4 max-w-2xl text-[18px] leading-8 text-slate-600 max-[640px]:mt-3 max-[640px]:text-[0.98rem] max-[640px]:leading-6 dark:text-[#cfb8a9]">
             Explora, filtra y retoma tus recetas favoritas con una vista más clara y consistente
             con el resto del recetario.
           </p>
@@ -21,7 +21,7 @@
           <div class="mt-5 flex flex-col gap-2.5 sm:flex-row max-[640px]:mt-4">
             <button
               type="button"
-              class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(249,115,22,0.28)] transition hover:bg-orange-600 max-[640px]:min-h-12 max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:py-2.5"
+              class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(125,78,46,0.22)] transition hover:bg-orange-600 hover:shadow-[0_18px_32px_rgba(88,56,35,0.26)] max-[640px]:min-h-12 max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:py-2.5 dark:shadow-[0_14px_28px_rgba(12,8,7,0.34)] dark:hover:shadow-[0_20px_34px_rgba(10,7,6,0.42)]"
               (click)="goToCreateRecipe()"
             >
               <app-icon name="plus" [size]="18"></app-icon>
@@ -30,7 +30,7 @@
 
             <button
               type="button"
-              class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 max-[640px]:min-h-12 max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:py-2.5"
+              class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 max-[640px]:min-h-12 max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:py-2.5 dark:border-[#6b5245] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24]"
               (click)="goToHome()"
             >
               <app-icon name="arrow-left" [size]="18"></app-icon>
@@ -40,43 +40,43 @@
         </div>
 
         <div class="grid grid-cols-2 gap-3 md:grid-cols-1 xl:grid-cols-2 max-[640px]:gap-2.5">
-          <div class="rounded-[1.35rem] border border-white/70 bg-white/85 p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] backdrop-blur max-[640px]:rounded-[1.15rem] max-[640px]:p-3">
+          <div class="rounded-[1.35rem] border border-white/70 bg-white/85 p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] backdrop-blur max-[640px]:rounded-[1.15rem] max-[640px]:p-3 dark:border-[#5c4438]/70 dark:bg-[#2c1f1b]/85 dark:shadow-[0_18px_34px_rgba(9,6,5,0.25)]">
             <span class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-orange-500/12 text-orange-600 max-[640px]:mb-3 max-[640px]:h-9 max-[640px]:w-9">
               <app-icon name="book-open" [size]="22"></app-icon>
             </span>
-            <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase max-[640px]:text-[0.68rem] max-[640px]:tracking-[0.12em]">
+            <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase max-[640px]:text-[0.68rem] max-[640px]:tracking-[0.12em] dark:text-[#b99d8b]">
               Recetas
             </p>
-            <p class="mt-2 text-[2rem] leading-none font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[2.1rem]">
+            <p class="metric-number mt-2 text-[2rem] leading-none font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[2.1rem] dark:text-[#f8ede3]">
               {{ totalRecipes() }}
             </p>
-            <p class="mt-2 text-sm leading-6 text-slate-500 max-[640px]:mt-1.5 max-[640px]:text-[0.92rem] max-[640px]:leading-5">
+            <p class="mt-2 text-sm leading-6 text-slate-500 max-[640px]:mt-1.5 max-[640px]:text-[0.92rem] max-[640px]:leading-5 dark:text-[#cfb8a9]">
               En tu colección
             </p>
           </div>
 
-          <div class="rounded-[1.35rem] border border-white/70 bg-white/85 p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] backdrop-blur max-[640px]:rounded-[1.15rem] max-[640px]:p-3">
+          <div class="rounded-[1.35rem] border border-white/70 bg-white/85 p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] backdrop-blur max-[640px]:rounded-[1.15rem] max-[640px]:p-3 dark:border-[#5c4438]/70 dark:bg-[#2c1f1b]/85 dark:shadow-[0_18px_34px_rgba(9,6,5,0.25)]">
             <span class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-red-500/12 text-red-500 max-[640px]:mb-3 max-[640px]:h-9 max-[640px]:w-9">
               <app-icon name="heart" [size]="22"></app-icon>
             </span>
-            <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase max-[640px]:text-[0.68rem] max-[640px]:tracking-[0.12em]">
+            <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase max-[640px]:text-[0.68rem] max-[640px]:tracking-[0.12em] dark:text-[#b99d8b]">
               Favoritas
             </p>
-            <p class="mt-2 text-[2rem] leading-none font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[2.1rem]">
+            <p class="metric-number mt-2 text-[2rem] leading-none font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[2.1rem] dark:text-[#f8ede3]">
               {{ totalFavorites() }}
             </p>
-            <p class="mt-2 text-sm leading-6 text-slate-500 max-[640px]:mt-1.5 max-[640px]:text-[0.92rem] max-[640px]:leading-5">
+            <p class="mt-2 text-sm leading-6 text-slate-500 max-[640px]:mt-1.5 max-[640px]:text-[0.92rem] max-[640px]:leading-5 dark:text-[#cfb8a9]">
               Listas para repetir
             </p>
           </div>
 
-          <div class="col-span-2 rounded-[1.35rem] border border-white/70 bg-[#18243f] p-5 text-white shadow-[0_16px_32px_rgba(15,23,42,0.22)] md:col-span-1 xl:col-span-2 max-[640px]:rounded-[1.15rem] max-[640px]:p-4">
+          <div class="col-span-2 rounded-[1.35rem] border border-white/70 bg-[#18243f] p-5 text-white shadow-[0_16px_32px_rgba(15,23,42,0.22)] md:col-span-1 xl:col-span-2 max-[640px]:rounded-[1.15rem] max-[640px]:p-4 dark:border-[#6e523e]/70 dark:bg-[#2b1d18] dark:shadow-[0_18px_36px_rgba(9,6,5,0.3)]">
             <div class="flex items-start justify-between gap-4">
               <div>
                 <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-orange-200 uppercase max-[640px]:text-[0.68rem] max-[640px]:tracking-[0.12em]">
                   Resultado actual
                 </p>
-                <p class="mt-2 text-[2rem] leading-none font-semibold max-[640px]:mt-1.5 max-[640px]:text-[2.1rem]">
+                <p class="metric-number mt-2 text-[2rem] leading-none font-semibold max-[640px]:mt-1.5 max-[640px]:text-[2.1rem]">
                   {{ filteredRecipes().length }}
                 </p>
               </div>
@@ -93,21 +93,21 @@
     </section>
 
     <section
-      class="mt-8 rounded-[2rem] border border-white/80 bg-white p-6 shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] md:p-7"
+      class="mt-8 rounded-[2rem] border border-white/80 bg-white p-6 shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] md:p-7 dark:border-[#5c4438]/70 dark:bg-[#241815]/84 dark:shadow-[0_24px_60px_rgba(9,6,5,0.42)]"
     >
       <div class="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase">
+          <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase dark:text-[#b99d8b]">
             Filtros
           </p>
-          <h2 class="mt-2 text-[2rem] font-semibold text-[#18243f] max-[640px]:text-[1.7rem]">
+          <h2 class="mt-2 text-[2rem] font-semibold text-[#18243f] max-[640px]:text-[1.7rem] dark:text-[#f8ede3]">
             Encuentra justo lo que quieres cocinar
           </h2>
         </div>
 
         <button
           type="button"
-          class="hidden items-center justify-center gap-2 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white md:inline-flex"
+          class="hidden items-center justify-center gap-2 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white md:inline-flex dark:border-[#6b5245] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24]"
           (click)="clearFilters()"
         >
           <app-icon name="x" [size]="16"></app-icon>
@@ -117,9 +117,9 @@
 
       <div class="grid gap-4">
         <label class="block">
-          <span class="mb-2 block text-sm font-semibold text-slate-600">Buscar</span>
-          <div class="flex items-center gap-3 rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-3 transition focus-within:border-orange-300 focus-within:bg-white">
-            <span class="text-slate-400">
+          <span class="mb-2 block text-sm font-semibold text-slate-600 dark:text-[#d9c8bc]">Buscar</span>
+          <div class="flex items-center gap-3 rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-3 transition focus-within:border-orange-300 focus-within:bg-white dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:focus-within:border-[#c6844b] dark:focus-within:bg-[#31231f]">
+            <span class="text-slate-400 dark:text-[#b99d8b]">
               <app-icon name="search" [size]="18"></app-icon>
             </span>
             <input
@@ -127,7 +127,7 @@
               [value]="searchTerm()"
               (input)="onSearch($event)"
               placeholder="Titulo, descripcion o tag"
-              class="recipe-search-input w-full bg-transparent text-slate-700 outline-none placeholder:text-slate-400"
+              class="recipe-search-input w-full bg-transparent text-slate-700 outline-none placeholder:text-slate-400 dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b]"
             />
           </div>
         </label>
@@ -136,7 +136,7 @@
           <div class="flex items-center gap-2">
             <button
               type="button"
-              class="inline-flex flex-1 items-center justify-center gap-2 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white"
+              class="inline-flex flex-1 items-center justify-center gap-2 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white dark:border-[#6b5245] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24]"
               (click)="toggleMobileFilters()"
             >
               <app-icon name="chevron-down" [size]="16"></app-icon>
@@ -150,7 +150,7 @@
 
             <button
               type="button"
-              class="inline-flex items-center justify-center gap-2 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white"
+              class="inline-flex items-center justify-center gap-2 rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white dark:border-[#6b5245] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24]"
               (click)="clearFilters()"
             >
               <app-icon name="x" [size]="16"></app-icon>
@@ -158,20 +158,20 @@
           </div>
 
           @if (mobileFiltersOpen()) {
-            <div class="grid gap-4 rounded-[1.4rem] border border-slate-100 bg-slate-50/70 p-4">
+            <div class="grid gap-4 rounded-[1.4rem] border border-slate-100 bg-slate-50/70 p-4 dark:border-[#4b3830] dark:bg-[#2c1f1b]/78">
               <label class="block">
-                <span class="mb-2 block text-sm font-semibold text-slate-600">Categoria</span>
+                <span class="mb-2 block text-sm font-semibold text-slate-600 dark:text-[#d9c8bc]">Categoria</span>
                 <div class="recipes-list-category-dropdown relative">
                   <button
                     type="button"
-                    class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200"
+                    class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200 dark:border-[#5c4438] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:hover:border-[#c6844b]"
                     (click)="toggleCategoryDropdown()"
                   >
                     <span [class.text-slate-400]="!selectedCategory()">{{
                       selectedCategoryLabel()
                     }}</span>
                     <span
-                      class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+                      class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200 dark:text-[#b99d8b]"
                       [class.rotate-180]="categoryDropdownOpen()"
                     >
                       <app-icon name="chevron-down" [size]="18"></app-icon>
@@ -180,11 +180,11 @@
 
                   @if (categoryDropdownOpen()) {
                     <div
-                      class="absolute top-[calc(100%+0.8rem)] z-20 max-h-[20rem] w-full overflow-y-auto rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+                      class="absolute top-[calc(100%+0.8rem)] z-20 max-h-[20rem] w-full overflow-y-auto rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)] dark:border-[#5c4438] dark:bg-[#241815] dark:shadow-[0_22px_40px_rgba(9,6,5,0.46)]"
                     >
                       <button
                         type="button"
-                        class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+                        class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24] dark:hover:text-[#f6c891]"
                         [class.bg-orange-50]="!selectedCategory()"
                         [class.text-orange-700]="!selectedCategory()"
                         (click)="selectCategory('')"
@@ -198,7 +198,7 @@
                       @for (category of categories(); track category) {
                         <button
                           type="button"
-                          class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+                        class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24] dark:hover:text-[#f6c891]"
                           [class.bg-orange-50]="selectedCategory() === category"
                           [class.text-orange-700]="selectedCategory() === category"
                           (click)="selectCategory(category)"
@@ -215,16 +215,16 @@
               </label>
 
               <label class="block">
-                <span class="mb-2 block text-sm font-semibold text-slate-600">Ordenar por</span>
+                <span class="mb-2 block text-sm font-semibold text-slate-600 dark:text-[#d9c8bc]">Ordenar por</span>
                 <div class="recipes-list-sort-dropdown relative">
                   <button
                     type="button"
-                    class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200"
+                    class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200 dark:border-[#5c4438] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:hover:border-[#c6844b]"
                     (click)="toggleSortDropdown()"
                   >
                     <span>{{ selectedSortLabel() }}</span>
                     <span
-                      class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+                      class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200 dark:text-[#b99d8b]"
                       [class.rotate-180]="sortDropdownOpen()"
                     >
                       <app-icon name="chevron-down" [size]="18"></app-icon>
@@ -233,12 +233,12 @@
 
                   @if (sortDropdownOpen()) {
                     <div
-                      class="absolute top-[calc(100%+0.8rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+                      class="absolute top-[calc(100%+0.8rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)] dark:border-[#5c4438] dark:bg-[#241815] dark:shadow-[0_22px_40px_rgba(9,6,5,0.46)]"
                     >
                       @for (option of sortOptions; track option.value) {
                         <button
                           type="button"
-                          class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+                          class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24] dark:hover:text-[#f6c891]"
                           [class.bg-orange-50]="sortBy() === option.value"
                           [class.text-orange-700]="sortBy() === option.value"
                           (click)="selectSort(option.value)"
@@ -259,16 +259,16 @@
 
         <div class="hidden gap-4 md:grid md:grid-cols-3">
           <label class="block">
-            <span class="mb-2 block text-sm font-semibold text-slate-600">Categoria</span>
+            <span class="mb-2 block text-sm font-semibold text-slate-600 dark:text-[#d9c8bc]">Categoria</span>
             <div class="recipes-list-category-dropdown relative">
               <button
                 type="button"
-                class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white"
+                class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f4ddd0] dark:hover:border-[#c6844b] dark:hover:bg-[#31231f]"
                 (click)="toggleCategoryDropdown()"
               >
                 <span [class.text-slate-400]="!selectedCategory()">{{ selectedCategoryLabel() }}</span>
                 <span
-                  class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+                  class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200 dark:text-[#b99d8b]"
                   [class.rotate-180]="categoryDropdownOpen()"
                 >
                   <app-icon name="chevron-down" [size]="18"></app-icon>
@@ -277,11 +277,11 @@
 
               @if (categoryDropdownOpen()) {
                 <div
-                  class="absolute top-[calc(100%+0.8rem)] z-20 max-h-[20rem] w-full overflow-y-auto rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+                  class="absolute top-[calc(100%+0.8rem)] z-20 max-h-[20rem] w-full overflow-y-auto rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)] dark:border-[#5c4438] dark:bg-[#241815] dark:shadow-[0_22px_40px_rgba(9,6,5,0.46)]"
                 >
                   <button
                     type="button"
-                    class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+                    class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24] dark:hover:text-[#f6c891]"
                     [class.bg-orange-50]="!selectedCategory()"
                     [class.text-orange-700]="!selectedCategory()"
                     (click)="selectCategory('')"
@@ -295,7 +295,7 @@
                   @for (category of categories(); track category) {
                     <button
                       type="button"
-                      class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+                    class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24] dark:hover:text-[#f6c891]"
                       [class.bg-orange-50]="selectedCategory() === category"
                       [class.text-orange-700]="selectedCategory() === category"
                       (click)="selectCategory(category)"
@@ -312,16 +312,16 @@
           </label>
 
           <label class="block">
-            <span class="mb-2 block text-sm font-semibold text-slate-600">Ordenar por</span>
+            <span class="mb-2 block text-sm font-semibold text-slate-600 dark:text-[#d9c8bc]">Ordenar por</span>
             <div class="recipes-list-sort-dropdown relative">
               <button
                 type="button"
-                class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white"
+                class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f4ddd0] dark:hover:border-[#c6844b] dark:hover:bg-[#31231f]"
                 (click)="toggleSortDropdown()"
               >
                 <span>{{ selectedSortLabel() }}</span>
                 <span
-                  class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+                  class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200 dark:text-[#b99d8b]"
                   [class.rotate-180]="sortDropdownOpen()"
                 >
                   <app-icon name="chevron-down" [size]="18"></app-icon>
@@ -330,12 +330,12 @@
 
               @if (sortDropdownOpen()) {
                 <div
-                  class="absolute top-[calc(100%+0.8rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+                  class="absolute top-[calc(100%+0.8rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)] dark:border-[#5c4438] dark:bg-[#241815] dark:shadow-[0_22px_40px_rgba(9,6,5,0.46)]"
                 >
                   @for (option of sortOptions; track option.value) {
                     <button
                       type="button"
-                      class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
+                    class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-sm text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24] dark:hover:text-[#f6c891]"
                       [class.bg-orange-50]="sortBy() === option.value"
                       [class.text-orange-700]="sortBy() === option.value"
                       (click)="selectSort(option.value)"
@@ -355,27 +355,27 @@
     </section>
 
     @if (loading()) {
-      <div class="mt-8 rounded-[2rem] border border-white/80 bg-white p-10 text-center shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)]">
-        <p class="text-[18px] text-slate-600">Cargando recetas...</p>
+      <div class="mt-8 rounded-[2rem] border border-white/80 bg-white p-10 text-center shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] dark:border-[#5c4438]/70 dark:bg-[#241815]/82 dark:shadow-[0_24px_55px_rgba(9,6,5,0.35)]">
+        <p class="text-[18px] text-slate-600 dark:text-[#cfb8a9]">Cargando recetas...</p>
       </div>
     } @else if (filteredRecipes().length === 0) {
       <section
-        class="mt-8 rounded-[2rem] border border-white/80 bg-white p-10 text-center shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)]"
+        class="mt-8 rounded-[2rem] border border-white/80 bg-white p-10 text-center shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] dark:border-[#5c4438]/70 dark:bg-[#241815]/82 dark:shadow-[0_24px_55px_rgba(9,6,5,0.35)]"
       >
         <span class="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full bg-orange-500/12 text-orange-600">
           <app-icon name="search-x" [size]="28"></app-icon>
         </span>
-        <h2 class="mt-5 text-[2rem] font-semibold text-[#18243f] max-[640px]:text-[1.7rem]">
+        <h2 class="mt-5 text-[2rem] font-semibold text-[#18243f] max-[640px]:text-[1.7rem] dark:text-[#f8ede3]">
           No encontramos recetas
         </h2>
-        <p class="mx-auto mt-3 max-w-xl text-[18px] leading-8 text-slate-600 max-[640px]:text-base max-[640px]:leading-7">
+        <p class="mx-auto mt-3 max-w-xl text-[18px] leading-8 text-slate-600 max-[640px]:text-base max-[640px]:leading-7 dark:text-[#cfb8a9]">
           Ajusta la busqueda o cambia los filtros para descubrir otras recetas de tu biblioteca.
         </p>
 
         <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <button
             type="button"
-            class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(249,115,22,0.28)] transition hover:bg-orange-600"
+            class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_rgba(125,78,46,0.22)] transition hover:bg-orange-600 hover:shadow-[0_18px_32px_rgba(88,56,35,0.26)] dark:shadow-[0_14px_28px_rgba(12,8,7,0.34)] dark:hover:shadow-[0_20px_34px_rgba(10,7,6,0.42)]"
             (click)="clearFilters()"
           >
             <app-icon name="rotate-ccw" [size]="18"></app-icon>
@@ -383,7 +383,7 @@
           </button>
           <button
             type="button"
-            class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-[#6b5245] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24]"
             (click)="goToCreateRecipe()"
           >
             <app-icon name="plus" [size]="18"></app-icon>
@@ -394,10 +394,10 @@
     } @else {
       <div class="mt-8 mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase">
+          <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase dark:text-[#b99d8b]">
             Resultados
           </p>
-          <p class="mt-1 text-sm text-slate-500">
+          <p class="mt-1 text-sm text-slate-500 dark:text-[#cfb8a9]">
             {{ filteredRecipes().length }} receta(s) lista(s) para explorar
           </p>
         </div>
@@ -406,7 +406,7 @@
       <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         @for (recipe of filteredRecipes(); track recipe.id) {
           <article
-            class="group cursor-pointer overflow-hidden rounded-[1.85rem] border border-white/80 bg-white shadow-[0_1rem_35px_rgba(148,163,184,0.14)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_1.4rem_44px_rgba(148,163,184,0.18)]"
+            class="group cursor-pointer overflow-hidden rounded-[1.85rem] border border-white/80 bg-white shadow-[0_1rem_35px_rgba(148,163,184,0.14)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_1.4rem_44px_rgba(102,74,61,0.15)] dark:border-[#5c4438]/70 dark:bg-[#241815]/84 dark:shadow-[0_22px_44px_rgba(9,6,5,0.38)] dark:hover:shadow-[0_26px_48px_rgba(10,7,6,0.48)]"
             (click)="goToRecipeDetail(recipe.id)"
           >
             <div class="relative">
@@ -419,10 +419,10 @@
                 </div>
               } @else {
                 <div
-                  class="flex h-56 items-center justify-center bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_52%,#fde68a_100%)] text-slate-500"
+                  class="flex h-56 items-center justify-center bg-[linear-gradient(135deg,#fff7ed_0%,#ffedd5_52%,#fde68a_100%)] text-slate-500 dark:bg-[linear-gradient(135deg,#3a2a24_0%,#5b3423_52%,#7a451f_100%)] dark:text-[#f4ddd0]"
                 >
                   <div class="text-center">
-                    <span class="mx-auto mb-3 inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/75 text-orange-600 shadow-[0_12px_25px_rgba(249,115,22,0.15)]">
+                    <span class="mx-auto mb-3 inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/75 text-orange-600 shadow-[0_12px_25px_rgba(249,115,22,0.15)] dark:bg-[#2a1d19]/70 dark:text-[#ffd29a]">
                       <app-icon name="chef-hat" [size]="24"></app-icon>
                     </span>
                     <p class="text-sm font-semibold">Sin imagen aun</p>
@@ -441,21 +441,21 @@
             <div class="p-5">
               <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
-                  <p class="text-[0.75rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase">
+                  <p class="text-[0.75rem] font-extrabold tracking-[0.16em] text-slate-400 uppercase dark:text-[#b99d8b]">
                     {{ categoryLabel(recipe.category) }}
                   </p>
-                  <h2 class="mt-2 text-[1.35rem] leading-7 font-semibold text-[#18243f]">
+                  <h2 class="mt-2 text-[1.35rem] leading-7 font-semibold text-[#18243f] dark:text-[#f8ede3]">
                     {{ recipe.title }}
                   </h2>
                 </div>
               </div>
 
               @if (recipe.description) {
-                <p class="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">
+                <p class="mt-3 line-clamp-2 text-sm leading-6 text-slate-600 dark:text-[#cfb8a9]">
                   {{ recipe.description }}
                 </p>
               } @else {
-                <p class="mt-3 text-sm leading-6 text-slate-400">
+                <p class="mt-3 text-sm leading-6 text-slate-400 dark:text-[#b99d8b]">
                   Agrega una descripcion para identificarla mas rapido.
                 </p>
               }
@@ -463,7 +463,7 @@
               <div class="mt-4 flex flex-wrap gap-2.5">
                 @if (recipe.servings) {
                   <span
-                    class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600"
+                    class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600 dark:bg-[#342723] dark:text-[#d9c8bc]"
                   >
                     <app-icon name="users" [size]="14"></app-icon>
                     {{ recipe.servings }} porciones
@@ -472,7 +472,7 @@
 
                 @if (recipe.totalTimeMinutes) {
                   <span
-                    class="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-3 py-1.5 text-sm font-semibold text-orange-700"
+                    class="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-3 py-1.5 text-sm font-semibold text-orange-700 dark:bg-[#4a2d22] dark:text-[#ffd29a]"
                   >
                     <app-icon name="clock-3" [size]="14"></app-icon>
                     {{ durationLabel(recipe.totalTimeMinutes) }}
@@ -484,7 +484,7 @@
                 <div class="mt-4 flex flex-wrap gap-2">
                   @for (tag of recipe.tags.slice(0, 3); track tag) {
                     <span
-                      class="rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-xs font-semibold text-orange-700"
+                      class="rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-xs font-semibold text-orange-700 dark:border-[#7b5745] dark:bg-[#4a2d22] dark:text-[#ffd29a]"
                     >
                       #{{ tag }}
                     </span>

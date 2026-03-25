@@ -17,6 +17,25 @@
       content="Guarda recetas, organiza ingredientes y vuelve a tus platos favoritos en un solo lugar."
     />
     <meta property="og:type" content="website" />
+    <script>
+      (() => {
+        const storageKey = 'cocinario-theme';
+        const storedTheme = localStorage.getItem(storageKey);
+        const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
+        const theme =
+          storedTheme === 'dark' || storedTheme === 'light'
+            ? storedTheme
+            : preferredTheme;
+
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        document.documentElement.style.colorScheme = theme;
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute('content', theme === 'dark' ? '#17110f' : '#fffaf4');
+      })();
+    </script>
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />

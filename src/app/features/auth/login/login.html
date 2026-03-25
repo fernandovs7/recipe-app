@@ -4,10 +4,22 @@
     <div class="login__hero-overlay"></div>
     <div class="login__hero-badge cursor-default">
       <app-icon name="sparkles" [size]="16" />
-      <span>Sabores que inspiran</span>
+      <span>Tu recetario personal</span>
     </div>
   </div>
   <div class="login__content">
+    <div class="login__toolbar">
+      <button
+        type="button"
+        class="login__theme-toggle"
+        (click)="themeService.toggleTheme()"
+        [attr.aria-label]="themeService.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"
+      >
+        <app-icon [name]="themeService.isDark() ? 'sun' : 'moon'" [size]="18" />
+        <span>{{ themeService.isDark() ? 'Modo claro' : 'Modo oscuro' }}</span>
+      </button>
+    </div>
+
     <p class="login__eyebrow">Tu cocina, tu historia</p>
 
     <div class="login__brand">
@@ -15,10 +27,10 @@
       <app-icon name="chef-hat" [size]="40" />
     </div>
 
-    <h2>Bienvenido!</h2>
+    <h2>Tu recetario empieza aquí</h2>
     <p class="login__copy">
-      Guarda tus recetas favoritas, organiza tus ideas y accede a tu recetario desde cualquier
-      lugar.
+      Guarda tus platos favoritos, ordénalos con calma y vuelve a cada receta con imágenes, pasos
+      y notas en un solo lugar.
     </p>
 
     <button class="login__cta" (click)="login()">
@@ -26,14 +38,40 @@
       <span>Continuar con Google</span>
     </button>
 
-    <div class="login__chips">
-      <span>Rapido</span>
-      <span>Visual</span>
-      <span>Personal</span>
+    <div class="login__benefits" aria-label="Beneficios principales">
+      <div class="login__benefit">
+        <span class="login__benefit-icon">
+          <app-icon name="check" [size]="14" />
+        </span>
+        <div>
+          <p>Rápido</p>
+          <small>Encuentra lo que quieres cocinar sin perder tiempo.</small>
+        </div>
+      </div>
+
+      <div class="login__benefit">
+        <span class="login__benefit-icon">
+          <app-icon name="check" [size]="14" />
+        </span>
+        <div>
+          <p>Visual</p>
+          <small>Recetas, imágenes y pasos claros en un mismo lugar.</small>
+        </div>
+      </div>
+
+      <div class="login__benefit">
+        <span class="login__benefit-icon">
+          <app-icon name="check" [size]="14" />
+        </span>
+        <div>
+          <p>Personal</p>
+          <small>Tu recetario crece contigo y con tu estilo de cocina.</small>
+        </div>
+      </div>
     </div>
 
     <div class="login__footer">
-      <p>Hecho por Fernando Vargas S.</p>
+      <p>Diseñado y desarrollado por Fernando Vargas S.</p>
       <p>© {{ currentYear }} Cocinario App</p>
     </div>
   </div>

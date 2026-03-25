@@ -1,8 +1,8 @@
 <div class="min-h-screen">
   <div class="mx-auto max-w-6xl px-6 py-10 max-[640px]:px-4 max-[640px]:py-6">
     <div class="mb-8 px-2 max-[640px]:mb-6 max-[640px]:px-0.5">
-      <h1 class="text-4xl font-semibold text-stone-900 max-[640px]:text-[2rem]">{{ formTitle() }}</h1>
-      <p class="mt-2 text-lg text-black max-[640px]:text-base">
+      <h1 class="text-4xl font-semibold text-stone-900 max-[640px]:text-[2rem] dark:text-[#f8ede3]">{{ formTitle() }}</h1>
+      <p class="mt-2 text-lg text-black max-[640px]:text-base dark:text-[#cfb8a9]">
         {{ formSubtitle() }}
       </p>
     </div>
@@ -10,17 +10,17 @@
     <form
       [formGroup]="form"
       (ngSubmit)="handleSubmit()"
-      class="space-y-9 rounded-[2rem] border border-white/80 bg-white px-6 py-8 shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] md:px-12 md:py-12 max-[640px]:space-y-7 max-[640px]:rounded-[1.5rem] max-[640px]:px-4 max-[640px]:py-5 max-[640px]:pb-8"
+      class="space-y-9 rounded-[2rem] border border-white/80 bg-white px-6 py-8 shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] md:px-12 md:py-12 max-[640px]:space-y-7 max-[640px]:rounded-[1.5rem] max-[640px]:px-4 max-[640px]:py-5 max-[640px]:pb-8 dark:border-[#5c4438]/70 dark:bg-[#241815]/84 dark:shadow-[0_24px_60px_rgba(9,6,5,0.42)]"
     >
       <div>
         <label
-          class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+          class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
           >Título</label
         >
         <input
           type="text"
           formControlName="title"
-          class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+          class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
           placeholder="Ej. Pasta aglio e olio"
         />
 
@@ -31,13 +31,13 @@
 
       <div>
         <label
-          class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+          class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
           >Descripción</label
         >
         <textarea
           formControlName="description"
           rows="5"
-          class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+          class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
           placeholder="Describe brevemente la receta"
         ></textarea>
       </div>
@@ -45,19 +45,19 @@
       <div class="grid gap-5 md:grid-cols-3 max-[640px]:gap-4">
         <div>
           <label
-            class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+            class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
             >Porciones</label
           >
           <div class="relative">
             <span
-              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6 text-slate-400 max-[640px]:pl-4"
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6 text-slate-400 max-[640px]:pl-4 dark:text-[#b99d8b]"
             >
               <app-icon name="users" [size]="22"></app-icon>
             </span>
             <input
               type="number"
               formControlName="servings"
-              class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 py-3 pr-5 pl-16 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:pl-13 max-[640px]:text-base"
+              class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 py-3 pr-5 pl-16 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:pl-13 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
               placeholder="0"
             />
           </div>
@@ -65,19 +65,19 @@
 
         <div>
           <label
-            class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+            class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
             >Prep min</label
           >
           <div class="relative">
             <span
-              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6 text-slate-400 max-[640px]:pl-4"
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6 text-slate-400 max-[640px]:pl-4 dark:text-[#b99d8b]"
             >
               <app-icon name="timer" [size]="22"></app-icon>
             </span>
             <input
               type="number"
               formControlName="prepTimeMinutes"
-              class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 py-3 pr-5 pl-16 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:pl-13 max-[640px]:text-base"
+              class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 py-3 pr-5 pl-16 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:pl-13 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
               placeholder="0"
             />
           </div>
@@ -85,19 +85,19 @@
 
         <div>
           <label
-            class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+            class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
             >Cocción min</label
           >
           <div class="relative">
             <span
-              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6 text-slate-400 max-[640px]:pl-4"
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-6 text-slate-400 max-[640px]:pl-4 dark:text-[#b99d8b]"
             >
               <app-icon name="flame" [size]="22"></app-icon>
             </span>
             <input
               type="number"
               formControlName="cookTimeMinutes"
-              class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 py-3 pr-5 pl-16 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:pl-13 max-[640px]:text-base"
+              class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 py-3 pr-5 pl-16 text-[1.125rem] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:pl-13 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
               placeholder="0"
             />
           </div>
@@ -106,13 +106,13 @@
 
       <div>
         <label
-          class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+          class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
           >Categoría</label
         >
         <div class="recipe-form-category-dropdown relative">
           <button
             type="button"
-            class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-left text-[1.125rem] text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+            class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-left text-[1.125rem] text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:hover:border-[#c6844b] dark:hover:bg-[#31231f]"
             (click)="toggleCategoryDropdown()"
           >
             <span [class.text-slate-400]="!form.controls.category.value">
@@ -120,7 +120,7 @@
             </span>
 
             <span
-              class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+              class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200 dark:text-[#b99d8b]"
               [class.rotate-180]="categoryDropdownOpen()"
             >
               <app-icon name="chevron-down" [size]="22"></app-icon>
@@ -129,12 +129,12 @@
 
           @if (categoryDropdownOpen()) {
             <div
-              class="absolute top-[calc(100%+0.8rem)] z-20 max-h-[20rem] w-full overflow-y-auto rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+              class="absolute top-[calc(100%+0.8rem)] z-20 max-h-[20rem] w-full overflow-y-auto rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)] dark:border-[#5c4438] dark:bg-[#241815] dark:shadow-[0_22px_40px_rgba(9,6,5,0.46)]"
             >
               @for (category of categories; track category.value) {
                 <button
                   type="button"
-                  class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-[1.125rem] text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 max-[640px]:text-base"
+                  class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-[1.125rem] text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 max-[640px]:text-base dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24] dark:hover:text-[#f6c891]"
                   [class.bg-orange-50]="form.controls.category.value === category.value"
                   [class.text-orange-700]="form.controls.category.value === category.value"
                   (click)="selectCategory(category.value)"
@@ -152,28 +152,28 @@
       </div>
 
       <section
-        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4"
+        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4 dark:border-[#4b3830] dark:bg-[#2c1f1b]/78 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]"
       >
         <div class="mb-5 max-[640px]:mb-4">
           <p
-            class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+            class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
           >
             Tags
           </p>
-          <p class="text-[18px] text-slate-500 max-[640px]:text-sm">
+          <p class="text-[18px] text-slate-500 max-[640px]:text-sm dark:text-[#cfb8a9]">
             Agrega palabras clave para encontrar la receta más rápido. Usa enter o coma para
             crear cada tag.
           </p>
         </div>
 
         <div
-          class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.08)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5"
+          class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.08)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5 dark:border-[#5c4438] dark:bg-[#241815] dark:shadow-[0_18px_34px_rgba(9,6,5,0.25)]"
         >
           <div class="flex flex-wrap gap-2">
             @for (tag of form.controls.tags.value; track tag) {
               <button
                 type="button"
-                class="inline-flex items-center gap-2 rounded-full bg-orange-500/12 px-3 py-2 text-sm font-semibold text-orange-700 ring-1 ring-orange-200 transition hover:bg-orange-500/18"
+                class="inline-flex items-center gap-2 rounded-full bg-orange-500/12 px-3 py-2 text-sm font-semibold text-orange-700 ring-1 ring-orange-200 transition hover:bg-orange-500/18 dark:bg-[#4a2d22] dark:text-[#ffd29a] dark:ring-[#7b5745]"
                 (click)="removeTag(tag)"
               >
                 <span>#{{ tag }}</span>
@@ -187,7 +187,7 @@
                 #tagInput
                 id="recipe-tags-input"
                 type="text"
-                class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
                 placeholder="Ej. rapida, vegetariana, pasta"
                 (keydown)="handleTagKeydown($event, tagInput)"
                 (blur)="addTagFromInput(tagInput)"
@@ -200,7 +200,7 @@
               @for (tag of availableTagSuggestions(); track tag) {
                 <button
                   type="button"
-                  class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
+                  class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700 dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#cfb8a9] dark:hover:border-[#c6844b] dark:hover:bg-[#3a2a24] dark:hover:text-[#f6c891]"
                   (click)="addTag(tag)"
                 >
                   #{{ tag }}
@@ -212,18 +212,18 @@
       </section>
 
       <section
-        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4"
+        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4 dark:border-[#4b3830] dark:bg-[#2c1f1b]/78 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]"
       >
         <div
           class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between max-[640px]:mb-4"
         >
           <div>
             <p
-              class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+              class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
             >
               Ingredientes
             </p>
-            <p class="text-[18px] text-slate-500 max-[640px]:text-sm">
+            <p class="text-[18px] text-slate-500 max-[640px]:text-sm dark:text-[#cfb8a9]">
               Agrega cada ingrediente con cantidad, unidad y notas opcionales.
             </p>
           </div>
@@ -233,19 +233,19 @@
           @for (ingredient of ingredients.controls; track trackByControlId($index, ingredient); let i = $index) {
             <div
               [formGroupName]="i"
-              class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5"
+              class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5 dark:border-[#5c4438] dark:bg-[#241815] dark:shadow-[0_18px_34px_rgba(9,6,5,0.25)]"
             >
               <div class="grid gap-4 min-[922px]:grid-cols-12 max-[640px]:gap-3">
                 <div class="min-[922px]:col-span-4">
                   <label
-                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
+                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem] dark:text-[#b99d8b]"
                   >
                     Ingrediente
                   </label>
                   <input
                     type="text"
                     formControlName="name"
-                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
                     placeholder="Ej. Pasta, ajo, mantequilla"
                   />
 
@@ -258,28 +258,28 @@
 
                 <div class="min-[922px]:col-span-2">
                   <label
-                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
+                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem] dark:text-[#b99d8b]"
                   >
                     Cantidad
                   </label>
                   <input
                     type="text"
                     formControlName="quantity"
-                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
                     placeholder="2, 1/2"
                   />
                 </div>
 
                 <div class="min-[922px]:col-span-2">
                   <label
-                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
+                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem] dark:text-[#b99d8b]"
                   >
                     Unidad
                   </label>
                   <div class="recipe-form-unit-dropdown relative">
                     <button
                       type="button"
-                      class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-left text-[18px] text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                      class="flex w-full items-center justify-between rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-left text-[18px] text-slate-700 outline-none transition hover:border-orange-200 hover:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:hover:border-[#c6844b] dark:hover:bg-[#31231f]"
                       (click)="toggleIngredientUnitDropdown(i)"
                     >
                       <span [class.text-slate-400]="!ingredient.get('unit')?.value">
@@ -287,7 +287,7 @@
                       </span>
 
                       <span
-                        class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200"
+                        class="inline-flex origin-center items-center justify-center text-slate-400 transition duration-200 dark:text-[#b99d8b]"
                         [class.rotate-180]="ingredientUnitDropdownIndex() === i"
                       >
                         <app-icon name="chevron-down" [size]="18"></app-icon>
@@ -296,12 +296,12 @@
 
                     @if (ingredientUnitDropdownIndex() === i) {
                       <div
-                        class="absolute top-[calc(100%+0.6rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)]"
+                        class="absolute top-[calc(100%+0.6rem)] z-20 w-full rounded-[1.2rem] border border-slate-200 bg-white p-2 shadow-[0_1.125rem_40px_rgba(148,163,184,0.2)] dark:border-[#5c4438] dark:bg-[#241815] dark:shadow-[0_22px_40px_rgba(9,6,5,0.46)]"
                       >
                         @for (unit of ingredientUnits; track unit) {
                           <button
                             type="button"
-                            class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-[18px] text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 max-[640px]:text-base"
+                            class="flex w-full items-center justify-between rounded-[1rem] px-4 py-3 text-left text-[18px] text-slate-700 transition hover:bg-orange-50 hover:text-orange-700 max-[640px]:text-base dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24] dark:hover:text-[#f6c891]"
                             [class.bg-orange-50]="ingredient.get('unit')?.value === unit"
                             [class.text-orange-700]="ingredient.get('unit')?.value === unit"
                             (click)="selectIngredientUnit(i, unit)"
@@ -320,14 +320,14 @@
 
                 <div class="min-[922px]:col-span-3">
                   <label
-                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem]"
+                    class="mb-3 block text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:mb-2 max-[640px]:text-[0.72rem] dark:text-[#b99d8b]"
                   >
                     Nota
                   </label>
                   <input
                     type="text"
                     formControlName="notes"
-                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
                     placeholder="Al gusto"
                   />
                 </div>
@@ -336,7 +336,7 @@
                   <button
                     type="button"
                     (click)="removeIngredient(i)"
-                    class="flex min-h-[3.25rem] w-full items-center justify-center rounded-[1.2rem] border border-red-200 bg-red-50 text-red-500 transition hover:bg-red-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 max-[640px]:min-h-11 max-[640px]:rounded-[1rem]"
+                    class="flex min-h-[3.25rem] w-full items-center justify-center rounded-[1.2rem] border border-red-200 bg-red-50 text-red-500 transition hover:bg-red-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 max-[640px]:min-h-11 max-[640px]:rounded-[1rem] dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#f4a3a8] dark:hover:bg-[#4a2528] dark:hover:text-[#ffc1c5]"
                     [disabled]="ingredients.length === 1"
                   >
                     <app-icon name="trash-2" [size]="18"></app-icon>
@@ -351,7 +351,7 @@
           <button
             type="button"
             (click)="addIngredient()"
-            class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-orange-200 bg-white px-4 py-3 text-[18px] font-semibold text-orange-600 transition hover:bg-orange-50 max-[640px]:w-full max-[640px]:rounded-[1rem] max-[640px]:text-base"
+            class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-orange-200 bg-white px-4 py-3 text-[18px] font-semibold text-orange-600 transition hover:bg-orange-50 max-[640px]:w-full max-[640px]:rounded-[1rem] max-[640px]:text-base dark:border-[#7b5745] dark:bg-[#31231f] dark:text-[#ffd29a] dark:hover:bg-[#3a2a24]"
           >
             <app-icon name="plus" [size]="18"></app-icon>
             <span>Agregar otro ingrediente</span>
@@ -359,22 +359,22 @@
         </div>
       </section>
       <section
-        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4"
+        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4 dark:border-[#4b3830] dark:bg-[#2c1f1b]/78 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]"
       >
         <div
           class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between max-[640px]:mb-4"
         >
           <div>
             <p
-              class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+              class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
             >
               Preparación
             </p>
-            <p class="text-[18px] text-slate-500 max-[640px]:text-sm">
+            <p class="text-[18px] text-slate-500 max-[640px]:text-sm dark:text-[#cfb8a9]">
               Describe paso a paso cómo preparar la receta.
             </p>
           </div>
-          <p class="text-sm font-medium text-slate-500 max-[640px]:text-[0.82rem]">
+          <p class="text-sm font-medium text-slate-500 max-[640px]:text-[0.82rem] dark:text-[#cfb8a9]">
             Arrastra el asa de cada paso para reordenarlos.
           </p>
         </div>
@@ -384,7 +384,7 @@
             <div
               [formGroupName]="i"
               cdkDrag
-              class="recipe-step-card rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5"
+              class="recipe-step-card rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5 dark:border-[#5c4438] dark:bg-[#241815] dark:shadow-[0_18px_34px_rgba(9,6,5,0.25)]"
             >
               <div class="flex items-start gap-4 max-[640px]:gap-3">
                 <div class="flex-1">
@@ -392,19 +392,19 @@
                     <button
                       type="button"
                       cdkDragHandle
-                      class="inline-flex h-8 min-w-8 cursor-grab items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition hover:border-orange-200 hover:text-orange-600 active:cursor-grabbing max-[640px]:h-7 max-[640px]:min-w-7"
+                      class="inline-flex h-8 min-w-8 cursor-grab items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition hover:border-orange-200 hover:text-orange-600 active:cursor-grabbing max-[640px]:h-7 max-[640px]:min-w-7 dark:border-[#5c4438] dark:bg-[#31231f] dark:text-[#b99d8b] dark:hover:border-[#c6844b] dark:hover:text-[#ffd29a]"
                       aria-label="Mover paso"
                       title="Arrastra para mover este paso"
                     >
                       <app-icon name="grip-vertical" [size]="16"></app-icon>
                     </button>
                     <span
-                      class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-orange-500/15 px-2 text-sm font-bold text-orange-700 ring-1 ring-orange-200 max-[640px]:h-7 max-[640px]:min-w-7 max-[640px]:text-[0.78rem]"
+                      class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-orange-500/15 px-2 text-sm font-bold text-orange-700 ring-1 ring-orange-200 max-[640px]:h-7 max-[640px]:min-w-7 max-[640px]:text-[0.78rem] dark:bg-[#4a2d22] dark:text-[#ffd29a] dark:ring-[#7b5745]"
                     >
                       {{ i + 1 }}
                     </span>
                     <label
-                      class="text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:text-[0.72rem]"
+                      class="text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:text-[0.72rem] dark:text-[#b99d8b]"
                     >
                       Paso
                     </label>
@@ -412,7 +412,7 @@
                   <textarea
                     formControlName="instruction"
                     rows="3"
-                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+                    class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
                     placeholder="Describe este paso..."
                   ></textarea>
 
@@ -425,7 +425,7 @@
                   <button
                     type="button"
                     (click)="removeStep(i)"
-                    class="flex min-h-[3.25rem] min-w-[3.25rem] items-center justify-center rounded-[1.2rem] border border-red-200 bg-red-50 text-red-500 transition hover:bg-red-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 max-[640px]:min-h-11 max-[640px]:min-w-11 max-[640px]:rounded-[1rem]"
+                    class="flex min-h-[3.25rem] min-w-[3.25rem] items-center justify-center rounded-[1.2rem] border border-red-200 bg-red-50 text-red-500 transition hover:bg-red-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 max-[640px]:min-h-11 max-[640px]:min-w-11 max-[640px]:rounded-[1rem] dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#f4a3a8] dark:hover:bg-[#4a2528] dark:hover:text-[#ffc1c5]"
                     [disabled]="steps.length === 1"
                   >
                     <app-icon name="trash-2" [size]="18"></app-icon>
@@ -434,27 +434,27 @@
               </div>
 
               <ng-template cdkDragPreview [matchSize]="true">
-                <div class="recipe-step-card recipe-step-card--preview rounded-[1.4rem] border border-orange-200 bg-white p-4 shadow-[0_20px_45px_rgba(15,23,42,0.18)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5">
+                <div class="recipe-step-card recipe-step-card--preview rounded-[1.4rem] border border-orange-200 bg-white p-4 shadow-[0_20px_45px_rgba(15,23,42,0.18)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5 dark:border-[#7b5745] dark:bg-[#241815] dark:shadow-[0_24px_50px_rgba(9,6,5,0.45)]">
                   <div class="flex items-start gap-4 max-[640px]:gap-3">
                     <div class="flex-1">
                       <div class="mb-3 flex items-center gap-3 max-[640px]:mb-2">
-                        <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 max-[640px]:h-7 max-[640px]:min-w-7">
+                        <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 max-[640px]:h-7 max-[640px]:min-w-7 dark:border-[#5c4438] dark:bg-[#31231f] dark:text-[#b99d8b]">
                           <app-icon name="grip-vertical" [size]="16"></app-icon>
                         </span>
-                        <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-orange-500/15 px-2 text-sm font-bold text-orange-700 ring-1 ring-orange-200 max-[640px]:h-7 max-[640px]:min-w-7 max-[640px]:text-[0.78rem]">
+                        <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-orange-500/15 px-2 text-sm font-bold text-orange-700 ring-1 ring-orange-200 max-[640px]:h-7 max-[640px]:min-w-7 max-[640px]:text-[0.78rem] dark:bg-[#4a2d22] dark:text-[#ffd29a] dark:ring-[#7b5745]">
                           {{ i + 1 }}
                         </span>
-                        <label class="text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:text-[0.72rem]">
+                        <label class="text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:text-[0.72rem] dark:text-[#b99d8b]">
                           Paso
                         </label>
                       </div>
-                      <div class="rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] leading-8 text-slate-700 max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base max-[640px]:leading-7">
+                      <div class="rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] leading-8 text-slate-700 max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base max-[640px]:leading-7 dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3]">
                         {{ step.get('instruction')?.value || 'Describe este paso...' }}
                       </div>
                     </div>
 
                     <div class="flex items-start pt-[2.15rem] max-[640px]:pt-[1.9rem]">
-                      <span class="inline-flex min-h-[3.25rem] min-w-[3.25rem] items-center justify-center rounded-[1.2rem] border border-red-200 bg-red-50 text-red-400 max-[640px]:min-h-11 max-[640px]:min-w-11 max-[640px]:rounded-[1rem]">
+                      <span class="inline-flex min-h-[3.25rem] min-w-[3.25rem] items-center justify-center rounded-[1.2rem] border border-red-200 bg-red-50 text-red-400 max-[640px]:min-h-11 max-[640px]:min-w-11 max-[640px]:rounded-[1rem] dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#f4a3a8]">
                         <app-icon name="trash-2" [size]="18"></app-icon>
                       </span>
                     </div>
@@ -469,7 +469,7 @@
           <button
             type="button"
             (click)="addStep()"
-            class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-orange-200 bg-white px-4 py-3 text-[18px] font-semibold text-orange-600 transition hover:bg-orange-50 max-[640px]:w-full max-[640px]:rounded-[1rem] max-[640px]:text-base"
+            class="inline-flex items-center justify-center gap-2 rounded-[1.1rem] border border-orange-200 bg-white px-4 py-3 text-[18px] font-semibold text-orange-600 transition hover:bg-orange-50 max-[640px]:w-full max-[640px]:rounded-[1rem] max-[640px]:text-base dark:border-[#7b5745] dark:bg-[#31231f] dark:text-[#ffd29a] dark:hover:bg-[#3a2a24]"
           >
             <app-icon name="plus" [size]="18"></app-icon>
             <span>Agregar otro paso</span>
@@ -477,15 +477,15 @@
         </div>
       </section>
       <section
-        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4"
+        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4 dark:border-[#4b3830] dark:bg-[#2c1f1b]/78 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]"
       >
         <div class="mb-5 max-[640px]:mb-4">
           <p
-            class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+            class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
           >
             Notas
           </p>
-          <p class="text-[18px] text-slate-500 max-[640px]:text-sm">
+          <p class="text-[18px] text-slate-500 max-[640px]:text-sm dark:text-[#cfb8a9]">
             Agrega tips, observaciones o ajustes personales para esta receta.
           </p>
         </div>
@@ -493,20 +493,20 @@
         <textarea
           formControlName="notes"
           rows="4"
-          class="w-full rounded-[1.2rem] border border-slate-100 bg-white px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base"
+          class="w-full rounded-[1.2rem] border border-slate-100 bg-white px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#241815] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
           placeholder="Tips, observaciones o ajustes personales"
         ></textarea>
       </section>
       <section
-        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4"
+        class="rounded-[1.8rem] border border-slate-100 bg-slate-50/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4 dark:border-[#4b3830] dark:bg-[#2c1f1b]/78 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]"
       >
         <div class="mb-5 max-[640px]:mb-4">
           <p
-            class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em]"
+            class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
           >
             Imagen
           </p>
-          <p class="text-[18px] text-slate-500 max-[640px]:text-sm">
+          <p class="text-[18px] text-slate-500 max-[640px]:text-sm dark:text-[#cfb8a9]">
             Agrega una foto para tu receta. Puedes seleccionarla desde tu dispositivo o arrastrarla
             y soltarla aqui para verla antes de guardar.
           </p>
@@ -533,7 +533,7 @@
 
           @if (imagePreviewUrl) {
             <div
-              class="overflow-hidden rounded-[1.4rem] border border-white/90 bg-white shadow-[0_12px_28px_rgba(148,163,184,0.12)] transition max-[640px]:rounded-[1.1rem]"
+              class="overflow-hidden rounded-[1.4rem] border border-white/90 bg-white shadow-[0_12px_28px_rgba(148,163,184,0.12)] transition max-[640px]:rounded-[1.1rem] dark:border-[#5c4438] dark:bg-[#241815] dark:shadow-[0_18px_34px_rgba(9,6,5,0.25)]"
               [class.border-orange-300]="imageDragActive()"
               [class.bg-orange-50]="imageDragActive()"
               [class.ring-4]="imageDragActive()"
@@ -547,10 +547,10 @@
                 />
                 @if (imageDragActive()) {
                   <div
-                    class="absolute inset-0 flex items-center justify-center bg-[#18243f]/42 px-6 text-center"
+                  class="absolute inset-0 flex items-center justify-center bg-[#18243f]/42 px-6 text-center dark:bg-[#120c0a]/62"
                   >
                     <div
-                      class="rounded-[1.2rem] border border-white/30 bg-white/12 px-5 py-4 backdrop-blur-sm"
+                      class="rounded-[1.2rem] border border-white/30 bg-white/12 px-5 py-4 backdrop-blur-sm dark:border-[#f4ddd0]/20 dark:bg-[#241815]/28"
                     >
                       <p class="text-lg font-semibold text-white max-[640px]:text-base">
                         Suelta la imagen para reemplazarla
@@ -568,16 +568,16 @@
               </div>
 
               <div
-                class="flex flex-col gap-3 border-t border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between max-[640px]:px-3.5"
+                class="flex flex-col gap-3 border-t border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between max-[640px]:px-3.5 dark:border-[#4b3830]"
               >
-                <p class="text-sm text-slate-500">
+                <p class="text-sm text-slate-500 dark:text-[#cfb8a9]">
                   Puedes cambiar la imagen o eliminarla antes de guardar la receta.
                 </p>
 
                 <div class="flex flex-col gap-2 sm:flex-row">
                   <label
                     for="recipe-image-input"
-                    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-[1rem] border border-orange-200 bg-white px-4 py-3 text-[18px] font-semibold text-orange-600 transition hover:bg-orange-50 max-[640px]:text-base"
+                    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-[1rem] border border-orange-200 bg-white px-4 py-3 text-[18px] font-semibold text-orange-600 transition hover:bg-orange-50 max-[640px]:text-base dark:border-[#7b5745] dark:bg-[#31231f] dark:text-[#ffd29a] dark:hover:bg-[#3a2a24]"
                   >
                     <app-icon name="image-plus" [size]="18"></app-icon>
                     <span>Cambiar imagen</span>
@@ -586,7 +586,7 @@
                   <button
                     type="button"
                     (click)="removeSelectedImage()"
-                    class="inline-flex items-center justify-center gap-2 rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-[18px] font-semibold text-red-600 transition hover:bg-red-100 max-[640px]:text-base"
+                    class="inline-flex items-center justify-center gap-2 rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-[18px] font-semibold text-red-600 transition hover:bg-red-100 max-[640px]:text-base dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#f4a3a8] dark:hover:bg-[#4a2528]"
                   >
                     <app-icon name="trash-2" [size]="18"></app-icon>
                     <span>Quitar imagen</span>
@@ -597,7 +597,7 @@
           } @else {
             <label
               for="recipe-image-input"
-              class="flex min-h-64 cursor-pointer flex-col items-center justify-center rounded-[1.4rem] border border-dashed border-orange-200 bg-white px-6 py-8 text-center shadow-[0_12px_28px_rgba(148,163,184,0.08)] transition hover:border-orange-300 hover:bg-orange-50/40 max-[640px]:min-h-52 max-[640px]:rounded-[1.1rem] max-[640px]:px-4"
+              class="flex min-h-64 cursor-pointer flex-col items-center justify-center rounded-[1.4rem] border border-dashed border-orange-200 bg-white px-6 py-8 text-center shadow-[0_12px_28px_rgba(148,163,184,0.08)] transition hover:border-orange-300 hover:bg-orange-50/40 max-[640px]:min-h-52 max-[640px]:rounded-[1.1rem] max-[640px]:px-4 dark:border-[#7b5745] dark:bg-[#241815] dark:shadow-[0_18px_34px_rgba(9,6,5,0.25)] dark:hover:border-[#c6844b] dark:hover:bg-[#31231f]"
               [class.border-orange-400]="imageDragActive()"
               [class.bg-orange-50]="imageDragActive()"
               [class.ring-4]="imageDragActive()"
@@ -609,10 +609,10 @@
               >
                 <app-icon name="image-plus" [size]="26"></app-icon>
               </span>
-              <span class="text-[20px] font-semibold text-slate-800 max-[640px]:text-lg">
+              <span class="text-[20px] font-semibold text-slate-800 max-[640px]:text-lg dark:text-[#f8ede3]">
                 {{ imageDragActive() ? 'Suelta la imagen aquí' : 'Selecciona una imagen' }}
               </span>
-              <span class="mt-2 max-w-md text-[18px] text-slate-500 max-[640px]:text-sm">
+              <span class="mt-2 max-w-md text-[18px] text-slate-500 max-[640px]:text-sm dark:text-[#cfb8a9]">
                 {{
                   imageDragActive()
                     ? 'Puedes arrastrar un archivo JPG, PNG o WebP y lo mostraremos como vista previa.'
@@ -628,7 +628,7 @@
         class="flex flex-col-reverse gap-4 pt-4 sm:flex-row sm:items-center sm:justify-end max-[640px]:gap-2.5 max-[640px]:pt-0"
       >
         @if (displayedSubmitError()) {
-          <p class="w-full rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 sm:mr-auto sm:max-w-md">
+          <p class="w-full rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 sm:mr-auto sm:max-w-md dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#ffc1c5]">
             {{ displayedSubmitError() }}
           </p>
         }
@@ -636,7 +636,7 @@
         <button
           type="button"
           (click)="cancel()"
-          class="rounded-2xl px-6 py-4 text-lg font-semibold text-slate-600 transition hover:text-slate-900 cursor-pointer max-[640px]:px-4 max-[640px]:py-1.5 max-[640px]:text-base"
+          class="rounded-2xl px-6 py-4 text-lg font-semibold text-slate-600 transition hover:text-slate-900 cursor-pointer max-[640px]:px-4 max-[640px]:py-1.5 max-[640px]:text-base dark:text-[#cfb8a9] dark:hover:text-[#f8ede3]"
         >
           Cancelar
         </button>
@@ -644,7 +644,7 @@
         <button
           type="submit"
           [disabled]="saving()"
-          class="rounded-[1.2rem] bg-orange-500 px-8 py-4 text-lg font-semibold text-white shadow-[0_14px_28px_rgba(249,115,22,0.28)] transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer max-[640px]:w-full max-[640px]:px-5 max-[640px]:py-3 max-[640px]:text-base"
+          class="rounded-[1.2rem] bg-orange-500 px-8 py-4 text-lg font-semibold text-white shadow-[0_14px_28px_rgba(125,78,46,0.22)] transition hover:bg-orange-600 hover:shadow-[0_18px_32px_rgba(88,56,35,0.26)] disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer max-[640px]:w-full max-[640px]:px-5 max-[640px]:py-3 max-[640px]:text-base dark:shadow-[0_14px_28px_rgba(12,8,7,0.34)] dark:hover:shadow-[0_20px_34px_rgba(10,7,6,0.42)]"
         >
           {{ submitLabel() }}
         </button>
@@ -659,12 +659,12 @@
       [class.opacity-100]="!formActionsVisible()"
       [class.translate-y-0]="!formActionsVisible()"
     >
-      <div class="mx-auto max-w-md rounded-full border border-white/80 bg-white/92 p-2 shadow-[0_18px_40px_rgba(15,23,42,0.16)] backdrop-blur pointer-events-auto">
+      <div class="mx-auto max-w-md rounded-full border border-white/80 bg-white/92 p-2 shadow-[0_18px_40px_rgba(15,23,42,0.16)] backdrop-blur pointer-events-auto dark:border-[#5c4438] dark:bg-[#241815]/92 dark:shadow-[0_24px_45px_rgba(9,6,5,0.45)]">
         <div class="grid grid-cols-[0.92fr_1.08fr] gap-2">
           <button
             type="button"
             (click)="cancel()"
-            class="inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            class="inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-[#6b5245] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24]"
           >
             Cancelar
           </button>
@@ -673,7 +673,7 @@
             type="button"
             [disabled]="saving()"
             (click)="handleSubmit()"
-            class="inline-flex min-h-11 items-center justify-center rounded-full bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(249,115,22,0.22)] transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            class="inline-flex min-h-11 items-center justify-center rounded-full bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(125,78,46,0.22)] transition hover:bg-orange-600 hover:shadow-[0_16px_28px_rgba(88,56,35,0.26)] disabled:cursor-not-allowed disabled:opacity-60 dark:shadow-[0_12px_24px_rgba(12,8,7,0.34)] dark:hover:shadow-[0_16px_30px_rgba(10,7,6,0.42)]"
           >
             {{ submitLabel() }}
           </button>

@@ -6,10 +6,19 @@
     opacity 220ms ease;
 }
 
+:host {
+  display: block;
+}
+
+:host > div {
+  animation: warm-form-in 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .recipe-step-card.cdk-drag-preview,
 .recipe-step-card--preview {
   box-sizing: border-box;
   transform: rotate(0.6deg) scale(1.01);
+  backdrop-filter: blur(10px);
 }
 
 .recipe-step-card.cdk-drag-dragging {
@@ -24,10 +33,33 @@
   box-shadow: none;
 }
 
+:host-context(.dark) .recipe-step-card.cdk-drag-placeholder {
+  border-color: rgb(198 132 75 / 0.9);
+  background: rgb(58 42 36 / 0.56);
+}
+
 .cdk-drop-list-dragging .recipe-step-card:not(.cdk-drag-placeholder) {
   transition: transform 240ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 .recipe-step-card.cdk-drag-animating {
   transition: transform 260ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes warm-form-in {
+  0% {
+    opacity: 0;
+    transform: translateY(0.9rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host > div {
+    animation: none;
+  }
 }

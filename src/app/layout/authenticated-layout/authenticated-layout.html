@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-stone-50">
+<div class="min-h-screen bg-stone-50 dark:bg-transparent">
   <app-floating-nav></app-floating-nav>
   <div class="flex min-h-screen flex-col pt-28 max-[980px]:pt-26 max-[640px]:pt-24">
     <main class="flex-1">
@@ -7,7 +7,7 @@
 
     <footer class="px-6 pb-8 pt-10 max-[640px]:px-4 max-[640px]:pb-6 max-[640px]:pt-8">
       <div
-        class="mx-auto flex max-w-7xl flex-col gap-6 rounded-[2rem] border border-white/80 bg-white/85 px-6 py-6 shadow-[0_1.125rem_45px_rgba(148,163,184,0.14)] backdrop-blur min-[981px]:flex-row min-[981px]:items-end min-[981px]:justify-between min-[981px]:px-8 max-[640px]:rounded-[1.5rem] max-[640px]:gap-5 max-[640px]:px-4 max-[640px]:py-4"
+        class="mx-auto flex max-w-7xl flex-col gap-6 rounded-[2rem] border border-white/80 bg-white/85 px-6 py-6 shadow-[0_1.125rem_45px_rgba(148,163,184,0.14)] backdrop-blur min-[981px]:flex-row min-[981px]:items-end min-[981px]:justify-between min-[981px]:px-8 max-[640px]:rounded-[1.5rem] max-[640px]:gap-5 max-[640px]:px-4 max-[640px]:py-4 dark:border-[#5c4438]/70 dark:bg-[#241815]/72 dark:shadow-[0_24px_55px_rgba(9,6,5,0.35)]"
       >
         <div class="max-w-2xl">
           <div class="flex items-center gap-3">
@@ -17,27 +17,29 @@
               <app-icon name="chef-hat" [size]="20"></app-icon>
             </span>
             <div>
-              <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-orange-600 uppercase">
+              <p class="text-[0.78rem] font-extrabold tracking-[0.16em] text-orange-600 uppercase dark:text-[#f0b06b]">
                 Cocinario App
               </p>
-              <h2 class="text-[1.35rem] font-semibold text-[#18243f] max-[640px]:text-[1.15rem]">
+              <h2 class="text-[1.35rem] font-semibold text-[#18243f] max-[640px]:text-[1.15rem] dark:text-[#f8ede3]">
                 Tu cocina organizada, simple y siempre a mano
               </h2>
             </div>
           </div>
 
           <p
-            class="mt-3 text-sm leading-6 text-slate-500 max-[640px]:mt-2 max-[640px]:text-[0.92rem] max-[640px]:leading-5"
+            class="mt-3 text-sm leading-6 text-slate-500 max-[640px]:mt-2 max-[640px]:text-[0.92rem] max-[640px]:leading-5 dark:text-[#cfb8a9]"
           >
             Guarda tus recetas, vuelve a tus favoritas y sigue cocinando sin perder el hilo.
           </p>
         </div>
 
-        <div class="flex flex-col gap-1 min-[981px]:items-end">
-          <p class="text-sm font-semibold text-slate-600 max-[640px]:text-[0.92rem]">
-            Hecho por Fernando Vargas S.
+        <div class="flex flex-col gap-1.5 min-[981px]:items-end min-[981px]:pr-1">
+          <p
+            class="text-[0.82rem] font-semibold tracking-[0.04em] text-slate-500 max-[640px]:text-[0.8rem] dark:text-[#cfb8a9]"
+          >
+            Diseñado y desarrollado por Fernando Vargas S.
           </p>
-          <p class="text-sm text-slate-400 max-[640px]:text-[0.82rem]">
+          <p class="text-sm text-slate-400 max-[640px]:text-[0.82rem] dark:text-[#b99d8b]">
             © {{ currentYear }} Cocinario App
           </p>
         </div>
