@@ -18,6 +18,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { CapitalizeFirstLetterDirective } from '../../../../shared/directives/capitalize-first-letter.directive';
 import { Recipe, RecipeImage } from '../../../../core/models/recipe.model';
@@ -36,8 +37,9 @@ import { PLATFORM_ID } from '@angular/core';
 
 @Component({
   selector: 'app-recipe-form',
-  imports: [ReactiveFormsModule, IconComponent, CapitalizeFirstLetterDirective],
+  imports: [ReactiveFormsModule, DragDropModule, IconComponent, CapitalizeFirstLetterDirective],
   templateUrl: './recipe-form.html',
+  styleUrl: './recipe-form.scss',
 })
 export class RecipeFormComponent {
   private fb = inject(FormBuilder);
@@ -187,6 +189,14 @@ export class RecipeFormComponent {
     }
 
     this.steps.removeAt(index);
+  }
+
+  dropStep(event: CdkDragDrop<AbstractControl[]>): void {
+    if (event.previousIndex === event.currentIndex) {
+      return;
+    }
+
+    this.moveStep(event.previousIndex, event.currentIndex);
   }
 
   trackByControlId(index: number, control: AbstractControl): string | number {
@@ -484,6 +494,23 @@ export class RecipeFormComponent {
     for (const step of steps) {
       this.steps.push(this.createStepGroup(step));
     }
+  }
+
+  private moveStep(fromIndex: number, toIndex: number): void {
+    if (fromIndex === toIndex) {
+      return;
+    }
+
+    const control = this.steps.at(fromIndex);
+
+    if (!control) {
+      return;
+    }
+
+    this.steps.removeAt(fromIndex);
+    this.steps.insert(toIndex, control);
+    this.steps.markAsDirty();
+    this.steps.markAsTouched();
   }
 
   private normalizeTag(value: string): string {

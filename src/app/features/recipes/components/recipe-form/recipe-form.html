@@ -374,17 +374,30 @@
               Describe paso a paso cómo preparar la receta.
             </p>
           </div>
+          <p class="text-sm font-medium text-slate-500 max-[640px]:text-[0.82rem]">
+            Arrastra el asa de cada paso para reordenarlos.
+          </p>
         </div>
 
-        <div formArrayName="steps" class="space-y-4">
+        <div formArrayName="steps" class="space-y-4" cdkDropList [cdkDropListData]="steps.controls" (cdkDropListDropped)="dropStep($event)">
           @for (step of steps.controls; track trackByControlId($index, step); let i = $index) {
             <div
               [formGroupName]="i"
-              class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5"
+              cdkDrag
+              class="recipe-step-card rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5"
             >
               <div class="flex items-start gap-4 max-[640px]:gap-3">
                 <div class="flex-1">
                   <div class="mb-3 flex items-center gap-3 max-[640px]:mb-2">
+                    <button
+                      type="button"
+                      cdkDragHandle
+                      class="inline-flex h-8 min-w-8 cursor-grab items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition hover:border-orange-200 hover:text-orange-600 active:cursor-grabbing max-[640px]:h-7 max-[640px]:min-w-7"
+                      aria-label="Mover paso"
+                      title="Arrastra para mover este paso"
+                    >
+                      <app-icon name="grip-vertical" [size]="16"></app-icon>
+                    </button>
                     <span
                       class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-orange-500/15 px-2 text-sm font-bold text-orange-700 ring-1 ring-orange-200 max-[640px]:h-7 max-[640px]:min-w-7 max-[640px]:text-[0.78rem]"
                     >
@@ -419,6 +432,35 @@
                   </button>
                 </div>
               </div>
+
+              <ng-template cdkDragPreview [matchSize]="true">
+                <div class="recipe-step-card recipe-step-card--preview rounded-[1.4rem] border border-orange-200 bg-white p-4 shadow-[0_20px_45px_rgba(15,23,42,0.18)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5">
+                  <div class="flex items-start gap-4 max-[640px]:gap-3">
+                    <div class="flex-1">
+                      <div class="mb-3 flex items-center gap-3 max-[640px]:mb-2">
+                        <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 max-[640px]:h-7 max-[640px]:min-w-7">
+                          <app-icon name="grip-vertical" [size]="16"></app-icon>
+                        </span>
+                        <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-orange-500/15 px-2 text-sm font-bold text-orange-700 ring-1 ring-orange-200 max-[640px]:h-7 max-[640px]:min-w-7 max-[640px]:text-[0.78rem]">
+                          {{ i + 1 }}
+                        </span>
+                        <label class="text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:text-[0.72rem]">
+                          Paso
+                        </label>
+                      </div>
+                      <div class="rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] leading-8 text-slate-700 max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base max-[640px]:leading-7">
+                        {{ step.get('instruction')?.value || 'Describe este paso...' }}
+                      </div>
+                    </div>
+
+                    <div class="flex items-start pt-[2.15rem] max-[640px]:pt-[1.9rem]">
+                      <span class="inline-flex min-h-[3.25rem] min-w-[3.25rem] items-center justify-center rounded-[1.2rem] border border-red-200 bg-red-50 text-red-400 max-[640px]:min-h-11 max-[640px]:min-w-11 max-[640px]:rounded-[1rem]">
+                        <app-icon name="trash-2" [size]="18"></app-icon>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
             </div>
           }
         </div>

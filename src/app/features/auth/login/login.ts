@@ -37,11 +37,7 @@ export class Login {
   }
 
   async login() {
-    const result = await this.authService.loginWithGoogle();
-
-    if (result === 'popup') {
-      this.router.navigate(['/app']);
-    }
+    await this.authService.loginWithGoogle();
   }
 
   logout() {

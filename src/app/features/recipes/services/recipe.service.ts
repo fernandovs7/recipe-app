@@ -8,24 +8,28 @@ import {
   ImageSizeKey,
   optimizeImageVariants,
 } from '../../../core/utils/optimize-image';
+import { PostgrestError } from '@supabase/supabase-js';
+import { supabase } from '../../../core/supabase.config';
 
-import {
-  doc,
-  addDoc,
-  getDoc,
-  updateDoc,
-  deleteDoc,
-  collection,
-  query,
-  where,
-  onSnapshot,
-  Unsubscribe,
-} from 'firebase/firestore';
-
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { storage } from '../../../core/firebase.config';
-
-import { db } from '../../../core/firebase.config';
+interface RecipeRow {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string | null;
+  notes: string | null;
+  ingredients: Recipe['ingredients'];
+  steps: Recipe['steps'];
+  image: RecipeImage | null;
+  servings: number | null;
+  prep_time_minutes: number | null;
+  cook_time_minutes: number | null;
+  total_time_minutes: number | null;
+  category: string | null;
+  tags: string[];
+  favorite: boolean;
+  created_at: number;
+  updated_at: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -36,46 +40,40 @@ export class RecipeService {
   recipes = signal<Recipe[]>([]);
   loading = signal(false);
 
-  private unsubscribeRecipes: Unsubscribe | null = null;
-
   constructor() {
     effect(() => {
       const user = this.authService.user();
-      if (this.unsubscribeRecipes) {
-        this.unsubscribeRecipes();
-        this.unsubscribeRecipes = null;
-      }
+
       if (!user) {
         this.recipes.set([]);
         this.loading.set(false);
         return;
       }
-      this.listenToRecipes(user.uid);
+
+      void this.loadRecipes(user.uid);
     });
   }
 
-  private listenToRecipes(userId: string): void {
+  private async loadRecipes(userId: string): Promise<void> {
     this.loading.set(true);
 
-    const recipesRef = collection(db, 'recipes');
-    const recipesQuery = query(recipesRef, where('userId', '==', userId));
+    try {
+      const { data, error } = await supabase
+        .from('recipes')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
 
-    this.unsubscribeRecipes = onSnapshot(
-      recipesQuery,
-      (snapshot) => {
-        const recipes = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Recipe[];
+      if (error) {
+        throw error;
+      }
 
-        this.recipes.set(recipes);
-        this.loading.set(false);
-      },
-      () => {
-        this.recipes.set([]);
-        this.loading.set(false);
-      },
-    );
+      this.recipes.set((data ?? []).map((row) => this.mapRecipeRow(row as RecipeRow)));
+    } catch {
+      this.recipes.set([]);
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   async createRecipe(
@@ -87,16 +85,24 @@ export class RecipeService {
       throw new Error('User not authenticated');
     }
 
-    const recipesRef = collection(db, 'recipes');
-
+    const timestamp = Date.now();
     const recipe = removeUndefinedFields({
       ...recipeData,
       userId: user.uid,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: timestamp,
+      updatedAt: timestamp,
     });
 
-    await addDoc(recipesRef, recipe);
+    const row = this.mapRecipeToInsertRow(recipe);
+    const { data, error } = await supabase.from('recipes').insert(row).select().single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (data) {
+      this.recipes.update((recipes) => [this.mapRecipeRow(data as RecipeRow), ...recipes]);
+    }
   }
 
   async updateRecipe(
@@ -109,19 +115,27 @@ export class RecipeService {
       throw new Error('User not authenticated');
     }
 
-    const recipeRef = doc(db, 'recipes', recipeId);
     const existingRecipe = await this.getRecipeById(recipeId);
 
     if (!existingRecipe) {
       throw new Error('Recipe not found or access denied');
     }
 
+    const timestamp = Date.now();
     const updatedRecipe = removeUndefinedFields({
       ...recipeData,
-      updatedAt: Date.now(),
+      updatedAt: timestamp,
     });
 
-    await updateDoc(recipeRef, updatedRecipe);
+    const { error } = await supabase
+      .from('recipes')
+      .update(this.mapRecipeToUpdateRow(updatedRecipe))
+      .eq('id', recipeId)
+      .eq('user_id', user.uid);
+
+    if (error) {
+      throw error;
+    }
 
     const previousImagePaths = this.collectRecipeImagePaths(existingRecipe.image);
     const nextImagePaths = new Set(this.collectRecipeImagePaths(recipeData.image));
@@ -138,7 +152,7 @@ export class RecipeService {
           ? {
               ...recipe,
               ...recipeData,
-              updatedAt: Date.now(),
+              updatedAt: timestamp,
             }
           : recipe,
       ),
@@ -158,15 +172,18 @@ export class RecipeService {
 
     const resolvedFileName = fileName ?? crypto.randomUUID();
     const path = `recipes/${user.uid}/${resolvedFileName}.${fileExtension}`;
-
-    const storageRef = ref(storage, path);
-
-    await uploadBytes(storageRef, file, {
+    const { error } = await supabase.storage.from('recipes').upload(path, file, {
       contentType: 'image/webp',
-      cacheControl: 'public,max-age=31536000,immutable',
+      cacheControl: '31536000',
+      upsert: false,
     });
 
-    const url = await getDownloadURL(storageRef);
+    if (error) {
+      throw error;
+    }
+
+    const { data } = supabase.storage.from('recipes').getPublicUrl(path);
+    const url = data.publicUrl;
 
     return { url, path };
   }
@@ -223,23 +240,22 @@ export class RecipeService {
       throw new Error('User not authenticated');
     }
 
-    const recipeRef = doc(db, 'recipes', recipeId);
-    const recipeSnapshot = await getDoc(recipeRef);
+    const { data, error } = await supabase
+      .from('recipes')
+      .select('*')
+      .eq('id', recipeId)
+      .eq('user_id', user.uid)
+      .maybeSingle();
 
-    if (!recipeSnapshot.exists()) {
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
       return null;
     }
 
-    const recipe = {
-      id: recipeSnapshot.id,
-      ...recipeSnapshot.data(),
-    } as Recipe;
-
-    if (recipe.userId !== user.uid) {
-      return null;
-    }
-
-    return recipe;
+    return this.mapRecipeRow(data as RecipeRow);
   }
 
   async updateRecipeFavorite(recipeId: string, favorite: boolean): Promise<void> {
@@ -249,12 +265,19 @@ export class RecipeService {
       throw new Error('User not authenticated');
     }
 
-    const recipeRef = doc(db, 'recipes', recipeId);
+    const timestamp = Date.now();
+    const { error } = await supabase
+      .from('recipes')
+      .update({
+        favorite,
+        updated_at: timestamp,
+      })
+      .eq('id', recipeId)
+      .eq('user_id', user.uid);
 
-    await updateDoc(recipeRef, {
-      favorite,
-      updatedAt: Date.now(),
-    });
+    if (error) {
+      throw error;
+    }
 
     this.recipes.update((recipes) =>
       recipes.map((recipe) =>
@@ -262,7 +285,7 @@ export class RecipeService {
           ? {
               ...recipe,
               favorite,
-              updatedAt: Date.now(),
+              updatedAt: timestamp,
             }
           : recipe,
       ),
@@ -276,14 +299,21 @@ export class RecipeService {
       throw new Error('User not authenticated');
     }
 
-    const recipeRef = doc(db, 'recipes', recipeId);
     const existingRecipe = await this.getRecipeById(recipeId);
 
     if (!existingRecipe) {
       throw new Error('Recipe not found or access denied');
     }
 
-    await deleteDoc(recipeRef);
+    const { error } = await supabase
+      .from('recipes')
+      .delete()
+      .eq('id', recipeId)
+      .eq('user_id', user.uid);
+
+    if (error) {
+      throw error;
+    }
 
     for (const imagePath of this.collectRecipeImagePaths(existingRecipe.image)) {
       await this.deleteRecipeImage(imagePath);
@@ -294,8 +324,11 @@ export class RecipeService {
 
   async deleteRecipeImage(imagePath: string): Promise<void> {
     try {
-      const imageRef = ref(storage, imagePath);
-      await deleteObject(imageRef);
+      const { error } = await supabase.storage.from('recipes').remove([imagePath]);
+
+      if (error) {
+        throw error;
+      }
     } catch (error) {
       if (this.isStorageObjectMissing(error)) {
         return;
@@ -326,7 +359,76 @@ export class RecipeService {
       return false;
     }
 
-    const code = 'code' in error ? String(error.code) : '';
-    return code === 'storage/object-not-found';
+    const message = 'message' in error ? String(error.message) : '';
+
+    if (error instanceof PostgrestError) {
+      return false;
+    }
+
+    return message.toLowerCase().includes('not found');
+  }
+
+  private mapRecipeRow(row: RecipeRow): Recipe {
+    return {
+      id: row.id,
+      userId: row.user_id,
+      title: row.title,
+      description: row.description ?? undefined,
+      notes: row.notes ?? undefined,
+      ingredients: row.ingredients ?? [],
+      steps: row.steps ?? [],
+      image: row.image ?? null,
+      servings: row.servings,
+      prepTimeMinutes: row.prep_time_minutes,
+      cookTimeMinutes: row.cook_time_minutes,
+      totalTimeMinutes: row.total_time_minutes,
+      category: row.category ?? undefined,
+      tags: row.tags ?? [],
+      favorite: row.favorite,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  }
+
+  private mapRecipeToInsertRow(recipe: Omit<Recipe, 'id'>): Omit<RecipeRow, 'id'> {
+    return {
+      user_id: recipe.userId,
+      title: recipe.title,
+      description: recipe.description ?? null,
+      notes: recipe.notes ?? null,
+      ingredients: recipe.ingredients,
+      steps: recipe.steps,
+      image: recipe.image ?? null,
+      servings: recipe.servings,
+      prep_time_minutes: recipe.prepTimeMinutes ?? null,
+      cook_time_minutes: recipe.cookTimeMinutes ?? null,
+      total_time_minutes: recipe.totalTimeMinutes ?? null,
+      category: recipe.category ?? null,
+      tags: recipe.tags,
+      favorite: recipe.favorite,
+      created_at: recipe.createdAt,
+      updated_at: recipe.updatedAt,
+    };
+  }
+
+  private mapRecipeToUpdateRow(
+    recipe: Partial<Omit<Recipe, 'id' | 'userId' | 'createdAt'>>,
+  ): Partial<Omit<RecipeRow, 'id' | 'user_id' | 'created_at'>> {
+    return {
+      title: recipe.title,
+      description: recipe.description ?? null,
+      notes: recipe.notes ?? null,
+      ingredients: recipe.ingredients,
+      steps: recipe.steps,
+      image: recipe.image ?? null,
+      servings: recipe.servings ?? null,
+      prep_time_minutes: recipe.prepTimeMinutes ?? null,
+      cook_time_minutes: recipe.cookTimeMinutes ?? null,
+      total_time_minutes: recipe.totalTimeMinutes ?? null,
+      category: recipe.category ?? null,
+      tags: recipe.tags,
+      favorite: recipe.favorite,
+      updated_at: recipe.updatedAt,
+    };
   }
 }

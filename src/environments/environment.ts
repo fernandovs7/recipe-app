@@ -1,11 +1,7 @@
 export const environment = {
   production: false,
-  firebase: {
-    apiKey: 'AIzaSyAdjob7DBjUl2wNquANZ9R3d4keihVFUBU',
-    authDomain: 'cocinario.app',
-    projectId: 'recipe-app-a7be0',
-    storageBucket: 'recipe-app-a7be0.firebasestorage.app',
-    messagingSenderId: '689780363133',
-    appId: '1:689780363133:web:24c40671971aad98ba8614',
+  supabase: {
+    url: 'https://jotsvrrncbqimtdfpafo.supabase.co',
+    publishableKey: 'sb_publishable_oCiVOx1sH7IgiTxxdqSe5Q_F02nBcWL',
   },
 };

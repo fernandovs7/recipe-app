@@ -168,14 +168,6 @@ export class ViewRecipe {
     return getRecipeCategoryLabel(categoryValue) ?? categoryValue;
   }
 
-  tagLabel(tag: string): string {
-    return tag
-      .split(' ')
-      .filter(Boolean)
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
-
   durationLabel(minutes: number | null | undefined): string {
     return formatDuration(minutes);
   }
