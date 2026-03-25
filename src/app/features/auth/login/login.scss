@@ -19,13 +19,20 @@
 }
 
 .login__hero {
-  width: 32rem;
   position: relative;
+  width: 32rem;
   min-height: 100%;
+  overflow: hidden;
   background: linear-gradient(180deg, #ff8a5b 0%, #ff5d8f 100%);
 }
 
-.login__hero :is(app-image, picture, img) {
+.login__hero app-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.login__hero :is(picture, img) {
   display: block;
   width: 100%;
   height: 100%;

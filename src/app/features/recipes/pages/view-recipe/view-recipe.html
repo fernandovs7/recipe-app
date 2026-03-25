@@ -186,14 +186,14 @@
                 </p>
               </div>
 
-              <div class="rounded-[1.35rem] bg-[#fff7f1] px-5 py-5 text-center max-[640px]:rounded-[1rem] max-[640px]:px-3 max-[640px]:py-4">
+              <div class="min-w-0 rounded-[1.35rem] bg-[#fff7f1] px-5 py-5 text-center max-[640px]:rounded-[1rem] max-[640px]:px-3 max-[640px]:py-4">
                 <div class="mx-auto mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/12 text-orange-600 max-[640px]:mb-2 max-[640px]:h-9 max-[640px]:w-9">
                   <app-icon name="chef-hat" [size]="20"></app-icon>
                 </div>
                 <p class="text-[0.78rem] font-extrabold tracking-[0.14em] text-slate-400 uppercase max-[640px]:text-[0.68rem]">
                   Categoría
                 </p>
-                <p class="mt-2 text-[22px] font-semibold text-[#18243f] max-[640px]:mt-1.5 max-[640px]:text-[1.6rem]">
+                <p class="mt-2 min-w-0 text-[22px] leading-tight font-semibold text-[#18243f] break-words [overflow-wrap:anywhere] max-[640px]:mt-1.5 max-[640px]:text-[1.2rem]">
                   {{ categoryLabel(recipe()!.category) }}
                 </p>
               </div>

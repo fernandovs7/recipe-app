@@ -166,7 +166,9 @@ export class RecipesList {
   }
 
   goToRecipeDetail(recipeId: string): void {
-    this.router.navigate(['/app/recipes', recipeId]);
+    this.router.navigate(['/app/recipes', recipeId], {
+      state: { from: 'recipes' },
+    });
   }
 
   goToCreateRecipe(): void {

@@ -20,6 +20,8 @@ type QuantityFormatStyle =
   | 'fraction'
   | 'mixed-fraction';
 
+type ViewRecipeOrigin = 'home' | 'recipes';
+
 const FRACTION_FRIENDLY_UNITS = new Set(['taza', 'cda', 'cdta', 'unidad', 'unidads', 'unidad(s)']);
 
 @Component({
@@ -43,6 +45,7 @@ export class ViewRecipe {
   error = signal('');
   adjustedServings = signal<number | null>(null);
   categories = RECIPE_CATEGORIES;
+  private readonly origin = signal<ViewRecipeOrigin>(this.resolveOrigin());
   readonly displayedServings = computed(() => this.adjustedServings() ?? this.recipe()?.servings ?? null);
   readonly canAdjustServings = computed(() => {
     const servings = this.recipe()?.servings;
@@ -80,7 +83,14 @@ export class ViewRecipe {
   }
 
   goBack(): void {
-    this.router.navigate(['/app']);
+    const origin = this.origin();
+
+    if (origin === 'recipes') {
+      this.router.navigate(['/app/recipes']);
+      return;
+    }
+
+    this.router.navigate(['/app/home']);
   }
 
   async toggleFavorite(): Promise<void> {
@@ -434,5 +444,10 @@ export class ViewRecipe {
     }
 
     return left || 1;
+  }
+
+  private resolveOrigin(): ViewRecipeOrigin {
+    const state = this.router.getCurrentNavigation()?.extras.state ?? history.state;
+    return state?.from === 'recipes' ? 'recipes' : 'home';
   }
 }
