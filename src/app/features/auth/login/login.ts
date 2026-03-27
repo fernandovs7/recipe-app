@@ -1,13 +1,13 @@
 import { Component, effect, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { Router } from '@angular/router';
 import { ImageComponent } from '../../../shared/components/image/image';
 import { ImageData } from '../../../shared/components/image/image-data';
 import { IconComponent } from '../../../shared/components/icon/icon';
 
 @Component({
   selector: 'app-login',
-  imports: [ImageComponent, IconComponent],
+  imports: [ImageComponent, IconComponent, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -42,6 +42,6 @@ export class Login {
 
   logout() {
     this.authService.logout();
-     this.router.navigate(['/login']);
+    this.router.navigate(['/login']);
   }
 }

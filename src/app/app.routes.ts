@@ -99,6 +99,32 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'privacy',
+    loadComponent: () =>
+      import('./features/legal/legal-page/legal-page').then((m) => m.LegalPage),
+    title: 'Politica de privacidad',
+    data: {
+      document: 'privacy',
+      seo: {
+        description:
+          'Consulta como Cocinario App recopila, usa y protege la informacion relacionada con tu cuenta y tus recetas.',
+      },
+    },
+  },
+  {
+    path: 'terms',
+    loadComponent: () =>
+      import('./features/legal/legal-page/legal-page').then((m) => m.LegalPage),
+    title: 'Terminos del servicio',
+    data: {
+      document: 'terms',
+      seo: {
+        description:
+          'Revisa las condiciones de uso de Cocinario App para gestionar tu recetario personal.',
+      },
+    },
+  },
+  {
     path: '',
     redirectTo: 'app',
     pathMatch: 'full',

@@ -1,0 +1,24 @@
+<section class="legal-page">
+  <div class="legal-page__shell">
+    <p class="legal-page__eyebrow">{{ document.eyebrow }}</p>
+    <h1>{{ document.title }}</h1>
+    <p class="legal-page__intro">{{ document.intro }}</p>
+
+    <div class="legal-page__meta">
+      <span>Ultima actualizacion: {{ document.lastUpdated }}</span>
+      <a routerLink="/login">Volver al acceso</a>
+    </div>
+
+    <div class="legal-page__sections">
+      @for (section of document.sections; track section.heading) {
+        <article class="legal-page__section">
+          <h2>{{ section.heading }}</h2>
+
+          @for (paragraph of section.paragraphs; track paragraph) {
+            <p>{{ paragraph }}</p>
+          }
+        </article>
+      }
+    </div>
+  </div>
+</section>

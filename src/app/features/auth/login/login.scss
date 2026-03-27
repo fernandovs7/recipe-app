@@ -220,6 +220,24 @@
   color: #4b5563;
 }
 
+.login__legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin: 0.85rem 0;
+}
+
+.login__legal-links a {
+  color: #9a3412;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login__legal-links a:hover {
+  text-decoration: underline;
+}
+
 :host-context(.dark) {
   background:
     radial-gradient(circle at top, rgba(217, 119, 6, 0.17), transparent 24%),
@@ -256,6 +274,10 @@
 :host-context(.dark) .login__content h2,
 :host-context(.dark) .login__copy {
   color: #f8ede3;
+}
+
+:host-context(.dark) .login__legal-links a {
+  color: #fdba74;
 }
 
 :host-context(.dark) .login__benefit {

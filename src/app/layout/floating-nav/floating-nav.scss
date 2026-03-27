@@ -2,18 +2,19 @@
   display: block;
 }
 
-nav {
+nav > div {
   animation: nav-float-in 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
 }
 
 @keyframes nav-float-in {
   0% {
     opacity: 0;
-    transform: translate(-50%, -0.7rem);
+    transform: translateY(-0.7rem);
   }
 
   100% {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translateY(0);
   }
 }
