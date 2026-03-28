@@ -3,16 +3,21 @@ import { authGuard, guestGuard } from './core/guads/auth-guard';
 
 export const routes: Routes = [
   {
-    path: 'login',
+    path: '',
     canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
-    title: 'Inicia sesion',
+    title: 'Cocinario App',
     data: {
       seo: {
-        description: 'Accede a tu recetario personal y organiza tus recetas favoritas.',
-        robots: 'noindex,nofollow',
+        description:
+          'Guarda tus recetas favoritas, organiza ingredientes y accede a tu recetario personal desde Cocinario App.',
       },
     },
+  },
+  {
+    path: 'login',
+    redirectTo: '',
+    pathMatch: 'full',
   },
   {
     path: 'app',
@@ -125,12 +130,7 @@ export const routes: Routes = [
     },
   },
   {
-    path: '',
-    redirectTo: 'app',
-    pathMatch: 'full',
-  },
-  {
     path: '**',
-    redirectTo: 'app',
+    redirectTo: '',
   },
 ];
