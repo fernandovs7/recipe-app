@@ -34,6 +34,11 @@ import {
   RecipeFormSubmitValue,
 } from './recipe-form.model';
 import { PLATFORM_ID } from '@angular/core';
+import {
+  extractRecipeFromImage,
+  ImportedRecipeDraft,
+} from '../../utils/extract-recipe-from-image';
+import { RecipeImportService } from '../../services/recipe-import.service';
 
 @Component({
   selector: 'app-recipe-form',
@@ -46,6 +51,7 @@ export class RecipeFormComponent {
   private elementRef = inject(ElementRef<HTMLElement>);
   private destroyRef = inject(DestroyRef);
   private platformId = inject(PLATFORM_ID);
+  private recipeImportService = inject(RecipeImportService);
   private formActionsRef = viewChild<ElementRef<HTMLElement>>('formActions');
 
   mode = input<'create' | 'edit'>('create');
@@ -69,6 +75,11 @@ export class RecipeFormComponent {
   ingredientUnitDropdownIndex = signal<number | null>(null);
   localSubmitError = signal<string | null>(null);
   formActionsVisible = signal(false);
+  importingFromPhoto = signal(false);
+  importProgress = signal(0);
+  importStatus = signal('');
+  importError = signal<string | null>(null);
+  importSummary = signal<string | null>(null);
 
   private objectPreviewUrl: string | null = null;
   private syncedRecipeId: string | null = null;
@@ -231,6 +242,18 @@ export class RecipeFormComponent {
     if (!this.processSelectedImage(file)) {
       input.value = '';
     }
+  }
+
+  async onRecipePhotoSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    input.value = '';
+
+    if (!file || !this.processSelectedImage(file)) {
+      return;
+    }
+
+    await this.importRecipeFromPhoto(file);
   }
 
   onImageDragEnter(event: DragEvent): void {
@@ -468,6 +491,8 @@ export class RecipeFormComponent {
     this.selectedImageFile = null;
     this.imagePreviewUrl = recipe.image?.url ?? null;
     this.imageError = '';
+    this.importError.set(null);
+    this.importSummary.set(null);
   }
 
   private replaceIngredients(ingredients: Recipe['ingredients']): void {
@@ -550,6 +575,128 @@ export class RecipeFormComponent {
     this.objectPreviewUrl = URL.createObjectURL(file);
     this.imagePreviewUrl = this.objectPreviewUrl;
     return true;
+  }
+
+  private async importRecipeFromPhoto(file: File): Promise<void> {
+    this.importingFromPhoto.set(true);
+    this.importProgress.set(0.08);
+    this.importStatus.set('Preparando imagen');
+    this.importError.set(null);
+    this.importSummary.set(null);
+
+    try {
+      const { rawText, recipe: extractedRecipe } = await extractRecipeFromImage(file, (progress, status) => {
+        this.importProgress.set(Math.max(0.08, progress));
+        this.importStatus.set(status);
+      });
+      this.importProgress.set(0.92);
+      this.importStatus.set('Traduciendo y organizando receta');
+
+      let recipe = extractedRecipe;
+      let importedWithAi = false;
+
+      try {
+        recipe = await this.recipeImportService.refineImportedRecipe(rawText, extractedRecipe);
+        importedWithAi = true;
+      } catch {
+        importedWithAi = false;
+      }
+
+      const importedContentCount = this.applyImportedRecipe(recipe, file);
+
+      if (!importedContentCount) {
+        this.importError.set(
+          'No pudimos reconocer la receta con suficiente claridad. Intenta con una foto más nítida.',
+        );
+        return;
+      }
+
+      this.importProgress.set(1);
+      this.importSummary.set(this.buildImportSummary(recipe, importedWithAi));
+    } catch {
+      this.importError.set(
+        'No logramos leer esa foto. Prueba con otra imagen o completa la receta manualmente.',
+      );
+    } finally {
+      this.importingFromPhoto.set(false);
+    }
+  }
+
+  private applyImportedRecipe(recipe: ImportedRecipeDraft, file: File): number {
+    const currentValue = this.form.getRawValue();
+    const title = recipe.title || this.deriveTitleFromFile(file.name);
+    const nextTags = recipe.tags.length
+      ? Array.from(new Set([...currentValue.tags, ...recipe.tags]))
+      : currentValue.tags;
+
+    this.form.patchValue({
+      title: title || currentValue.title,
+      description: recipe.description || currentValue.description,
+      notes: recipe.notes || currentValue.notes,
+      servings: recipe.servings ?? currentValue.servings,
+      prepTimeMinutes: recipe.prepTimeMinutes ?? currentValue.prepTimeMinutes,
+      cookTimeMinutes: recipe.cookTimeMinutes ?? currentValue.cookTimeMinutes,
+      category: recipe.category || currentValue.category,
+      tags: nextTags,
+    });
+
+    if (recipe.ingredients.length) {
+      this.replaceIngredients(
+        recipe.ingredients.map((ingredient) => ({
+          id: crypto.randomUUID(),
+          name: ingredient.name,
+          quantity: ingredient.quantity,
+          unit: ingredient.unit,
+          notes: ingredient.notes,
+        })),
+      );
+    }
+
+    if (recipe.steps.length) {
+      this.replaceSteps(
+        recipe.steps.map((step, index) => ({
+          id: crypto.randomUUID(),
+          order: index + 1,
+          instruction: step.instruction,
+        })),
+      );
+    }
+
+    this.form.markAsDirty();
+
+    return [
+      title,
+      recipe.description,
+      recipe.notes,
+      recipe.ingredients.length ? 'ingredients' : '',
+      recipe.steps.length ? 'steps' : '',
+    ].filter(Boolean).length;
+  }
+
+  private buildImportSummary(recipe: ImportedRecipeDraft, importedWithAi: boolean): string {
+    const parts = [
+      recipe.title ? 'título' : '',
+      recipe.ingredients.length ? `${recipe.ingredients.length} ingredientes` : '',
+      recipe.steps.length ? `${recipe.steps.length} pasos` : '',
+    ].filter(Boolean);
+
+    if (!parts.length) {
+      return 'Importamos la foto, pero revisa los campos antes de guardar.';
+    }
+
+    if (importedWithAi) {
+      return `Completamos ${parts.join(', ')} con IA y lo dejamos en español. Revísalo antes de guardar.`;
+    }
+
+    return `Completamos ${parts.join(', ')} desde la foto. Revísalo antes de guardar.`;
+  }
+
+  private deriveTitleFromFile(fileName: string): string {
+    return fileName
+      .replace(/\.[^.]+$/, '')
+      .replace(/[-_]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   private scrollToFirstInvalidField(): void {

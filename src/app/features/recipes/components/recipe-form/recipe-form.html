@@ -12,6 +12,97 @@
       (ngSubmit)="handleSubmit()"
       class="space-y-9 rounded-[2rem] border border-white/80 bg-white px-6 py-8 shadow-[0_1.125rem_45px_rgba(148,163,184,0.18)] md:px-12 md:py-12 max-[640px]:space-y-7 max-[640px]:rounded-[1.5rem] max-[640px]:px-4 max-[640px]:py-5 max-[640px]:pb-8 dark:border-[#5c4438]/70 dark:bg-[#241815]/84 dark:shadow-[0_24px_60px_rgba(9,6,5,0.42)]"
     >
+      @if (mode() === 'create') {
+        <section
+          class="rounded-[1.8rem] border border-orange-200/70 bg-[linear-gradient(135deg,rgba(255,247,237,0.98),rgba(255,255,255,0.98))] p-5 shadow-[0_18px_40px_rgba(251,146,60,0.12)] md:p-7 max-[640px]:rounded-[1.35rem] max-[640px]:p-4 dark:border-[#7b5745] dark:bg-[linear-gradient(135deg,rgba(58,42,36,0.94),rgba(36,24,21,0.96))] dark:shadow-[0_22px_44px_rgba(9,6,5,0.28)]"
+        >
+          <div
+            class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between max-[640px]:mb-4"
+          >
+            <div class="max-w-2xl">
+              <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-orange-500/12 px-3 py-1 text-sm font-semibold text-orange-700 ring-1 ring-orange-200 dark:bg-[#4a2d22] dark:text-[#ffd29a] dark:ring-[#7b5745]">
+                <app-icon name="sparkles" [size]="16"></app-icon>
+                <span>Importar desde foto</span>
+              </div>
+              <p
+                class="mb-2 block text-[1rem] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
+              >
+                Crea una receta con una imagen
+              </p>
+              <p class="text-[18px] text-slate-600 max-[640px]:text-sm dark:text-[#cfb8a9]">
+                Sube una foto o tómala desde el celular y completaremos el formulario con el texto detectado. Luego puedes corregir cualquier detalle antes de guardar.
+              </p>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2 lg:min-w-[23rem]">
+              <input
+                id="recipe-photo-import-input"
+                type="file"
+                accept="image/*"
+                class="sr-only"
+                (change)="onRecipePhotoSelected($event)"
+              />
+              <input
+                id="recipe-photo-camera-input"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                class="sr-only"
+                (change)="onRecipePhotoSelected($event)"
+              />
+
+              <label
+                for="recipe-photo-import-input"
+                class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-[1rem] border border-orange-200 bg-white px-4 py-3 text-[18px] font-semibold text-orange-700 transition hover:bg-orange-50 max-[640px]:text-base dark:border-[#7b5745] dark:bg-[#31231f] dark:text-[#ffd29a] dark:hover:bg-[#3a2a24]"
+              >
+                <app-icon name="image-plus" [size]="18"></app-icon>
+                <span>Subir foto</span>
+              </label>
+
+              <label
+                for="recipe-photo-camera-input"
+                class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-[1rem] border border-slate-200 bg-white px-4 py-3 text-[18px] font-semibold text-slate-700 transition hover:bg-slate-50 max-[640px]:text-base dark:border-[#6b5245] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:hover:bg-[#3a2a24]"
+              >
+                <app-icon name="camera" [size]="18"></app-icon>
+                <span>Tomar foto</span>
+              </label>
+            </div>
+          </div>
+
+          @if (importError()) {
+            <p class="rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#ffc1c5]">
+              {{ importError() }}
+            </p>
+          }
+
+          @if (importingFromPhoto()) {
+            <div class="space-y-3 rounded-[1.2rem] border border-white/80 bg-white/85 p-4 dark:border-[#5c4438] dark:bg-[#241815]/92">
+              <div class="flex items-center justify-between gap-3">
+                <p class="text-sm font-semibold text-slate-700 dark:text-[#f4ddd0]">
+                  {{ importStatus() || 'Leyendo receta' }}
+                </p>
+                <p class="text-sm text-slate-500 dark:text-[#cfb8a9]">
+                  {{ (importProgress() * 100).toFixed(0) }}%
+                </p>
+              </div>
+
+              <div class="h-2 overflow-hidden rounded-full bg-orange-100 dark:bg-[#3a2a24]">
+                <div
+                  class="h-full rounded-full bg-orange-500 transition-[width] duration-300"
+                  [style.width.%]="importProgress() * 100"
+                ></div>
+              </div>
+            </div>
+          }
+
+          @if (importSummary()) {
+            <p class="rounded-[1rem] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-[#466b54] dark:bg-[#1e3024] dark:text-[#b7e6c4]">
+              {{ importSummary() }}
+            </p>
+          }
+        </section>
+      }
+
       <div>
         <label
           class="mb-4 block text-[1] font-extrabold tracking-[0.18em] text-black uppercase max-[640px]:mb-3 max-[640px]:text-[0.75rem] max-[640px]:tracking-[0.14em] dark:text-[#f4ddd0]"
