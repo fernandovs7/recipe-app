@@ -39,6 +39,7 @@ import {
   ImportedRecipeDraft,
 } from '../../utils/extract-recipe-from-image';
 import { RecipeImportService } from '../../services/recipe-import.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-recipe-form',
@@ -52,6 +53,7 @@ export class RecipeFormComponent {
   private destroyRef = inject(DestroyRef);
   private platformId = inject(PLATFORM_ID);
   private recipeImportService = inject(RecipeImportService);
+  private authService = inject(AuthService);
   private formActionsRef = viewChild<ElementRef<HTMLElement>>('formActions');
 
   mode = input<'create' | 'edit'>('create');
@@ -80,6 +82,7 @@ export class RecipeFormComponent {
   importStatus = signal('');
   importError = signal<string | null>(null);
   importSummary = signal<string | null>(null);
+  readonly accountTier = this.authService.user.asReadonly();
 
   private objectPreviewUrl: string | null = null;
   private syncedRecipeId: string | null = null;
@@ -249,7 +252,19 @@ export class RecipeFormComponent {
     const file = input.files?.[0] ?? null;
     input.value = '';
 
-    if (!file || !this.processSelectedImage(file)) {
+    if (!this.canImportRecipeFromPhoto()) {
+      this.importError.set('La importación con IA está disponible solo para cuentas Pro.');
+      return;
+    }
+
+    if (!file) {
+      return;
+    }
+
+    const fileValidationError = this.validateImageFile(file);
+
+    if (fileValidationError) {
+      this.importError.set(fileValidationError);
       return;
     }
 
@@ -325,6 +340,10 @@ export class RecipeFormComponent {
     }
 
     return this.mode() === 'edit' ? 'Imagen actual de la receta' : 'Vista previa de la receta';
+  }
+
+  canImportRecipeFromPhoto(): boolean {
+    return this.accountTier()?.accountTier === 'pro';
   }
 
   toggleCategoryDropdown(): void {
@@ -557,15 +576,10 @@ export class RecipeFormComponent {
   }
 
   private processSelectedImage(file: File): boolean {
-    this.imageError = '';
+    const fileValidationError = this.validateImageFile(file);
+    this.imageError = fileValidationError ?? '';
 
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      this.imageError = 'Formato no permitido. Usa JPG, PNG o WebP.';
-      return false;
-    }
-
-    if (file.size > MAX_IMAGE_SIZE_BYTES) {
-      this.imageError = 'La imagen supera el tamaño máximo de 10 MB.';
+    if (fileValidationError) {
       return false;
     }
 
@@ -577,6 +591,18 @@ export class RecipeFormComponent {
     return true;
   }
 
+  private validateImageFile(file: File): string | null {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      return 'Formato no permitido. Usa JPG, PNG o WebP.';
+    }
+
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      return 'La imagen supera el tamaño máximo de 10 MB.';
+    }
+
+    return null;
+  }
+
   private async importRecipeFromPhoto(file: File): Promise<void> {
     this.importingFromPhoto.set(true);
     this.importProgress.set(0.08);
@@ -585,21 +611,71 @@ export class RecipeFormComponent {
     this.importSummary.set(null);
 
     try {
-      const { rawText, recipe: extractedRecipe } = await extractRecipeFromImage(file, (progress, status) => {
-        this.importProgress.set(Math.max(0.08, progress));
-        this.importStatus.set(status);
-      });
-      this.importProgress.set(0.92);
-      this.importStatus.set('Traduciendo y organizando receta');
+      this.importProgress.set(0.24);
+      this.importStatus.set('Analizando foto con IA');
 
-      let recipe = extractedRecipe;
+      let recipe: ImportedRecipeDraft = {
+        title: '',
+        description: '',
+        notes: '',
+        servings: null,
+        prepTimeMinutes: null,
+        cookTimeMinutes: null,
+        category: '',
+        tags: [],
+        ingredients: [],
+        steps: [],
+      };
       let importedWithAi = false;
+      let usedOcrFallback = false;
 
       try {
-        recipe = await this.recipeImportService.refineImportedRecipe(rawText, extractedRecipe);
+        recipe = await this.recipeImportService.importRecipeFromImage(file);
         importedWithAi = true;
-      } catch {
+      } catch (error) {
+        console.error('Single AI recipe import failed', error);
         importedWithAi = false;
+      }
+
+      if (!this.hasMeaningfulImportedContent(recipe)) {
+        let rawText = '';
+        let extractedRecipe: ImportedRecipeDraft | undefined;
+
+        try {
+          this.importProgress.set(0.56);
+          this.importStatus.set('Leyendo texto de apoyo');
+
+          const extracted = await extractRecipeFromImage(file, (progress, status) => {
+            this.importProgress.set(0.56 + progress * 0.22);
+            this.importStatus.set(status);
+          });
+
+          rawText = extracted.rawText;
+          extractedRecipe = extracted.recipe;
+          usedOcrFallback = true;
+        } catch (error) {
+          console.error('Support OCR failed, continuing with first AI result', error);
+        }
+
+        if (rawText || extractedRecipe) {
+          try {
+            this.importProgress.set(0.82);
+            this.importStatus.set('Ajustando receta con apoyo OCR');
+
+            recipe = await this.recipeImportService.importRecipeFromImage(file, {
+              rawText,
+              draft: extractedRecipe,
+            });
+            importedWithAi = true;
+          } catch (error) {
+            console.error('AI recipe import with OCR support failed', error);
+
+            if (extractedRecipe && !this.hasMeaningfulImportedContent(recipe)) {
+              recipe = extractedRecipe;
+              importedWithAi = false;
+            }
+          }
+        }
       }
 
       const importedContentCount = this.applyImportedRecipe(recipe, file);
@@ -612,8 +688,9 @@ export class RecipeFormComponent {
       }
 
       this.importProgress.set(1);
-      this.importSummary.set(this.buildImportSummary(recipe, importedWithAi));
-    } catch {
+      this.importSummary.set(this.buildImportSummary(recipe, importedWithAi, usedOcrFallback));
+    } catch (error) {
+      console.error('Recipe photo import failed', error);
       this.importError.set(
         'No logramos leer esa foto. Prueba con otra imagen o completa la receta manualmente.',
       );
@@ -673,7 +750,11 @@ export class RecipeFormComponent {
     ].filter(Boolean).length;
   }
 
-  private buildImportSummary(recipe: ImportedRecipeDraft, importedWithAi: boolean): string {
+  private buildImportSummary(
+    recipe: ImportedRecipeDraft,
+    importedWithAi: boolean,
+    usedOcrFallback = false,
+  ): string {
     const parts = [
       recipe.title ? 'título' : '',
       recipe.ingredients.length ? `${recipe.ingredients.length} ingredientes` : '',
@@ -685,10 +766,23 @@ export class RecipeFormComponent {
     }
 
     if (importedWithAi) {
+      if (usedOcrFallback) {
+        return `Completamos ${parts.join(', ')} con IA y apoyo OCR. Revísalo antes de guardar.`;
+      }
+
       return `Completamos ${parts.join(', ')} con IA y lo dejamos en español. Revísalo antes de guardar.`;
     }
 
     return `Completamos ${parts.join(', ')} desde la foto. Revísalo antes de guardar.`;
+  }
+
+  private hasMeaningfulImportedContent(recipe: ImportedRecipeDraft): boolean {
+    return Boolean(
+      recipe.title.trim() ||
+        recipe.description.trim() ||
+        recipe.ingredients.length >= 3 ||
+        recipe.steps.length >= 2,
+    );
   }
 
   private deriveTitleFromFile(fileName: string): string {

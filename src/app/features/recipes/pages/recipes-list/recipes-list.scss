@@ -12,7 +12,18 @@
 
 :host ::ng-deep .recipes-list-category-dropdown,
 :host ::ng-deep .recipes-list-sort-dropdown {
-  isolation: isolate;
+  position: relative;
+  z-index: 1;
+}
+
+:host ::ng-deep .recipes-list-category-dropdown[data-open='true'],
+:host ::ng-deep .recipes-list-sort-dropdown[data-open='true'] {
+  z-index: 50;
+}
+
+:host ::ng-deep .recipes-list-category-dropdown [data-dropdown-panel],
+:host ::ng-deep .recipes-list-sort-dropdown [data-dropdown-panel] {
+  z-index: 50;
 }
 
 .metric-number {

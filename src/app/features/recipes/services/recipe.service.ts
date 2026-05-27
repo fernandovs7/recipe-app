@@ -1,14 +1,17 @@
 import { effect, inject, Injectable, signal } from '@angular/core';
+import { PostgrestError, User as SupabaseUser } from '@supabase/supabase-js';
 import { AuthService } from '../../../core/services/auth.service';
 import { Recipe, RecipeImage } from '../../../core/models/recipe.model';
-
+import {
+  createDefaultRecipeData,
+  DEFAULT_RECIPE_SEEDED_METADATA_KEY,
+} from '../constants/default-recipe';
 import { removeUndefinedFields } from '../../../core/utils/remove-undefined-fields';
 import {
   IMAGE_SIZES,
   ImageSizeKey,
   optimizeImageVariants,
 } from '../../../core/utils/optimize-image';
-import { PostgrestError } from '@supabase/supabase-js';
 import { supabase } from '../../../core/supabase.config';
 
 interface RecipeRow {
@@ -36,6 +39,7 @@ interface RecipeRow {
 })
 export class RecipeService {
   private authService = inject(AuthService);
+  private defaultRecipeSeedRequests = new Map<string, Promise<Recipe | null>>();
 
   recipes = signal<Recipe[]>([]);
   loading = signal(false);
@@ -68,7 +72,15 @@ export class RecipeService {
         throw error;
       }
 
-      this.recipes.set((data ?? []).map((row) => this.mapRecipeRow(row as RecipeRow)));
+      const recipes = (data ?? []).map((row) => this.mapRecipeRow(row as RecipeRow));
+
+      if (recipes.length > 0) {
+        this.recipes.set(recipes);
+        return;
+      }
+
+      const defaultRecipe = await this.ensureDefaultRecipeForUser(userId);
+      this.recipes.set(defaultRecipe ? [defaultRecipe] : []);
     } catch {
       this.recipes.set([]);
     } finally {
@@ -323,6 +335,10 @@ export class RecipeService {
   }
 
   async deleteRecipeImage(imagePath: string): Promise<void> {
+    if (!this.isStoragePath(imagePath)) {
+      return;
+    }
+
     try {
       const { error } = await supabase.storage.from('recipes').remove([imagePath]);
 
@@ -366,6 +382,86 @@ export class RecipeService {
     }
 
     return message.toLowerCase().includes('not found');
+  }
+
+  private isStoragePath(path: string): boolean {
+    return path.startsWith('recipes/');
+  }
+
+  private ensureDefaultRecipeForUser(userId: string): Promise<Recipe | null> {
+    const ongoingRequest = this.defaultRecipeSeedRequests.get(userId);
+
+    if (ongoingRequest) {
+      return ongoingRequest;
+    }
+
+    const request = this.seedDefaultRecipeForUser(userId).finally(() => {
+      this.defaultRecipeSeedRequests.delete(userId);
+    });
+
+    this.defaultRecipeSeedRequests.set(userId, request);
+    return request;
+  }
+
+  private async seedDefaultRecipeForUser(userId: string): Promise<Recipe | null> {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!user || user.id !== userId || this.hasDefaultRecipeSeeded(user)) {
+      return null;
+    }
+
+    const timestamp = Date.now();
+    const defaultRecipe = removeUndefinedFields({
+      ...createDefaultRecipeData(),
+      userId,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    });
+
+    const { data, error: insertError } = await supabase
+      .from('recipes')
+      .insert(this.mapRecipeToInsertRow(defaultRecipe))
+      .select('*')
+      .single();
+
+    if (insertError) {
+      throw insertError;
+    }
+
+    await this.markDefaultRecipeAsSeeded(user);
+
+    return data ? this.mapRecipeRow(data as RecipeRow) : null;
+  }
+
+  private hasDefaultRecipeSeeded(user: SupabaseUser): boolean {
+    if (!user.user_metadata || typeof user.user_metadata !== 'object') {
+      return false;
+    }
+
+    return user.user_metadata[DEFAULT_RECIPE_SEEDED_METADATA_KEY] === true;
+  }
+
+  private async markDefaultRecipeAsSeeded(user: SupabaseUser): Promise<void> {
+    const metadata =
+      user.user_metadata && typeof user.user_metadata === 'object' ? user.user_metadata : {};
+
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        ...metadata,
+        [DEFAULT_RECIPE_SEEDED_METADATA_KEY]: true,
+      },
+    });
+
+    if (error) {
+      console.warn('No se pudo marcar la receta por defecto como inicializada.', error);
+    }
   }
 
   private mapRecipeRow(row: RecipeRow): Recipe {

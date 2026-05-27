@@ -85,9 +85,29 @@
               class="absolute right-0 top-[calc(100%+1.3rem)] min-w-64 rounded-3xl border border-white/80 bg-white/90 p-3 shadow-[0_18px_40px_rgba(28,25,23,0.16)] backdrop-blur-xl dark:border-[#5c4438] dark:bg-[#241815]/95 dark:shadow-[0_18px_40px_rgba(9,6,5,0.45)]"
             >
               <div class="border-b border-stone-200/70 px-2.5 pb-3.5 pt-2 dark:border-[#5c4438]/70">
-                <p class="m-0 text-[0.98rem] font-bold text-stone-800 dark:text-[#f7ede3]">
-                  {{ user()?.displayName || 'Usuario' }}
-                </p>
+                <div class="flex items-center justify-between gap-3">
+                  <p class="m-0 text-[0.98rem] font-bold text-stone-800 dark:text-[#f7ede3]">
+                    {{ user()?.displayName || 'Usuario' }}
+                  </p>
+                  <span
+                    class="inline-flex items-center rounded-full px-2.5 py-1 text-[0.72rem] font-extrabold tracking-[0.14em] uppercase"
+                    [class.bg-amber-500/12]="user()?.accountTier === 'pro'"
+                    [class.text-amber-700]="user()?.accountTier === 'pro'"
+                    [class.ring-1]="true"
+                    [class.ring-amber-200]="user()?.accountTier === 'pro'"
+                    [class.bg-slate-100]="user()?.accountTier !== 'pro'"
+                    [class.text-slate-600]="user()?.accountTier !== 'pro'"
+                    [class.ring-slate-200]="user()?.accountTier !== 'pro'"
+                    [class.dark:bg-[#4a2d22]]="user()?.accountTier === 'pro'"
+                    [class.dark:text-[#ffd29a]]="user()?.accountTier === 'pro'"
+                    [class.dark:ring-[#7b5745]]="user()?.accountTier === 'pro'"
+                    [class.dark:bg-[#31231f]]="user()?.accountTier !== 'pro'"
+                    [class.dark:text-[#cfb8a9]]="user()?.accountTier !== 'pro'"
+                    [class.dark:ring-[#5c4438]]="user()?.accountTier !== 'pro'"
+                  >
+                    {{ accountTierLabel() }}
+                  </span>
+                </div>
                 <span class="mt-1 block text-[0.84rem] text-stone-500 dark:text-[#cfb8a9]">{{
                   user()?.email || 'Sin correo disponible'
                 }}</span>
@@ -181,9 +201,29 @@
           class="mt-2 rounded-[1.6rem] border border-white/80 bg-white/70 p-3 shadow-[0_10px_24px_rgba(28,25,23,0.08)] dark:border-[#5c4438] dark:bg-[#241815]/95 dark:shadow-[0_18px_40px_rgba(9,6,5,0.45)]"
         >
           <div class="border-b border-stone-200/70 px-2 pb-3 dark:border-[#5c4438]/70">
-            <p class="m-0 text-[0.98rem] font-bold text-stone-800 dark:text-[#f7ede3]">
-              {{ user()?.displayName || 'Usuario' }}
-            </p>
+            <div class="flex items-center justify-between gap-3">
+              <p class="m-0 text-[0.98rem] font-bold text-stone-800 dark:text-[#f7ede3]">
+                {{ user()?.displayName || 'Usuario' }}
+              </p>
+              <span
+                class="inline-flex items-center rounded-full px-2.5 py-1 text-[0.72rem] font-extrabold tracking-[0.14em] uppercase"
+                [class.bg-amber-500/12]="user()?.accountTier === 'pro'"
+                [class.text-amber-700]="user()?.accountTier === 'pro'"
+                [class.ring-1]="true"
+                [class.ring-amber-200]="user()?.accountTier === 'pro'"
+                [class.bg-slate-100]="user()?.accountTier !== 'pro'"
+                [class.text-slate-600]="user()?.accountTier !== 'pro'"
+                [class.ring-slate-200]="user()?.accountTier !== 'pro'"
+                [class.dark:bg-[#4a2d22]]="user()?.accountTier === 'pro'"
+                [class.dark:text-[#ffd29a]]="user()?.accountTier === 'pro'"
+                [class.dark:ring-[#7b5745]]="user()?.accountTier === 'pro'"
+                [class.dark:bg-[#31231f]]="user()?.accountTier !== 'pro'"
+                [class.dark:text-[#cfb8a9]]="user()?.accountTier !== 'pro'"
+                [class.dark:ring-[#5c4438]]="user()?.accountTier !== 'pro'"
+              >
+                {{ accountTierLabel() }}
+              </span>
+            </div>
             <span class="mt-1 block text-[0.84rem] text-stone-500 dark:text-[#cfb8a9]">{{
               user()?.email || 'Sin correo disponible'
             }}</span>

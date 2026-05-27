@@ -120,18 +120,61 @@ Deno.serve(async (req) => {
       return json({ error: 'Unauthorized' }, 401);
     }
 
+    if (!isProUser(user)) {
+      return json({ error: 'Pro plan required' }, 403);
+    }
+
     const payload = (await req.json()) as {
+      imageDataUrl?: string;
       rawText?: string;
       draft?: ImportedRecipeDraft;
       targetLanguage?: string;
     };
 
+    const imageDataUrl = payload.imageDataUrl?.trim() ?? '';
     const rawText = payload.rawText?.trim() ?? '';
     const draft = payload.draft;
     const targetLanguage = payload.targetLanguage?.trim() || 'es';
 
-    if (!rawText || !draft) {
+    if (!imageDataUrl && !rawText && !draft) {
       return json({ error: 'Invalid payload' }, 400);
+    }
+
+    const userContent: Array<Record<string, unknown>> = [
+      {
+        type: 'input_text',
+        text: JSON.stringify({
+          targetLanguage,
+          draft,
+          rawText,
+          instructions: [
+            'If an image is provided, use the image as the primary source of truth.',
+            'If the image is rotated, mentally rotate it to read it correctly.',
+            'Extract only the recipe shown in the photo, ignoring page numbers, side notes, unrelated paragraphs, decorative text, and repeated fragments.',
+            'Return title, description, notes, ingredients and steps in Spanish when targetLanguage is es.',
+            'Translate English recipe content into natural Spanish.',
+            'Use the OCR text and draft only as fallback scaffolding when the image is unclear.',
+            'If a field is missing, return empty string, empty array, or null as appropriate.',
+            'Do not include markdown.',
+            'Do not merge ingredients with steps.',
+            'For ingredient units, use only this allowed set when possible: gr, kg, ml, cda, cdta, taza, unidad(s).',
+            'Normalize grams and gram variants to gr.',
+            'Normalize cup and cups to taza.',
+            'Normalize tablespoon variants to cda and teaspoon variants to cdta.',
+            'Normalize unit, piece, pieces, clove, cloves, slice, slices, egg, eggs to unidad(s) when no better allowed unit applies.',
+            'Do not convert taza to gr unless the original recipe explicitly provides grams or another weight value for that same ingredient.',
+            'Normalize tags to lowercase ASCII words.',
+          ],
+        }),
+      },
+    ];
+
+    if (imageDataUrl) {
+      userContent.push({
+        type: 'input_image',
+        image_url: imageDataUrl,
+        detail: 'high',
+      });
     }
 
     const openAiResponse = await fetch('https://api.openai.com/v1/responses', {
@@ -149,31 +192,13 @@ Deno.serve(async (req) => {
               {
                 type: 'input_text',
                 text:
-                  'You transform OCR-extracted recipe text into clean recipe JSON. If the source is in English, translate the final recipe to Spanish. Keep ingredient amounts faithful, keep culinary meaning natural, and do not invent missing data. Use concise neutral Spanish. Output only the schema fields.',
+                  'You extract recipes from photos and OCR text into clean recipe JSON. The image may be rotated or photographed at an angle. Read carefully, translate English recipe content into Spanish when requested, keep ingredient amounts faithful, keep culinary meaning natural, and do not invent missing data. Output only the schema fields.',
               },
             ],
           },
           {
             role: 'user',
-            content: [
-              {
-                type: 'input_text',
-                text: JSON.stringify({
-                  targetLanguage,
-                  draft,
-                  rawText,
-                  instructions: [
-                    'Use the OCR text as the main source of truth.',
-                    'Use the draft only as fallback scaffolding.',
-                    'Return title, description, notes, ingredients and steps in Spanish when targetLanguage is es.',
-                    'If a field is missing, return empty string, empty array, or null as appropriate.',
-                    'Do not include markdown.',
-                    'Do not merge ingredients with steps.',
-                    'Normalize tags to lowercase ASCII words.',
-                  ],
-                }),
-              },
-            ],
+            content: userContent,
           },
         ],
         text: {
@@ -189,6 +214,7 @@ Deno.serve(async (req) => {
 
     if (!openAiResponse.ok) {
       const errorText = await openAiResponse.text();
+      console.error('OpenAI request failed', errorText);
       return json({ error: 'OpenAI request failed', details: errorText }, 502);
     }
 
@@ -203,6 +229,7 @@ Deno.serve(async (req) => {
     return json({ recipe }, 200);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unexpected error';
+    console.error('import-recipe-with-ai unexpected error', error);
     return json({ error: message }, 500);
   }
 });
@@ -252,7 +279,7 @@ function sanitizeRecipe(recipe: ImportedRecipeDraft): ImportedRecipeDraft {
           .map((ingredient) => ({
             name: ingredient.name?.trim() ?? '',
             quantity: ingredient.quantity?.trim() || null,
-            unit: ingredient.unit?.trim() ?? '',
+            unit: normalizeIngredientUnit(ingredient.unit),
             notes: ingredient.notes?.trim() ?? '',
           }))
           .filter((ingredient) => ingredient.name)
@@ -265,6 +292,160 @@ function sanitizeRecipe(recipe: ImportedRecipeDraft): ImportedRecipeDraft {
           .filter((step) => step.instruction)
       : [],
   };
+}
+
+function isProUser(user: { app_metadata?: unknown; user_metadata?: unknown }): boolean {
+  const candidates = [
+    getMetadataString(user.app_metadata, 'account_tier'),
+    getMetadataString(user.app_metadata, 'tier'),
+    getMetadataString(user.app_metadata, 'plan'),
+    getMetadataString(user.user_metadata, 'account_tier'),
+    getMetadataString(user.user_metadata, 'tier'),
+    getMetadataString(user.user_metadata, 'plan'),
+  ];
+
+  return candidates.some((value) => value?.toLowerCase() === 'pro');
+}
+
+function getMetadataString(metadata: unknown, key: string): string | null {
+  if (!metadata || typeof metadata !== 'object') {
+    return null;
+  }
+
+  const record = metadata as Record<string, unknown>;
+  const value = record[key];
+
+  return typeof value === 'string' && value.trim() ? value : null;
+}
+
+function normalizeIngredientUnit(unit: string | undefined): string {
+  const normalized = unit?.trim().toLowerCase() ?? '';
+
+  if (!normalized) {
+    return '';
+  }
+
+  if (
+    [
+      'g',
+      'gr',
+      'grs',
+      'gram',
+      'grams',
+      'gramo',
+      'gramos',
+    ].includes(normalized)
+  ) {
+    return 'gr';
+  }
+
+  if (
+    [
+      'kg',
+      'kilo',
+      'kilos',
+      'kilogram',
+      'kilograms',
+      'kilogramo',
+      'kilogramos',
+    ].includes(normalized)
+  ) {
+    return 'kg';
+  }
+
+  if (
+    [
+      'ml',
+      'milliliter',
+      'milliliters',
+      'millilitre',
+      'millilitres',
+      'mililitro',
+      'mililitros',
+    ].includes(normalized)
+  ) {
+    return 'ml';
+  }
+
+  if (
+    [
+      'tbsp',
+      'tablespoon',
+      'tablespoons',
+      'cda',
+      'cdas',
+      'cucharada',
+      'cucharadas',
+    ].includes(normalized)
+  ) {
+    return 'cda';
+  }
+
+  if (
+    [
+      'tsp',
+      'teaspoon',
+      'teaspoons',
+      'cdta',
+      'cdtas',
+      'cucharadita',
+      'cucharaditas',
+    ].includes(normalized)
+  ) {
+    return 'cdta';
+  }
+
+  if (
+    [
+      'cup',
+      'cups',
+      'taza',
+      'tazas',
+    ].includes(normalized)
+  ) {
+    return 'taza';
+  }
+
+  if (
+    [
+      'unit',
+      'units',
+      'piece',
+      'pieces',
+      'unidad',
+      'unidades',
+      'clove',
+      'cloves',
+      'diente',
+      'dientes',
+      'slice',
+      'slices',
+      'rebanada',
+      'rebanadas',
+      'egg',
+      'eggs',
+      'huevo',
+      'huevos',
+    ].includes(normalized)
+  ) {
+    return 'unidad(s)';
+  }
+
+  if (
+    [
+      'gr',
+      'kg',
+      'ml',
+      'cda',
+      'cdta',
+      'taza',
+      'unidad(s)',
+    ].includes(normalized)
+  ) {
+    return normalized;
+  }
+
+  return '';
 }
 
 function json(body: Record<string, unknown>, status: number): Response {

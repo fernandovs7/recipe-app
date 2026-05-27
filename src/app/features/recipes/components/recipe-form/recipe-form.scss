@@ -17,8 +17,34 @@
 .recipe-step-card.cdk-drag-preview,
 .recipe-step-card--preview {
   box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: 100%;
   transform: rotate(0.6deg) scale(1.01);
   backdrop-filter: blur(10px);
+}
+
+.recipe-step-card--preview .recipe-step-card__preview-layout {
+  display: flex;
+  min-height: 100%;
+}
+
+.recipe-step-card--preview .recipe-step-card__preview-body {
+  display: flex;
+  min-height: 100%;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.recipe-step-card--preview .recipe-step-card__preview-text {
+  flex: 1 1 auto;
+  min-height: calc((2rem * 3) + (0.75rem * 2) + 2px);
+}
+
+@media (max-width: 640px) {
+  .recipe-step-card--preview .recipe-step-card__preview-text {
+    min-height: calc((1.75rem * 3) + (0.75rem * 2) + 2px);
+  }
 }
 
 .recipe-step-card.cdk-drag-dragging {

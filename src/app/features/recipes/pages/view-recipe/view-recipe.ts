@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RecipeService } from '../../services/recipe.service';
@@ -10,7 +11,10 @@ import {
 import { IconComponent } from '../../../../shared/components/icon/icon';
 import { ImageComponent } from '../../../../shared/components/image/image';
 import { ImageData } from '../../../../shared/components/image/image-data';
-import { RECIPE_CATEGORIES, getRecipeCategoryLabel } from '../../../../core/constants/recipe-categories';
+import {
+  RECIPE_CATEGORIES,
+  getRecipeCategoryLabel,
+} from '../../../../core/constants/recipe-categories';
 import { formatDuration } from '../../../../core/utils/format-duration';
 
 type QuantityFormatStyle =
@@ -31,6 +35,7 @@ const FRACTION_FRIENDLY_UNITS = new Set(['taza', 'cda', 'cdta', 'unidad', 'unida
   styleUrl: './view-recipe.scss',
 })
 export class ViewRecipe {
+  private readonly document = inject(DOCUMENT);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private recipeService = inject(RecipeService);
@@ -42,11 +47,14 @@ export class ViewRecipe {
   favoriteBounceActive = signal(false);
   deleteModalOpen = signal(false);
   deleting = signal(false);
+  pdfSharing = signal(false);
   error = signal('');
   adjustedServings = signal<number | null>(null);
   categories = RECIPE_CATEGORIES;
   private readonly origin = signal<ViewRecipeOrigin>(this.resolveOrigin());
-  readonly displayedServings = computed(() => this.adjustedServings() ?? this.recipe()?.servings ?? null);
+  readonly displayedServings = computed(
+    () => this.adjustedServings() ?? this.recipe()?.servings ?? null,
+  );
   readonly canAdjustServings = computed(() => {
     const servings = this.recipe()?.servings;
     return typeof servings === 'number' && servings > 0;
@@ -91,6 +99,76 @@ export class ViewRecipe {
     }
 
     this.router.navigate(['/app/home']);
+  }
+
+  async shareRecipe(): Promise<void> {
+    const current = this.recipe();
+    if (!current || this.pdfSharing()) {
+      return;
+    }
+
+    this.pdfSharing.set(true);
+    try {
+      const { buildRecipePdfBlob, recipePdfFileName } = await import('../../utils/recipe-pdf');
+      const ingredientLines = current.ingredients.map((ing) => {
+        const qty = this.ingredientQuantityLabel(ing);
+        const notes = ing.notes?.trim();
+        const namePart = notes ? `${ing.name} (${notes})` : ing.name;
+        return qty ? `${namePart} — ${qty}` : namePart;
+      });
+
+      const servings = this.displayedServings();
+      const blob = buildRecipePdfBlob({
+        recipe: current,
+        categoryLabel: this.categoryLabel(current.category),
+        servingsLabel: servings != null ? String(servings) : null,
+        prepLabel: this.durationLabel(current.prepTimeMinutes),
+        cookLabel: this.durationLabel(current.cookTimeMinutes),
+        ingredientLines,
+      });
+
+      await this.offerPdfShare(blob, recipePdfFileName(current), current.title);
+    } finally {
+      this.pdfSharing.set(false);
+    }
+  }
+
+  private async offerPdfShare(blob: Blob, filename: string, title: string): Promise<void> {
+    const win = this.document.defaultView;
+    const nav = win?.navigator;
+    const file = new File([blob], filename, { type: 'application/pdf' });
+
+    if (nav?.canShare?.({ files: [file] })) {
+      try {
+        await nav.share({ title, text: title, files: [file] });
+        return;
+      } catch (err: unknown) {
+        if (this.isShareUserAbort(err)) {
+          return;
+        }
+      }
+    }
+
+    const objectUrl = URL.createObjectURL(blob);
+    try {
+      const anchor = this.document.createElement('a');
+      anchor.href = objectUrl;
+      anchor.download = filename;
+      anchor.rel = 'noopener';
+      anchor.style.display = 'none';
+      this.document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  }
+
+  private isShareUserAbort(err: unknown): boolean {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      return true;
+    }
+    return err instanceof Error && err.name === 'AbortError';
   }
 
   async toggleFavorite(): Promise<void> {
@@ -242,7 +320,9 @@ export class ViewRecipe {
     }
 
     const entries = Object.values(variants)
-      .filter((variant): variant is NonNullable<typeof variant> => Boolean(variant?.url && variant?.width))
+      .filter((variant): variant is NonNullable<typeof variant> =>
+        Boolean(variant?.url && variant?.width),
+      )
       .sort((left, right) => left.width - right.width)
       .map((variant) => `${variant.url} ${variant.width}w`);
 
@@ -282,9 +362,7 @@ export class ViewRecipe {
     return this.formatScaledQuantity(scaledValue, parsedQuantity.style, unit);
   }
 
-  private parseQuantity(
-    value: string,
-  ): { value: number; style: QuantityFormatStyle } | null {
+  private parseQuantity(value: string): { value: number; style: QuantityFormatStyle } | null {
     const normalizedValue = value.trim().replace(',', '.');
 
     const mixedFractionMatch = normalizedValue.match(/^(\d+)\s+(\d+)\/(\d+)$/);
@@ -324,11 +402,7 @@ export class ViewRecipe {
       : null;
   }
 
-  private formatScaledQuantity(
-    value: number,
-    style: QuantityFormatStyle,
-    unit?: string,
-  ): string {
+  private formatScaledQuantity(value: number, style: QuantityFormatStyle, unit?: string): string {
     const shouldUseFraction =
       style === 'fraction' ||
       style === 'mixed-fraction' ||
@@ -405,9 +479,7 @@ export class ViewRecipe {
       : `${numerator}/${denominator}`;
   }
 
-  private approximateFraction(
-    value: number,
-  ): { numerator: number; denominator: number } | null {
+  private approximateFraction(value: number): { numerator: number; denominator: number } | null {
     const candidateDenominators = [2, 3, 4, 5, 6, 8];
     let bestMatch: { numerator: number; denominator: number; error: number } | null = null;
 

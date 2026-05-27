@@ -27,6 +27,7 @@ export class FloatingNav {
   ];
 
   readonly user = this.authService.user;
+  readonly accountTierLabel = () => (this.user()?.accountTier === 'pro' ? 'Pro' : 'Basic');
   readonly themeOptions: { value: ThemePreference; label: string; icon: string }[] = [
     { value: 'light', label: 'Claro', icon: 'sun' },
     { value: 'dark', label: 'Oscuro', icon: 'moon' },

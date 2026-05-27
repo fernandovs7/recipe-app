@@ -24,11 +24,26 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "allowedCommonJsDependencies": [
+              "canvg",
+              "core-js",
+              "dompurify",
+              "html2canvas",
+              "raf",
+              "rgbcolor",
+              "regenerator-runtime",
+              "tesseract.js"
+            ],
             "assets": [
               {
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
+              },
+              {
+                "glob": "worker.min.js",
+                "input": "node_modules/tesseract.js/dist",
+                "output": "assets/tesseract"
               },
               {
                 "glob": "**/*",

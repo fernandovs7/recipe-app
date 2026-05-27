@@ -7,6 +7,7 @@ export interface AuthUser {
   displayName: string | null;
   email: string | null;
   photoURL: string | null;
+  accountTier: 'basic' | 'pro';
 }
 
 @Injectable({
@@ -111,6 +112,7 @@ export class AuthService {
       displayName,
       email: user.email ?? null,
       photoURL,
+      accountTier: this.resolveAccountTier(user),
     };
   }
 
@@ -122,5 +124,18 @@ export class AuthService {
     const record = metadata as Record<string, unknown>;
     const value = record[key];
     return typeof value === 'string' && value.trim() ? value : null;
+  }
+
+  private resolveAccountTier(user: SupabaseUser): 'basic' | 'pro' {
+    const candidates = [
+      this.getMetadataString(user.app_metadata, 'account_tier'),
+      this.getMetadataString(user.app_metadata, 'tier'),
+      this.getMetadataString(user.app_metadata, 'plan'),
+      this.getMetadataString(user.user_metadata, 'account_tier'),
+      this.getMetadataString(user.user_metadata, 'tier'),
+      this.getMetadataString(user.user_metadata, 'plan'),
+    ];
+
+    return candidates.some((value) => value?.toLowerCase() === 'pro') ? 'pro' : 'basic';
   }
 }

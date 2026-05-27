@@ -59,9 +59,14 @@ export async function extractRecipeFromImage(
   file: File,
   onProgress?: (progress: number, status: string) => void,
 ): Promise<ImportedRecipeResult> {
-  const { createWorker, PSM } = await import('tesseract.js');
+  const tesseractModule = await import('tesseract.js');
+  const tesseract = (tesseractModule.default ?? tesseractModule) as typeof import('tesseract.js');
+  const { createWorker, PSM } = tesseract;
+  const assetBaseUrl = new URL('assets/tesseract/', document.baseURI).toString();
 
   const worker = await createWorker(['spa', 'eng'], 1, {
+    workerBlobURL: false,
+    workerPath: new URL('worker.min.js', assetBaseUrl).toString(),
     logger: (message) => {
       onProgress?.(message.progress, normalizeStatus(message.status));
     },
