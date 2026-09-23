@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { FunctionsHttpError } from '@supabase/supabase-js';
-import { supabase } from '../../../core/supabase.config';
+import { environment } from '../../../../environments/environment';
+import { firebaseAuth } from '../../../core/firebase.config';
 import { ImportedRecipeDraft } from '../utils/extract-recipe-from-image';
 import { optimizeImage } from '../../../core/utils/optimize-image';
 
 interface ImportRecipeAiResponse {
   recipe: ImportedRecipeDraft;
+  error?: string;
 }
 
 @Injectable({
@@ -44,43 +45,37 @@ export class RecipeImportService {
     draft?: ImportedRecipeDraft;
     targetLanguage: 'es';
   }): Promise<ImportedRecipeDraft> {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    const user = firebaseAuth.currentUser;
 
-    if (!session?.access_token) {
-      throw new Error('No active Supabase session for recipe import');
+    if (!user) {
+      throw new Error('No active Firebase session for recipe import');
     }
 
-    const { data, error } = await supabase.functions.invoke<ImportRecipeAiResponse>(
-      'import-recipe-with-ai',
-      {
-        body,
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
+    const accessToken = await user.getIdToken();
+    const response = await fetch(environment.firebase.importRecipeUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify(body),
+    });
 
-    if (error) {
-      if (error instanceof FunctionsHttpError) {
-        const details = await this.readFunctionErrorDetails(error);
-        console.error('AI recipe import request failed', {
-          name: error.name,
-          message: error.message,
-          details,
-        });
-      } else {
-        console.error('AI recipe import request failed', error);
-      }
-      throw error;
+    const payload = (await response.json().catch(() => null)) as ImportRecipeAiResponse | null;
+
+    if (!response.ok) {
+      console.error('AI recipe import request failed', {
+        status: response.status,
+        payload,
+      });
+      throw new Error(payload?.error ?? `AI recipe import failed (${response.status})`);
     }
 
-    if (!data?.recipe) {
+    if (!payload?.recipe) {
       throw new Error('AI recipe import returned no recipe');
     }
 
-    return data.recipe;
+    return payload.recipe;
   }
 
   private blobToDataUrl(blob: Blob): Promise<string> {
@@ -97,26 +92,5 @@ export class RecipeImportService {
       reader.onerror = () => reject(reader.error ?? new Error('Image could not be read'));
       reader.readAsDataURL(blob);
     });
-  }
-
-  private async readFunctionErrorDetails(error: FunctionsHttpError): Promise<unknown> {
-    try {
-      const response = error.context;
-
-      if (!response) {
-        return null;
-      }
-
-      const clonedResponse = response.clone();
-      const contentType = clonedResponse.headers.get('content-type') ?? '';
-
-      if (contentType.includes('application/json')) {
-        return await clonedResponse.json();
-      }
-
-      return await clonedResponse.text();
-    } catch {
-      return null;
-    }
   }
 }

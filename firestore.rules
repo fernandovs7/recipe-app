@@ -1,0 +1,40 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isProfile(request.resource.data);
+      allow update: if isOwner(userId)
+        && isProfile(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['defaultRecipeSeeded']);
+
+      match /recipes/{recipeId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isRecipe(request.resource.data, userId);
+      }
+    }
+  }
+}
+
+function isOwner(userId) {
+  return request.auth != null && request.auth.uid == userId;
+}
+
+function isProfile(data) {
+  return data.keys().hasOnly(['defaultRecipeSeeded']) && data.defaultRecipeSeeded is bool;
+}
+
+function isRecipe(data, userId) {
+  return data.userId == userId
+    && data.title is string
+    && data.ingredients is list
+    && data.steps is list
+    && data.tags is list
+    && data.favorite is bool
+    && data.createdAt is number
+    && data.updatedAt is number
+    && (data.servings == null || data.servings is number)
+    && (data.prepTimeMinutes == null || data.prepTimeMinutes is number)
+    && (data.cookTimeMinutes == null || data.cookTimeMinutes is number);
+}

@@ -1,7 +1,5 @@
 import { Recipe } from '../../../core/models/recipe.model';
 
-export const DEFAULT_RECIPE_SEEDED_METADATA_KEY = 'default_recipe_seeded';
-
 export function createDefaultRecipeData(): Omit<Recipe, 'id' | 'userId' | 'createdAt' | 'updatedAt'> {
   return {
     title: 'Tostadas con aguacate y huevo',

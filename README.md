@@ -74,6 +74,35 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
 
+## Firebase setup
+
+The app uses Firebase project `recipe-app-a7be0` for Auth, Firestore, Storage, Cloud Functions, and Hosting. Firestore does not pause for inactivity. Billing, Google sign-in, the authorized domains (`localhost`, `recipe-app-a7be0.web.app`, `recipe-app-a7be0.firebaseapp.com`, `cocinario.app`), the Firestore database, and the Storage bucket are already in place. The web config is in `src/environments/environment.ts`. Firestore and Storage rules are deployed from `firestore.rules` and `storage.rules`.
+
+The import function still needs the OpenAI secret, then a functions deploy:
+
+```bash
+firebase functions:secrets:set OPENAI_API_KEY
+firebase deploy --only functions
+```
+
+After that deploy, if Firebase prints a Cloud Run URL instead of the `cloudfunctions.net` URL, put that URL in `environment.firebase.importRecipeUrl`.
+
+Pro access is the custom claim `accountTier: "pro"`. The migration script sets it for users who were pro in Supabase. The client cannot grant that claim to itself.
+
+## Supabase to Firebase migration
+
+Copy the live Supabase users, recipes, and images into Firebase. Match users by email. Someone who has not signed in to this Firebase project with Google yet is skipped; sign in once and run the script again. Re-running is safe: each recipe is written to `users/{firebaseUid}/recipes/{supabaseRecipeId}` with `legacySupabaseId`.
+
+```bash
+SUPABASE_URL="https://your-project.supabase.co" \
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key" \
+FIREBASE_SERVICE_ACCOUNT_PATH="./service-account.json" \
+FIREBASE_STORAGE_BUCKET="recipe-app-a7be0.firebasestorage.app" \
+npm run migrate:supabase-to-firebase -- --dry-run
+```
+
+Remove `--dry-run` for the real copy. The service-account JSON and the Supabase service-role key stay on the machine that runs the script. `GOOGLE_APPLICATION_CREDENTIALS` can be used instead of `FIREBASE_SERVICE_ACCOUNT_PATH`.
+
 ## Firebase to Supabase migration
 
 To migrate historical data from Firebase into Supabase:
