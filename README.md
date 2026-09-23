@@ -1,97 +1,111 @@
 # RecipeApp
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.3.
+RecipeApp is an Angular 21 personal recipe manager backed by Firebase. The active application uses Google Authentication, Firestore, Storage, Cloud Functions, and Firebase Hosting. Supabase is not part of the runtime; the remaining Supabase files and dependency exist only for historical migration tooling.
 
-## Node version
+## Requirements
 
-This project is most stable with Node.js `22.12.0` or newer `24.5.0+`.
-
-If you hit crashes during `ng build` or `ng serve` with Node `24.4.x`, switch to the version in `.nvmrc`:
+- Node.js 22.12.0, as pinned in `.nvmrc`, or Node.js 24.5.0 or newer. Angular build and serve can crash on Node 24.4.x.
+- npm 11.4.2, as pinned in `package.json`.
+- Firebase CLI for deployment and Firebase operations.
 
 ```bash
 nvm use
+npm ci
+npm --prefix functions ci
 ```
 
-Or install it first if needed:
+## Development
+
+Start the development server at `http://localhost:4200`:
 
 ```bash
-nvm install
+npm start
 ```
 
-## Development server
-
-To start a local development server, run:
+Create a production build in `dist/recipe-app/browser`:
 
 ```bash
-ng serve
+npm run build
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Run unit tests once with Vitest:
 
 ```bash
-ng generate component component-name
+npm test -- --watch=false
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Run one test file or filter test names:
 
 ```bash
-ng generate --help
+npm test -- --watch=false --include src/app/app.spec.ts
+npm test -- --watch=false --filter '<regex>'
 ```
 
-## Building
+There is currently no lint script or end-to-end test target.
 
-To build the project run:
+## Firebase architecture
+
+The default Firebase project is `recipe-app-a7be0`, configured in `.firebaserc`.
+
+- `src/environments/environment.ts` contains the public Firebase web configuration and the HTTPS endpoint for AI recipe import. The frontend does not load Firebase settings from `.env` files.
+- `src/app/core/firebase.config.ts` initializes Auth, Firestore, and Storage.
+- Recipes are stored at `users/{uid}/recipes/{recipeId}`; `users/{uid}` stores the `defaultRecipeSeeded` profile flag.
+- Recipe images are stored under `recipes/{uid}/` as thumbnail, medium, and full WebP variants.
+- `firestore.rules`, `firestore.indexes.json`, and `storage.rules` define the database and storage access policy.
+- `functions/src/index.ts` implements the `importRecipeWithAi` Cloud Function. It validates the Firebase ID token and requires the custom claim `accountTier: "pro"`.
+- `firebase.json` configures Functions, Firestore, Storage, and Hosting. Hosting serves `dist/recipe-app/browser` with an SPA rewrite.
+
+The Firebase web API key is a public client identifier, not a server secret. Keep service-account files and `OPENAI_API_KEY` out of the frontend and out of version control.
+
+## Deploy
+
+Install the Firebase CLI if it is not already available, authenticate, and select the configured project:
 
 ```bash
-ng build
+npm install -g firebase-tools
+firebase login
+firebase use recipe-app-a7be0
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Install dependencies and verify both builds:
 
 ```bash
-ng test
+nvm use
+npm ci
+npm --prefix functions ci
+npm run build
+npm --prefix functions run build
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-
-## Firebase setup
-
-The app uses Firebase project `recipe-app-a7be0` for Auth, Firestore, Storage, Cloud Functions, and Hosting. Firestore does not pause for inactivity. Billing, Google sign-in, the authorized domains (`localhost`, `recipe-app-a7be0.web.app`, `recipe-app-a7be0.firebaseapp.com`, `cocinario.app`), the Firestore database, and the Storage bucket are already in place. The web config is in `src/environments/environment.ts`. Firestore and Storage rules are deployed from `firestore.rules` and `storage.rules`.
-
-The import function still needs the OpenAI secret, then a functions deploy:
+Set `OPENAI_API_KEY` before the first Functions deploy, and run the same command whenever the secret must be rotated:
 
 ```bash
 firebase functions:secrets:set OPENAI_API_KEY
-firebase deploy --only functions
 ```
 
-After that deploy, if Firebase prints a Cloud Run URL instead of the `cloudfunctions.net` URL, put that URL in `environment.firebase.importRecipeUrl`.
+Deploy Hosting, Cloud Functions, Firestore rules and indexes, and Storage rules together:
 
-Pro access is the custom claim `accountTier: "pro"`. The migration script sets it for users who were pro in Supabase. The client cannot grant that claim to itself.
+```bash
+firebase deploy
+```
 
-## Supabase to Firebase migration
+`firebase.json` also builds the Functions package automatically before a Functions deploy. For targeted deployments, use:
 
-Copy the live Supabase users, recipes, and images into Firebase. Match users by email. Someone who has not signed in to this Firebase project with Google yet is skipped; sign in once and run the script again. Re-running is safe: each recipe is written to `users/{firebaseUid}/recipes/{supabaseRecipeId}` with `legacySupabaseId`.
+```bash
+firebase deploy --only hosting
+firebase deploy --only functions
+firebase deploy --only firestore:rules,firestore:indexes,storage
+```
+
+After the first Functions deploy, confirm that `environment.firebase.importRecipeUrl` matches the HTTPS endpoint reported for `importRecipeWithAi`. If it changes, update `src/environments/environment.ts`, rebuild the Angular app, and deploy Hosting again.
+
+Google sign-in also requires the Google provider to be enabled and each deployed domain to be authorized in the Firebase console.
+
+## Historical Supabase migration
+
+The application no longer connects to Supabase. `scripts/migrate-supabase-to-firebase.mjs` remains only to copy historical Supabase users, recipes, images, and pro status into Firebase. It matches users by email; users must sign in to Firebase with Google at least once before they can be matched.
+
+Always run a dry run first:
 
 ```bash
 SUPABASE_URL="https://your-project.supabase.co" \
@@ -101,44 +115,4 @@ FIREBASE_STORAGE_BUCKET="recipe-app-a7be0.firebasestorage.app" \
 npm run migrate:supabase-to-firebase -- --dry-run
 ```
 
-Remove `--dry-run` for the real copy. The service-account JSON and the Supabase service-role key stay on the machine that runs the script. `GOOGLE_APPLICATION_CREDENTIALS` can be used instead of `FIREBASE_SERVICE_ACCOUNT_PATH`.
-
-## Firebase to Supabase migration
-
-To migrate historical data from Firebase into Supabase:
-
-1. Add the legacy id column once in Supabase:
-
-```sql
-alter table public.recipes
-add column if not exists legacy_firebase_id text unique;
-```
-
-2. Create a Firebase service account JSON with access to Firestore, Auth, and Storage.
-
-3. Run a dry run first:
-
-```bash
-SUPABASE_URL="https://your-project.supabase.co" \
-SUPABASE_SERVICE_ROLE_KEY="your-service-role-key" \
-FIREBASE_SERVICE_ACCOUNT_PATH="./service-account.json" \
-FIREBASE_STORAGE_BUCKET="recipe-app-a7be0.firebasestorage.app" \
-npm run migrate:firebase-to-supabase -- --dry-run
-```
-
-4. If the dry run looks good, run the real migration:
-
-```bash
-SUPABASE_URL="https://your-project.supabase.co" \
-SUPABASE_SERVICE_ROLE_KEY="your-service-role-key" \
-FIREBASE_SERVICE_ACCOUNT_PATH="./service-account.json" \
-FIREBASE_STORAGE_BUCKET="recipe-app-a7be0.firebasestorage.app" \
-npm run migrate:firebase-to-supabase
-```
-
-Notes:
-
-- The script matches Firebase users to Supabase users by email.
-- Users who have not signed into Supabase yet will be skipped.
-- Recipe images are copied from Firebase Storage into the Supabase `recipes` bucket.
-- Re-running the script is safe after adding `legacy_firebase_id`, because it upserts on that field.
+Remove `--dry-run` only after reviewing the summary. `GOOGLE_APPLICATION_CREDENTIALS` can be used instead of `FIREBASE_SERVICE_ACCOUNT_PATH`. Supabase service-role keys and Firebase service-account files are server-only secrets.
