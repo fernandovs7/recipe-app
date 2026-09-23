@@ -10,66 +10,85 @@
         <span>Volver</span>
       </button>
 
-      <div class="flex items-center gap-2">
-        <a
-          [routerLink]="['/app/recipes', recipe()?.id, 'edit']"
-          class="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition hover:bg-slate-50 max-[640px]:w-11 max-[640px]:px-0 dark:border-[#6b5245] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:shadow-[0_14px_26px_rgba(9,6,5,0.24)] dark:hover:bg-[#3a2a24]"
-        >
-          <app-icon name="pencil" [size]="16"></app-icon>
-          <span class="max-[640px]:hidden">Editar</span>
-        </a>
-        <button
-          type="button"
-          (click)="toggleFavorite()"
-          [disabled]="favoriteSaving()"
-          [attr.aria-label]="recipe()?.favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'"
-          class="favorite-button inline-flex h-11 w-11 items-center justify-center rounded-full border shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition-all duration-300 ease-out cursor-pointer disabled:opacity-70"
-          [class.scale-110]="recipe()?.favorite && !favoriteSaving()"
-          [class.favorite-button--bounce]="favoriteBounceActive()"
-          [class.border-red-500]="recipe()?.favorite"
-          [class.bg-red-500]="recipe()?.favorite"
-          [class.text-white]="recipe()?.favorite"
-          [class.shadow-[0_12px_28px_rgba(239,68,68,0.32)]]="recipe()?.favorite"
-          [class.hover:bg-red-600]="recipe()?.favorite"
-          [class.border-slate-200]="!recipe()?.favorite"
-          [class.bg-white]="!recipe()?.favorite"
-          [class.text-slate-700]="!recipe()?.favorite"
-          [class.hover:bg-slate-50]="!recipe()?.favorite"
-          [class.dark:border-[#6b5245]]="!recipe()?.favorite"
-          [class.dark:bg-[#31231f]]="!recipe()?.favorite"
-          [class.dark:text-[#f4ddd0]]="!recipe()?.favorite"
-          [class.dark:hover:bg-[#3a2a24]]="!recipe()?.favorite"
-        >
-          <span
-            class="favorite-button__ripple"
-            [class.favorite-button__ripple--active]="favoriteBounceActive()"
-          ></span>
-          <span
-            class="favorite-button__icon inline-flex items-center justify-center transition-transform duration-300"
-            [class.scale-110]="recipe()?.favorite"
-            [class.favorite-button__icon--bounce]="favoriteBounceActive()"
+      <div class="flex flex-col items-end gap-2">
+        <div class="flex items-center gap-2">
+          <a
+            [routerLink]="['/app/recipes', recipe()?.id, 'edit']"
+            class="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition hover:bg-slate-50 max-[640px]:w-11 max-[640px]:px-0 dark:border-[#6b5245] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:shadow-[0_14px_26px_rgba(9,6,5,0.24)] dark:hover:bg-[#3a2a24]"
           >
-            <app-icon name="heart" [size]="18"></app-icon>
-          </span>
-        </button>
-        <button
-          type="button"
-          (click)="shareRecipe()"
-          [disabled]="!recipe() || loading() || pdfSharing()"
-          [attr.aria-busy]="pdfSharing()"
-          class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#6b5245] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:shadow-[0_14px_26px_rgba(9,6,5,0.24)] dark:hover:bg-[#3a2a24]"
-          aria-label="Exportar o compartir receta en PDF"
-        >
-          <app-icon name="share-2" [size]="18"></app-icon>
-        </button>
-        <button
-          type="button"
-          (click)="openDeleteModal()"
-          class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-red-200 bg-white text-red-500 shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition hover:bg-red-50 dark:border-[#7a474b] dark:bg-[#31231f] dark:text-[#f4a3a8] dark:shadow-[0_14px_26px_rgba(9,6,5,0.24)] dark:hover:bg-[#3a1f21]"
-          aria-label="Borrar receta"
-        >
-          <app-icon name="trash-2" [size]="18"></app-icon>
-        </button>
+            <app-icon name="pencil" [size]="16"></app-icon>
+            <span class="max-[640px]:hidden">Editar</span>
+          </a>
+          <button
+            type="button"
+            (click)="toggleFavorite()"
+            [disabled]="favoriteSaving()"
+            [attr.aria-label]="recipe()?.favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+            class="favorite-button inline-flex h-11 w-11 items-center justify-center rounded-full border shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition-all duration-300 ease-out cursor-pointer disabled:opacity-70"
+            [class.scale-110]="recipe()?.favorite && !favoriteSaving()"
+            [class.favorite-button--bounce]="favoriteBounceActive()"
+            [class.border-red-500]="recipe()?.favorite"
+            [class.bg-red-500]="recipe()?.favorite"
+            [class.text-white]="recipe()?.favorite"
+            [class.shadow-[0_12px_28px_rgba(239,68,68,0.32)]]="recipe()?.favorite"
+            [class.hover:bg-red-600]="recipe()?.favorite"
+            [class.border-slate-200]="!recipe()?.favorite"
+            [class.bg-white]="!recipe()?.favorite"
+            [class.text-slate-700]="!recipe()?.favorite"
+            [class.hover:bg-slate-50]="!recipe()?.favorite"
+            [class.dark:border-[#6b5245]]="!recipe()?.favorite"
+            [class.dark:bg-[#31231f]]="!recipe()?.favorite"
+            [class.dark:text-[#f4ddd0]]="!recipe()?.favorite"
+            [class.dark:hover:bg-[#3a2a24]]="!recipe()?.favorite"
+          >
+            <span
+              class="favorite-button__ripple"
+              [class.favorite-button__ripple--active]="favoriteBounceActive()"
+            ></span>
+            <span
+              class="favorite-button__icon inline-flex items-center justify-center transition-transform duration-300"
+              [class.scale-110]="recipe()?.favorite"
+              [class.favorite-button__icon--bounce]="favoriteBounceActive()"
+            >
+              <app-icon name="heart" [size]="18"></app-icon>
+            </span>
+          </button>
+          <button
+            type="button"
+            (click)="shareRecipe()"
+            [disabled]="!recipe() || loading() || sharingRecipe()"
+            [attr.aria-busy]="sharingRecipe()"
+            class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#6b5245] dark:bg-[#31231f] dark:text-[#f4ddd0] dark:shadow-[0_14px_26px_rgba(9,6,5,0.24)] dark:hover:bg-[#3a2a24]"
+            aria-label="Compartir receta"
+          >
+            <app-icon name="share-2" [size]="18"></app-icon>
+          </button>
+          <button
+            type="button"
+            (click)="openDeleteModal()"
+            class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-red-200 bg-white text-red-500 shadow-[0_10px_24px_rgba(148,163,184,0.08)] transition hover:bg-red-50 dark:border-[#7a474b] dark:bg-[#31231f] dark:text-[#f4a3a8] dark:shadow-[0_14px_26px_rgba(9,6,5,0.24)] dark:hover:bg-[#3a1f21]"
+            aria-label="Borrar receta"
+          >
+            <app-icon name="trash-2" [size]="18"></app-icon>
+          </button>
+        </div>
+        @if (shareFeedback(); as feedback) {
+          <p
+            class="rounded-full px-3 py-1 text-xs font-semibold"
+            [class.bg-emerald-100]="feedback.tone === 'success'"
+            [class.text-emerald-800]="feedback.tone === 'success'"
+            [class.bg-red-100]="feedback.tone === 'error'"
+            [class.text-red-700]="feedback.tone === 'error'"
+            [class.dark:bg-emerald-900/40]="feedback.tone === 'success'"
+            [class.dark:text-emerald-200]="feedback.tone === 'success'"
+            [class.dark:bg-red-900/35]="feedback.tone === 'error'"
+            [class.dark:text-red-200]="feedback.tone === 'error'"
+            role="status"
+            aria-live="polite"
+          >
+            {{ feedback.message }}
+          </p>
+        }
       </div>
     </div>
 

@@ -40,6 +40,7 @@ export class ViewRecipe {
   private router = inject(Router);
   private recipeService = inject(RecipeService);
   private favoriteBounceTimeout: ReturnType<typeof setTimeout> | null = null;
+  private shareFeedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 
   recipe = signal<Recipe | null>(null);
   loading = signal(true);
@@ -47,7 +48,8 @@ export class ViewRecipe {
   favoriteBounceActive = signal(false);
   deleteModalOpen = signal(false);
   deleting = signal(false);
-  pdfSharing = signal(false);
+  sharingRecipe = signal(false);
+  shareFeedback = signal<{ message: string; tone: 'success' | 'error' } | null>(null);
   error = signal('');
   adjustedServings = signal<number | null>(null);
   categories = RECIPE_CATEGORIES;
@@ -103,64 +105,42 @@ export class ViewRecipe {
 
   async shareRecipe(): Promise<void> {
     const current = this.recipe();
-    if (!current || this.pdfSharing()) {
+    if (!current || this.sharingRecipe()) {
       return;
     }
 
-    this.pdfSharing.set(true);
+    this.sharingRecipe.set(true);
     try {
-      const { buildRecipePdfBlob, recipePdfFileName } = await import('../../utils/recipe-pdf');
-      const ingredientLines = current.ingredients.map((ing) => {
-        const qty = this.ingredientQuantityLabel(ing);
-        const notes = ing.notes?.trim();
-        const namePart = notes ? `${ing.name} (${notes})` : ing.name;
-        return qty ? `${namePart} — ${qty}` : namePart;
-      });
+      const shareUrl = this.buildRecipeShareUrl(current.id);
+      const shareText = this.buildRecipeShareText(current);
+      const sharePayload = {
+        title: current.title,
+        text: shareText,
+        url: shareUrl,
+      };
+      const nav = this.document.defaultView?.navigator;
 
-      const servings = this.displayedServings();
-      const blob = buildRecipePdfBlob({
-        recipe: current,
-        categoryLabel: this.categoryLabel(current.category),
-        servingsLabel: servings != null ? String(servings) : null,
-        prepLabel: this.durationLabel(current.prepTimeMinutes),
-        cookLabel: this.durationLabel(current.cookTimeMinutes),
-        ingredientLines,
-      });
-
-      await this.offerPdfShare(blob, recipePdfFileName(current), current.title);
-    } finally {
-      this.pdfSharing.set(false);
-    }
-  }
-
-  private async offerPdfShare(blob: Blob, filename: string, title: string): Promise<void> {
-    const win = this.document.defaultView;
-    const nav = win?.navigator;
-    const file = new File([blob], filename, { type: 'application/pdf' });
-
-    if (nav?.canShare?.({ files: [file] })) {
-      try {
-        await nav.share({ title, text: title, files: [file] });
-        return;
-      } catch (err: unknown) {
-        if (this.isShareUserAbort(err)) {
+      if (nav?.share) {
+        try {
+          await nav.share(sharePayload);
+          this.setShareFeedback('Receta compartida con éxito.');
           return;
+        } catch (err: unknown) {
+          if (this.isShareUserAbort(err)) {
+            return;
+          }
         }
       }
-    }
 
-    const objectUrl = URL.createObjectURL(blob);
-    try {
-      const anchor = this.document.createElement('a');
-      anchor.href = objectUrl;
-      anchor.download = filename;
-      anchor.rel = 'noopener';
-      anchor.style.display = 'none';
-      this.document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
+      const copySuccess = await this.copyToClipboard(`${shareText}\n${shareUrl}`);
+      this.setShareFeedback(
+        copySuccess
+          ? 'No se pudo abrir el menú de compartir, pero copiamos la receta.'
+          : 'No se pudo compartir automáticamente. Intenta copiar el enlace manualmente.',
+        copySuccess ? 'success' : 'error',
+      );
     } finally {
-      URL.revokeObjectURL(objectUrl);
+      this.sharingRecipe.set(false);
     }
   }
 
@@ -169,6 +149,66 @@ export class ViewRecipe {
       return true;
     }
     return err instanceof Error && err.name === 'AbortError';
+  }
+
+  private buildRecipeShareUrl(recipeId: string): string {
+    const currentLocation = this.document.defaultView?.location;
+    if (!currentLocation?.origin) {
+      return `/app/recipes/${recipeId}`;
+    }
+    return new URL(`/app/recipes/${recipeId}`, currentLocation.origin).toString();
+  }
+
+  private buildRecipeShareText(recipe: Recipe): string {
+    const description = recipe.description?.trim();
+    const pieces = [`Te comparto esta receta: ${recipe.title}`];
+
+    if (description) {
+      pieces.push(description);
+    }
+
+    const servings = this.displayedServings() ?? recipe.servings;
+    if (servings != null && servings > 0) {
+      pieces.push(`Porciones: ${servings}`);
+    }
+
+    const prep = this.durationLabel(recipe.prepTimeMinutes);
+    if (prep !== '—') {
+      pieces.push(`Preparación: ${prep}`);
+    }
+
+    const cook = this.durationLabel(recipe.cookTimeMinutes);
+    if (cook !== '—') {
+      pieces.push(`Cocción: ${cook}`);
+    }
+
+    return pieces.join('\n');
+  }
+
+  private async copyToClipboard(text: string): Promise<boolean> {
+    const nav = this.document.defaultView?.navigator;
+    if (!nav?.clipboard?.writeText) {
+      return false;
+    }
+
+    try {
+      await nav.clipboard.writeText(text);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private setShareFeedback(message: string, tone: 'success' | 'error' = 'success'): void {
+    this.shareFeedback.set({ message, tone });
+    if (this.shareFeedbackTimeout) {
+      clearTimeout(this.shareFeedbackTimeout);
+    }
+
+    this.shareFeedbackTimeout = setTimeout(() => {
+      this.shareFeedback.set(null);
+      this.shareFeedbackTimeout = null;
+    }, 4200);
   }
 
   async toggleFavorite(): Promise<void> {
