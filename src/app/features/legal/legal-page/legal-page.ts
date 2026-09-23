@@ -20,7 +20,7 @@ const PRIVACY_DOCUMENT: LegalDocument = {
   title: 'Politica de privacidad',
   intro:
     'En Cocinario App valoramos tu privacidad. Esta politica explica que informacion se recopila cuando usas la aplicacion, como se utiliza y que opciones tienes sobre tus datos.',
-  lastUpdated: '27 de marzo de 2026',
+  lastUpdated: '22 de septiembre de 2026',
   sections: [
     {
       heading: 'Informacion que recopilamos',
@@ -39,7 +39,7 @@ const PRIVACY_DOCUMENT: LegalDocument = {
     {
       heading: 'Servicios de terceros',
       paragraphs: [
-        'Cocinario App utiliza proveedores externos para operar funciones esenciales del servicio, incluyendo autenticacion con Google y almacenamiento mediante Supabase. Estos proveedores pueden procesar datos segun sus propios terminos y politicas.',
+        'Cocinario App utiliza proveedores externos para operar funciones esenciales del servicio, incluyendo autenticacion con Google y almacenamiento mediante Firebase. Estos proveedores pueden procesar datos segun sus propios terminos y politicas.',
       ],
     },
     {

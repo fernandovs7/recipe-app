@@ -1,38 +1,27 @@
 import { effect, inject, Injectable, signal } from '@angular/core';
-import { PostgrestError, User as SupabaseUser } from '@supabase/supabase-js';
-import { AuthService } from '../../../core/services/auth.service';
-import { Recipe, RecipeImage } from '../../../core/models/recipe.model';
+import { FirebaseError } from 'firebase/app';
 import {
-  createDefaultRecipeData,
-  DEFAULT_RECIPE_SEEDED_METADATA_KEY,
-} from '../constants/default-recipe';
-import { removeUndefinedFields } from '../../../core/utils/remove-undefined-fields';
+  collection,
+  deleteDoc,
+  doc,
+  DocumentData,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { AuthService } from '../../../core/services/auth.service';
+import { firestore, recipeStorage } from '../../../core/firebase.config';
+import { Recipe, RecipeImage } from '../../../core/models/recipe.model';
+import { createDefaultRecipeData } from '../constants/default-recipe';
 import {
   IMAGE_SIZES,
   ImageSizeKey,
   optimizeImageVariants,
 } from '../../../core/utils/optimize-image';
-import { supabase } from '../../../core/supabase.config';
-
-interface RecipeRow {
-  id: string;
-  user_id: string;
-  title: string;
-  description: string | null;
-  notes: string | null;
-  ingredients: Recipe['ingredients'];
-  steps: Recipe['steps'];
-  image: RecipeImage | null;
-  servings: number | null;
-  prep_time_minutes: number | null;
-  cook_time_minutes: number | null;
-  total_time_minutes: number | null;
-  category: string | null;
-  tags: string[];
-  favorite: boolean;
-  created_at: number;
-  updated_at: number;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -62,17 +51,12 @@ export class RecipeService {
     this.loading.set(true);
 
     try {
-      const { data, error } = await supabase
-        .from('recipes')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        throw error;
-      }
-
-      const recipes = (data ?? []).map((row) => this.mapRecipeRow(row as RecipeRow));
+      const snapshot = await getDocs(
+        query(collection(firestore, 'users', userId, 'recipes'), orderBy('createdAt', 'desc')),
+      );
+      const recipes = snapshot.docs.map((recipeDoc) =>
+        this.mapRecipe(recipeDoc.id, recipeDoc.data()),
+      );
 
       if (recipes.length > 0) {
         this.recipes.set(recipes);
@@ -98,23 +82,16 @@ export class RecipeService {
     }
 
     const timestamp = Date.now();
-    const recipe = removeUndefinedFields({
+    const recipe = {
       ...recipeData,
       userId: user.uid,
       createdAt: timestamp,
       updatedAt: timestamp,
-    });
+    };
+    const recipeRef = doc(collection(firestore, 'users', user.uid, 'recipes'));
 
-    const row = this.mapRecipeToInsertRow(recipe);
-    const { data, error } = await supabase.from('recipes').insert(row).select().single();
-
-    if (error) {
-      throw error;
-    }
-
-    if (data) {
-      this.recipes.update((recipes) => [this.mapRecipeRow(data as RecipeRow), ...recipes]);
-    }
+    await setDoc(recipeRef, this.toRecipeDocument(recipe));
+    this.recipes.update((recipes) => [{ id: recipeRef.id, ...recipe }, ...recipes]);
   }
 
   async updateRecipe(
@@ -134,20 +111,15 @@ export class RecipeService {
     }
 
     const timestamp = Date.now();
-    const updatedRecipe = removeUndefinedFields({
-      ...recipeData,
-      updatedAt: timestamp,
-    });
 
-    const { error } = await supabase
-      .from('recipes')
-      .update(this.mapRecipeToUpdateRow(updatedRecipe))
-      .eq('id', recipeId)
-      .eq('user_id', user.uid);
-
-    if (error) {
-      throw error;
-    }
+    await updateDoc(
+      doc(firestore, 'users', user.uid, 'recipes', recipeId),
+      this.stripUndefined({
+        ...recipeData,
+        image: recipeData.image ?? null,
+        updatedAt: timestamp,
+      }),
+    );
 
     const previousImagePaths = this.collectRecipeImagePaths(existingRecipe.image);
     const nextImagePaths = new Set(this.collectRecipeImagePaths(recipeData.image));
@@ -184,19 +156,14 @@ export class RecipeService {
 
     const resolvedFileName = fileName ?? crypto.randomUUID();
     const path = `recipes/${user.uid}/${resolvedFileName}.${fileExtension}`;
-    const { error } = await supabase.storage.from('recipes').upload(path, file, {
+    const storageRef = ref(recipeStorage, path);
+
+    await uploadBytes(storageRef, file, {
       contentType: 'image/webp',
-      cacheControl: '31536000',
-      upsert: false,
+      cacheControl: 'public, max-age=31536000',
     });
 
-    if (error) {
-      throw error;
-    }
-
-    const { data } = supabase.storage.from('recipes').getPublicUrl(path);
-    const url = data.publicUrl;
-
+    const url = await getDownloadURL(storageRef);
     return { url, path };
   }
 
@@ -252,22 +219,19 @@ export class RecipeService {
       throw new Error('User not authenticated');
     }
 
-    const { data, error } = await supabase
-      .from('recipes')
-      .select('*')
-      .eq('id', recipeId)
-      .eq('user_id', user.uid)
-      .maybeSingle();
+    const snapshot = await getDoc(doc(firestore, 'users', user.uid, 'recipes', recipeId));
 
-    if (error) {
-      throw error;
-    }
-
-    if (!data) {
+    if (!snapshot.exists()) {
       return null;
     }
 
-    return this.mapRecipeRow(data as RecipeRow);
+    const recipe = this.mapRecipe(snapshot.id, snapshot.data());
+
+    if (recipe.userId !== user.uid) {
+      return null;
+    }
+
+    return recipe;
   }
 
   async updateRecipeFavorite(recipeId: string, favorite: boolean): Promise<void> {
@@ -278,18 +242,11 @@ export class RecipeService {
     }
 
     const timestamp = Date.now();
-    const { error } = await supabase
-      .from('recipes')
-      .update({
-        favorite,
-        updated_at: timestamp,
-      })
-      .eq('id', recipeId)
-      .eq('user_id', user.uid);
 
-    if (error) {
-      throw error;
-    }
+    await updateDoc(doc(firestore, 'users', user.uid, 'recipes', recipeId), {
+      favorite,
+      updatedAt: timestamp,
+    });
 
     this.recipes.update((recipes) =>
       recipes.map((recipe) =>
@@ -317,15 +274,7 @@ export class RecipeService {
       throw new Error('Recipe not found or access denied');
     }
 
-    const { error } = await supabase
-      .from('recipes')
-      .delete()
-      .eq('id', recipeId)
-      .eq('user_id', user.uid);
-
-    if (error) {
-      throw error;
-    }
+    await deleteDoc(doc(firestore, 'users', user.uid, 'recipes', recipeId));
 
     for (const imagePath of this.collectRecipeImagePaths(existingRecipe.image)) {
       await this.deleteRecipeImage(imagePath);
@@ -340,11 +289,7 @@ export class RecipeService {
     }
 
     try {
-      const { error } = await supabase.storage.from('recipes').remove([imagePath]);
-
-      if (error) {
-        throw error;
-      }
+      await deleteObject(ref(recipeStorage, imagePath));
     } catch (error) {
       if (this.isStorageObjectMissing(error)) {
         return;
@@ -371,17 +316,7 @@ export class RecipeService {
   }
 
   private isStorageObjectMissing(error: unknown): boolean {
-    if (!error || typeof error !== 'object') {
-      return false;
-    }
-
-    const message = 'message' in error ? String(error.message) : '';
-
-    if (error instanceof PostgrestError) {
-      return false;
-    }
-
-    return message.toLowerCase().includes('not found');
+    return error instanceof FirebaseError && error.code === 'storage/object-not-found';
   }
 
   private isStoragePath(path: string): boolean {
@@ -404,127 +339,128 @@ export class RecipeService {
   }
 
   private async seedDefaultRecipeForUser(userId: string): Promise<Recipe | null> {
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+    const user = this.authService.user();
 
-    if (error) {
-      throw error;
-    }
-
-    if (!user || user.id !== userId || this.hasDefaultRecipeSeeded(user)) {
+    if (!user || user.uid !== userId || (await this.hasDefaultRecipeSeeded(userId))) {
       return null;
     }
 
     const timestamp = Date.now();
-    const defaultRecipe = removeUndefinedFields({
+    const defaultRecipe = {
       ...createDefaultRecipeData(),
       userId,
       createdAt: timestamp,
       updatedAt: timestamp,
-    });
+    };
+    const recipeRef = doc(collection(firestore, 'users', userId, 'recipes'));
 
-    const { data, error: insertError } = await supabase
-      .from('recipes')
-      .insert(this.mapRecipeToInsertRow(defaultRecipe))
-      .select('*')
-      .single();
+    await setDoc(recipeRef, this.toRecipeDocument(defaultRecipe));
+    await this.markDefaultRecipeAsSeeded(userId);
 
-    if (insertError) {
-      throw insertError;
-    }
-
-    await this.markDefaultRecipeAsSeeded(user);
-
-    return data ? this.mapRecipeRow(data as RecipeRow) : null;
+    return {
+      id: recipeRef.id,
+      ...defaultRecipe,
+    };
   }
 
-  private hasDefaultRecipeSeeded(user: SupabaseUser): boolean {
-    if (!user.user_metadata || typeof user.user_metadata !== 'object') {
-      return false;
-    }
-
-    return user.user_metadata[DEFAULT_RECIPE_SEEDED_METADATA_KEY] === true;
+  private async hasDefaultRecipeSeeded(userId: string): Promise<boolean> {
+    const profile = await getDoc(doc(firestore, 'users', userId));
+    return profile.exists() && profile.data()['defaultRecipeSeeded'] === true;
   }
 
-  private async markDefaultRecipeAsSeeded(user: SupabaseUser): Promise<void> {
-    const metadata =
-      user.user_metadata && typeof user.user_metadata === 'object' ? user.user_metadata : {};
-
-    const { error } = await supabase.auth.updateUser({
-      data: {
-        ...metadata,
-        [DEFAULT_RECIPE_SEEDED_METADATA_KEY]: true,
-      },
-    });
-
-    if (error) {
+  private async markDefaultRecipeAsSeeded(userId: string): Promise<void> {
+    try {
+      await setDoc(doc(firestore, 'users', userId), { defaultRecipeSeeded: true }, { merge: true });
+    } catch (error) {
       console.warn('No se pudo marcar la receta por defecto como inicializada.', error);
     }
   }
 
-  private mapRecipeRow(row: RecipeRow): Recipe {
+  private mapRecipe(id: string, data: DocumentData): Recipe {
     return {
-      id: row.id,
-      userId: row.user_id,
-      title: row.title,
-      description: row.description ?? undefined,
-      notes: row.notes ?? undefined,
-      ingredients: row.ingredients ?? [],
-      steps: row.steps ?? [],
-      image: row.image ?? null,
-      servings: row.servings,
-      prepTimeMinutes: row.prep_time_minutes,
-      cookTimeMinutes: row.cook_time_minutes,
-      totalTimeMinutes: row.total_time_minutes,
-      category: row.category ?? undefined,
-      tags: row.tags ?? [],
-      favorite: row.favorite,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
+      id,
+      userId: this.readString(data, 'userId'),
+      title: this.readString(data, 'title'),
+      description: this.readOptionalString(data, 'description'),
+      notes: this.readOptionalString(data, 'notes'),
+      ingredients: Array.isArray(data['ingredients']) ? data['ingredients'] : [],
+      steps: Array.isArray(data['steps']) ? data['steps'] : [],
+      image: this.readImage(data['image']),
+      servings: this.readNullableNumber(data, 'servings'),
+      prepTimeMinutes: this.readNullableNumber(data, 'prepTimeMinutes'),
+      cookTimeMinutes: this.readNullableNumber(data, 'cookTimeMinutes'),
+      totalTimeMinutes: this.readNullableNumber(data, 'totalTimeMinutes'),
+      category: this.readOptionalString(data, 'category'),
+      tags: Array.isArray(data['tags'])
+        ? data['tags'].filter((tag: unknown): tag is string => typeof tag === 'string')
+        : [],
+      favorite: data['favorite'] === true,
+      createdAt: this.readNullableNumber(data, 'createdAt') ?? 0,
+      updatedAt: this.readNullableNumber(data, 'updatedAt') ?? 0,
     };
   }
 
-  private mapRecipeToInsertRow(recipe: Omit<Recipe, 'id'>): Omit<RecipeRow, 'id'> {
-    return {
-      user_id: recipe.userId,
+  private toRecipeDocument(recipe: Omit<Recipe, 'id'>): Record<string, unknown> {
+    return this.stripUndefined({
+      userId: recipe.userId,
       title: recipe.title,
-      description: recipe.description ?? null,
-      notes: recipe.notes ?? null,
+      description: recipe.description,
+      notes: recipe.notes,
       ingredients: recipe.ingredients,
       steps: recipe.steps,
       image: recipe.image ?? null,
       servings: recipe.servings,
-      prep_time_minutes: recipe.prepTimeMinutes ?? null,
-      cook_time_minutes: recipe.cookTimeMinutes ?? null,
-      total_time_minutes: recipe.totalTimeMinutes ?? null,
-      category: recipe.category ?? null,
+      prepTimeMinutes: recipe.prepTimeMinutes,
+      cookTimeMinutes: recipe.cookTimeMinutes,
+      totalTimeMinutes: recipe.totalTimeMinutes,
+      category: recipe.category,
       tags: recipe.tags,
       favorite: recipe.favorite,
-      created_at: recipe.createdAt,
-      updated_at: recipe.updatedAt,
-    };
+      createdAt: recipe.createdAt,
+      updatedAt: recipe.updatedAt,
+    });
   }
 
-  private mapRecipeToUpdateRow(
-    recipe: Partial<Omit<Recipe, 'id' | 'userId' | 'createdAt'>>,
-  ): Partial<Omit<RecipeRow, 'id' | 'user_id' | 'created_at'>> {
-    return {
-      title: recipe.title,
-      description: recipe.description ?? null,
-      notes: recipe.notes ?? null,
-      ingredients: recipe.ingredients,
-      steps: recipe.steps,
-      image: recipe.image ?? null,
-      servings: recipe.servings ?? null,
-      prep_time_minutes: recipe.prepTimeMinutes ?? null,
-      cook_time_minutes: recipe.cookTimeMinutes ?? null,
-      total_time_minutes: recipe.totalTimeMinutes ?? null,
-      category: recipe.category ?? null,
-      tags: recipe.tags,
-      favorite: recipe.favorite,
-      updated_at: recipe.updatedAt,
-    };
+  private stripUndefined(value: unknown): Record<string, unknown> {
+    return this.stripUndefinedValue(value) as Record<string, unknown>;
+  }
+
+  private stripUndefinedValue(value: unknown): unknown {
+    if (Array.isArray(value)) {
+      return value.map((item) => this.stripUndefinedValue(item));
+    }
+
+    if (value && typeof value === 'object') {
+      return Object.fromEntries(
+        Object.entries(value as Record<string, unknown>)
+          .filter(([, entry]) => entry !== undefined)
+          .map(([key, entry]) => [key, this.stripUndefinedValue(entry)]),
+      );
+    }
+
+    return value;
+  }
+
+  private readString(data: DocumentData, key: string): string {
+    const value = data[key];
+    return typeof value === 'string' ? value : '';
+  }
+
+  private readOptionalString(data: DocumentData, key: string): string | undefined {
+    const value = data[key];
+    return typeof value === 'string' && value.trim() ? value : undefined;
+  }
+
+  private readNullableNumber(data: DocumentData, key: string): number | null {
+    const value = data[key];
+    return typeof value === 'number' ? value : null;
+  }
+
+  private readImage(value: unknown): RecipeImage | null {
+    if (!value || typeof value !== 'object') {
+      return null;
+    }
+
+    return value as RecipeImage;
   }
 }
