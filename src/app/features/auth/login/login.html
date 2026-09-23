@@ -25,6 +25,9 @@
       <app-icon name="log-in" [size]="18" />
       <span>Continuar con Google</span>
     </button>
+    @if (errorMessage()) {
+      <p class="login__error" role="alert">{{ errorMessage() }}</p>
+    }
 
     <div class="login__benefits" aria-label="Beneficios principales">
       <div class="login__benefit">

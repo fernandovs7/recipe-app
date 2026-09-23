@@ -122,6 +122,13 @@
   line-height: 1.7;
 }
 
+.login__error {
+  margin: 12px 0 0;
+  color: #9f3a2f;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
 .login__cta {
   display: inline-flex;
   align-items: center;
@@ -278,6 +285,10 @@
 :host-context(.dark) .login__content h2,
 :host-context(.dark) .login__copy {
   color: #f8ede3;
+}
+
+:host-context(.dark) .login__error {
+  color: #ffb4a8;
 }
 
 :host-context(.dark) .login__legal-links a {

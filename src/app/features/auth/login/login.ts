@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ImageComponent } from '../../../shared/components/image/image';
@@ -15,6 +15,7 @@ export class Login {
   private authService = inject(AuthService);
   private router = inject(Router);
   readonly currentYear = new Date().getFullYear();
+  readonly errorMessage = signal<string | null>(null);
 
   heroImage: ImageData = {
     src: 'assets/images/shared/login-hero-image',
@@ -37,7 +38,27 @@ export class Login {
   }
 
   async login() {
-    await this.authService.loginWithGoogle();
+    this.errorMessage.set(null);
+
+    try {
+      await this.authService.loginWithGoogle();
+    } catch (error) {
+      console.error('Google sign-in failed', error);
+      const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
+
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        return;
+      }
+
+      if (code === 'auth/popup-blocked') {
+        this.errorMessage.set(
+          'El navegador bloqueó la ventana de Google. Permite ventanas emergentes e inténtalo de nuevo.',
+        );
+        return;
+      }
+
+      this.errorMessage.set('No se pudo iniciar sesión con Google. Inténtalo de nuevo.');
+    }
   }
 
   logout() {

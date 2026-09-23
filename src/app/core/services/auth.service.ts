@@ -4,7 +4,7 @@ import {
   User,
   getRedirectResult,
   onAuthStateChanged,
-  signInWithRedirect,
+  signInWithPopup,
   signOut,
 } from 'firebase/auth';
 import { firebaseAuth } from '../firebase.config';
@@ -43,8 +43,8 @@ export class AuthService {
       prompt: 'select_account',
     });
 
-    await signInWithRedirect(firebaseAuth, provider);
-    return 'redirect';
+    await signInWithPopup(firebaseAuth, provider);
+    return 'popup';
   }
 
   async logout(): Promise<void> {
@@ -70,8 +70,14 @@ export class AuthService {
         return;
       }
 
-      const token = await user.getIdTokenResult();
-      const accountTier = token.claims['accountTier'] === 'pro' ? 'pro' : 'basic';
+      let accountTier: 'basic' | 'pro' = 'basic';
+
+      try {
+        const token = await user.getIdTokenResult();
+        accountTier = token.claims['accountTier'] === 'pro' ? 'pro' : 'basic';
+      } catch (error) {
+        console.error('No se pudo leer el plan de la cuenta.', error);
+      }
 
       this.user.set({
         uid: user.uid,
