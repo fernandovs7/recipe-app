@@ -30,11 +30,7 @@ export class AuthService {
   private authReadyResolved = false;
 
   constructor() {
-    onAuthStateChanged(firebaseAuth, (user) => {
-      void this.applyAuthUser(user);
-    });
-
-    void this.completeRedirectSignIn();
+    void this.initAuth();
   }
 
   waitForAuthReady(): Promise<void> {
@@ -55,12 +51,16 @@ export class AuthService {
     await signOut(firebaseAuth);
   }
 
-  private async completeRedirectSignIn(): Promise<void> {
+  private async initAuth(): Promise<void> {
     try {
       await getRedirectResult(firebaseAuth);
     } catch (error) {
       console.error('Google sign-in redirect failed', error);
     }
+
+    onAuthStateChanged(firebaseAuth, (user) => {
+      void this.applyAuthUser(user);
+    });
   }
 
   private async applyAuthUser(user: User | null): Promise<void> {
