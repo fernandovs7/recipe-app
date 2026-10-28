@@ -1,7 +1,9 @@
 <div class="min-h-screen">
   <div class="mx-auto max-w-6xl px-6 py-10 max-[640px]:px-4 max-[640px]:py-6">
     <div class="mb-8 px-2 max-[640px]:mb-6 max-[640px]:px-0.5">
-      <h1 class="text-4xl font-semibold text-stone-900 max-[640px]:text-[2rem] dark:text-[#f8ede3]">{{ formTitle() }}</h1>
+      <h1 class="text-4xl font-semibold text-stone-900 max-[640px]:text-[2rem] dark:text-[#f8ede3]">
+        {{ formTitle() }}
+      </h1>
       <p class="mt-2 text-lg text-black max-[640px]:text-base dark:text-[#cfb8a9]">
         {{ formSubtitle() }}
       </p>
@@ -20,11 +22,16 @@
             class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between max-[640px]:mb-4"
           >
             <div class="max-w-2xl">
-              <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-orange-500/12 px-3 py-1 text-sm font-semibold text-orange-700 ring-1 ring-orange-200 dark:bg-[#4a2d22] dark:text-[#ffd29a] dark:ring-[#7b5745]">
+              <div
+                class="mb-3 inline-flex items-center gap-2 rounded-full bg-orange-500/12 px-3 py-1 text-sm font-semibold text-orange-700 ring-1 ring-orange-200 dark:bg-[#4a2d22] dark:text-[#ffd29a] dark:ring-[#7b5745]"
+              >
                 <app-icon name="sparkles" [size]="16"></app-icon>
                 <span>Importar desde foto</span>
                 @if (!canImportRecipeFromPhoto()) {
-                  <span class="rounded-full bg-white/80 px-2 py-0.5 text-[0.68rem] uppercase dark:bg-[#241815]">Pro</span>
+                  <span
+                    class="rounded-full bg-white/80 px-2 py-0.5 text-[0.68rem] uppercase dark:bg-[#241815]"
+                    >Pro</span
+                  >
                 }
               </div>
               <p
@@ -33,7 +40,8 @@
                 Crea una receta con una imagen
               </p>
               <p class="text-[18px] text-slate-600 max-[640px]:text-sm dark:text-[#cfb8a9]">
-                Sube una foto o tómala desde el celular y completaremos el formulario con el texto detectado. Luego puedes corregir cualquier detalle antes de guardar.
+                Sube una foto o tómala desde el celular y completaremos el formulario con el texto
+                detectado. Luego puedes corregir cualquier detalle antes de guardar.
               </p>
             </div>
 
@@ -83,13 +91,17 @@
           </div>
 
           @if (importError()) {
-            <p class="rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#ffc1c5]">
+            <p
+              class="rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#ffc1c5]"
+            >
               {{ importError() }}
             </p>
           }
 
           @if (importingFromPhoto()) {
-            <div class="space-y-3 rounded-[1.2rem] border border-white/80 bg-white/85 p-4 dark:border-[#5c4438] dark:bg-[#241815]/92">
+            <div
+              class="space-y-3 rounded-[1.2rem] border border-white/80 bg-white/85 p-4 dark:border-[#5c4438] dark:bg-[#241815]/92"
+            >
               <div class="flex items-center justify-between gap-3">
                 <p class="text-sm font-semibold text-slate-700 dark:text-[#f4ddd0]">
                   {{ importStatus() || 'Leyendo receta' }}
@@ -109,7 +121,9 @@
           }
 
           @if (importSummary()) {
-            <p class="rounded-[1rem] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-[#466b54] dark:bg-[#1e3024] dark:text-[#b7e6c4]">
+            <p
+              class="rounded-[1rem] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-[#466b54] dark:bg-[#1e3024] dark:text-[#b7e6c4]"
+            >
               {{ importSummary() }}
             </p>
           }
@@ -265,8 +279,8 @@
             Tags
           </p>
           <p class="text-[18px] text-slate-500 max-[640px]:text-sm dark:text-[#cfb8a9]">
-            Agrega palabras clave para encontrar la receta más rápido. Usa enter o coma para
-            crear cada tag.
+            Agrega palabras clave para encontrar la receta más rápido. Usa enter o coma para crear
+            cada tag.
           </p>
         </div>
 
@@ -334,7 +348,11 @@
         </div>
 
         <div formArrayName="ingredients" class="space-y-4">
-          @for (ingredient of ingredients.controls; track trackByControlId($index, ingredient); let i = $index) {
+          @for (
+            ingredient of ingredients.controls;
+            track trackByControlId($index, ingredient);
+            let i = $index
+          ) {
             <div
               [formGroupName]="i"
               class="rounded-[1.4rem] border border-white/90 bg-white p-4 shadow-[0_12px_28px_rgba(148,163,184,0.12)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5 dark:border-[#5c4438] dark:bg-[#241815] dark:shadow-[0_18px_34px_rgba(9,6,5,0.25)]"
@@ -436,7 +454,9 @@
                   />
                 </div>
 
-                <div class="min-[922px]:col-span-1 flex items-start max-[640px]:pt-1 min-[922px]:pt-[2.15rem]">
+                <div
+                  class="min-[922px]:col-span-1 flex items-start max-[640px]:pt-1 min-[922px]:pt-[2.15rem]"
+                >
                   <button
                     type="button"
                     (click)="removeIngredient(i)"
@@ -478,12 +498,20 @@
               Describe paso a paso cómo preparar la receta.
             </p>
           </div>
-          <p class="text-sm font-medium text-slate-500 max-[640px]:text-[0.82rem] dark:text-[#cfb8a9]">
+          <p
+            class="text-sm font-medium text-slate-500 max-[640px]:text-[0.82rem] dark:text-[#cfb8a9]"
+          >
             Arrastra el asa de cada paso para reordenarlos.
           </p>
         </div>
 
-        <div formArrayName="steps" class="space-y-4" cdkDropList [cdkDropListData]="steps.controls" (cdkDropListDropped)="dropStep($event)">
+        <div
+          formArrayName="steps"
+          class="space-y-4"
+          cdkDropList
+          [cdkDropListData]="steps.controls"
+          (cdkDropListDropped)="dropStep($event)"
+        >
           @for (step of steps.controls; track trackByControlId($index, step); let i = $index) {
             <div
               [formGroupName]="i"
@@ -513,9 +541,33 @@
                       Paso
                     </label>
                   </div>
+                  <div class="mb-2 flex items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      (mousedown)="$event.preventDefault()"
+                      (click)="toggleStepBold(i, instructionTextarea)"
+                      class="inline-flex min-h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 dark:border-[#5c4438] dark:bg-[#31231f] dark:text-[#e6cfc1] dark:hover:border-[#c6844b] dark:hover:bg-[#3a2a24] dark:hover:text-[#ffd29a]"
+                      aria-label="Aplicar o quitar negrita en el texto seleccionado"
+                      aria-keyshortcuts="Control+B Meta+B"
+                      title="Negrita (Ctrl+B o Cmd+B)"
+                    >
+                      <span class="text-base font-black" aria-hidden="true">B</span>
+                      <span>Negrita</span>
+                    </button>
+                    <span
+                      [id]="'step-format-help-' + i"
+                      class="text-right text-xs text-slate-400 dark:text-[#a78c7b]"
+                    >
+                      Enter crea una nueva línea
+                    </span>
+                  </div>
                   <textarea
+                    #instructionTextarea
                     formControlName="instruction"
                     rows="3"
+                    (keydown)="onStepInstructionKeydown($event, i, instructionTextarea)"
+                    [attr.aria-describedby]="'step-format-help-' + i"
+                    aria-keyshortcuts="Control+B Meta+B"
                     class="w-full rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-orange-200 focus:bg-white max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3] dark:placeholder:text-[#a78c7b] dark:focus:border-[#c6844b] dark:focus:bg-[#31231f]"
                     placeholder="Describe este paso..."
                   ></textarea>
@@ -538,27 +590,47 @@
               </div>
 
               <ng-template cdkDragPreview [matchSize]="true">
-                <div class="recipe-step-card recipe-step-card--preview rounded-[1.4rem] border border-orange-200 bg-white p-4 shadow-[0_20px_45px_rgba(15,23,42,0.18)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5 dark:border-[#7b5745] dark:bg-[#241815] dark:shadow-[0_24px_50px_rgba(9,6,5,0.45)]">
-                  <div class="recipe-step-card__preview-layout flex items-start gap-4 max-[640px]:gap-3">
+                <div
+                  class="recipe-step-card recipe-step-card--preview rounded-[1.4rem] border border-orange-200 bg-white p-4 shadow-[0_20px_45px_rgba(15,23,42,0.18)] max-[640px]:rounded-[1.1rem] max-[640px]:p-3.5 dark:border-[#7b5745] dark:bg-[#241815] dark:shadow-[0_24px_50px_rgba(9,6,5,0.45)]"
+                >
+                  <div
+                    class="recipe-step-card__preview-layout flex items-start gap-4 max-[640px]:gap-3"
+                  >
                     <div class="recipe-step-card__preview-body flex-1">
                       <div class="mb-3 flex items-center gap-3 max-[640px]:mb-2">
-                        <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 max-[640px]:h-7 max-[640px]:min-w-7 dark:border-[#5c4438] dark:bg-[#31231f] dark:text-[#b99d8b]">
+                        <span
+                          class="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 max-[640px]:h-7 max-[640px]:min-w-7 dark:border-[#5c4438] dark:bg-[#31231f] dark:text-[#b99d8b]"
+                        >
                           <app-icon name="grip-vertical" [size]="16"></app-icon>
                         </span>
-                        <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-orange-500/15 px-2 text-sm font-bold text-orange-700 ring-1 ring-orange-200 max-[640px]:h-7 max-[640px]:min-w-7 max-[640px]:text-[0.78rem] dark:bg-[#4a2d22] dark:text-[#ffd29a] dark:ring-[#7b5745]">
+                        <span
+                          class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-orange-500/15 px-2 text-sm font-bold text-orange-700 ring-1 ring-orange-200 max-[640px]:h-7 max-[640px]:min-w-7 max-[640px]:text-[0.78rem] dark:bg-[#4a2d22] dark:text-[#ffd29a] dark:ring-[#7b5745]"
+                        >
                           {{ i + 1 }}
                         </span>
-                        <label class="text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:text-[0.72rem] dark:text-[#b99d8b]">
+                        <label
+                          class="text-[0.82rem] font-extrabold tracking-[0.16em] text-slate-500 uppercase max-[640px]:text-[0.72rem] dark:text-[#b99d8b]"
+                        >
                           Paso
                         </label>
                       </div>
-                      <div class="recipe-step-card__preview-text rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] leading-8 text-slate-700 max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base max-[640px]:leading-7 dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3]">
-                        {{ step.get('instruction')?.value || 'Describe este paso...' }}
+                      <div
+                        class="recipe-step-card__preview-text rounded-[1.2rem] border border-slate-100 bg-slate-50 px-5 py-3 text-[18px] leading-8 text-slate-700 max-[640px]:rounded-[1rem] max-[640px]:px-4 max-[640px]:text-base max-[640px]:leading-7 dark:border-[#5c4438] dark:bg-[#2c1f1b] dark:text-[#f8ede3]"
+                      >
+                        @if (step.get('instruction')?.value) {
+                          <app-recipe-step-text
+                            [text]="step.get('instruction')?.value"
+                          ></app-recipe-step-text>
+                        } @else {
+                          Describe este paso...
+                        }
                       </div>
                     </div>
 
                     <div class="flex items-start pt-[2.15rem] max-[640px]:pt-[1.9rem]">
-                      <span class="inline-flex min-h-[3.25rem] min-w-[3.25rem] items-center justify-center rounded-[1.2rem] border border-red-200 bg-red-50 text-red-400 max-[640px]:min-h-11 max-[640px]:min-w-11 max-[640px]:rounded-[1rem] dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#f4a3a8]">
+                      <span
+                        class="inline-flex min-h-[3.25rem] min-w-[3.25rem] items-center justify-center rounded-[1.2rem] border border-red-200 bg-red-50 text-red-400 max-[640px]:min-h-11 max-[640px]:min-w-11 max-[640px]:rounded-[1rem] dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#f4a3a8]"
+                      >
                         <app-icon name="trash-2" [size]="18"></app-icon>
                       </span>
                     </div>
@@ -651,7 +723,7 @@
                 />
                 @if (imageDragActive()) {
                   <div
-                  class="absolute inset-0 flex items-center justify-center bg-[#18243f]/42 px-6 text-center dark:bg-[#120c0a]/62"
+                    class="absolute inset-0 flex items-center justify-center bg-[#18243f]/42 px-6 text-center dark:bg-[#120c0a]/62"
                   >
                     <div
                       class="rounded-[1.2rem] border border-white/30 bg-white/12 px-5 py-4 backdrop-blur-sm dark:border-[#f4ddd0]/20 dark:bg-[#241815]/28"
@@ -713,10 +785,14 @@
               >
                 <app-icon name="image-plus" [size]="26"></app-icon>
               </span>
-              <span class="text-[20px] font-semibold text-slate-800 max-[640px]:text-lg dark:text-[#f8ede3]">
+              <span
+                class="text-[20px] font-semibold text-slate-800 max-[640px]:text-lg dark:text-[#f8ede3]"
+              >
                 {{ imageDragActive() ? 'Suelta la imagen aquí' : 'Selecciona una imagen' }}
               </span>
-              <span class="mt-2 max-w-md text-[18px] text-slate-500 max-[640px]:text-sm dark:text-[#cfb8a9]">
+              <span
+                class="mt-2 max-w-md text-[18px] text-slate-500 max-[640px]:text-sm dark:text-[#cfb8a9]"
+              >
                 {{
                   imageDragActive()
                     ? 'Puedes arrastrar un archivo JPG, PNG o WebP y lo mostraremos como vista previa.'
@@ -732,7 +808,9 @@
         class="flex flex-col-reverse gap-4 pt-4 sm:flex-row sm:items-center sm:justify-end max-[640px]:gap-2.5 max-[640px]:pt-0"
       >
         @if (displayedSubmitError()) {
-          <p class="w-full rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 sm:mr-auto sm:max-w-md dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#ffc1c5]">
+          <p
+            class="w-full rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 sm:mr-auto sm:max-w-md dark:border-[#7a474b] dark:bg-[#3a1f21] dark:text-[#ffc1c5]"
+          >
             {{ displayedSubmitError() }}
           </p>
         }
@@ -763,7 +841,9 @@
       [class.opacity-100]="!formActionsVisible()"
       [class.translate-y-0]="!formActionsVisible()"
     >
-      <div class="mx-auto max-w-md rounded-full border border-white/80 bg-white/92 p-2 shadow-[0_18px_40px_rgba(15,23,42,0.16)] backdrop-blur pointer-events-auto dark:border-[#5c4438] dark:bg-[#241815]/92 dark:shadow-[0_24px_45px_rgba(9,6,5,0.45)]">
+      <div
+        class="mx-auto max-w-md rounded-full border border-white/80 bg-white/92 p-2 shadow-[0_18px_40px_rgba(15,23,42,0.16)] backdrop-blur pointer-events-auto dark:border-[#5c4438] dark:bg-[#241815]/92 dark:shadow-[0_24px_45px_rgba(9,6,5,0.45)]"
+      >
         <div class="grid grid-cols-[0.92fr_1.08fr] gap-2">
           <button
             type="button"

@@ -34,16 +34,20 @@ import {
   RecipeFormSubmitValue,
 } from './recipe-form.model';
 import { PLATFORM_ID } from '@angular/core';
-import {
-  extractRecipeFromImage,
-  ImportedRecipeDraft,
-} from '../../utils/extract-recipe-from-image';
+import { extractRecipeFromImage, ImportedRecipeDraft } from '../../utils/extract-recipe-from-image';
 import { RecipeImportService } from '../../services/recipe-import.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { RecipeStepTextComponent } from '../recipe-step-text/recipe-step-text';
 
 @Component({
   selector: 'app-recipe-form',
-  imports: [ReactiveFormsModule, DragDropModule, IconComponent, CapitalizeFirstLetterDirective],
+  imports: [
+    ReactiveFormsModule,
+    DragDropModule,
+    IconComponent,
+    CapitalizeFirstLetterDirective,
+    RecipeStepTextComponent,
+  ],
   templateUrl: './recipe-form.html',
   styleUrl: './recipe-form.scss',
 })
@@ -203,6 +207,68 @@ export class RecipeFormComponent {
     }
 
     this.steps.removeAt(index);
+  }
+
+  toggleStepBold(index: number, textarea: HTMLTextAreaElement): void {
+    const control = this.steps.at(index)?.get('instruction');
+
+    if (!control) {
+      return;
+    }
+
+    const value = String(control.value ?? '');
+    const selectionStart = textarea.selectionStart ?? value.length;
+    const selectionEnd = textarea.selectionEnd ?? selectionStart;
+    const selectedText = value.slice(selectionStart, selectionEnd);
+    let nextValue: string;
+    let nextSelectionStart: number;
+    let nextSelectionEnd: number;
+
+    if (
+      selectionStart >= 2 &&
+      value.slice(selectionStart - 2, selectionStart) === '**' &&
+      value.slice(selectionEnd, selectionEnd + 2) === '**'
+    ) {
+      nextValue = value.slice(0, selectionStart - 2) + selectedText + value.slice(selectionEnd + 2);
+      nextSelectionStart = selectionStart - 2;
+      nextSelectionEnd = selectionEnd - 2;
+    } else if (
+      selectedText.length >= 4 &&
+      selectedText.startsWith('**') &&
+      selectedText.endsWith('**')
+    ) {
+      const unwrappedText = selectedText.slice(2, -2);
+      nextValue = value.slice(0, selectionStart) + unwrappedText + value.slice(selectionEnd);
+      nextSelectionStart = selectionStart;
+      nextSelectionEnd = selectionStart + unwrappedText.length;
+    } else {
+      nextValue =
+        value.slice(0, selectionStart) + `**${selectedText}**` + value.slice(selectionEnd);
+      nextSelectionStart = selectionStart + 2;
+      nextSelectionEnd = selectionEnd + 2;
+    }
+
+    control.setValue(nextValue);
+    control.markAsDirty();
+    control.markAsTouched();
+
+    requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.setSelectionRange(nextSelectionStart, nextSelectionEnd);
+    });
+  }
+
+  onStepInstructionKeydown(
+    event: KeyboardEvent,
+    index: number,
+    textarea: HTMLTextAreaElement,
+  ): void {
+    if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 'b') {
+      return;
+    }
+
+    event.preventDefault();
+    this.toggleStepBold(index, textarea);
   }
 
   dropStep(event: CdkDragDrop<AbstractControl[]>): void {
@@ -779,9 +845,9 @@ export class RecipeFormComponent {
   private hasMeaningfulImportedContent(recipe: ImportedRecipeDraft): boolean {
     return Boolean(
       recipe.title.trim() ||
-        recipe.description.trim() ||
-        recipe.ingredients.length >= 3 ||
-        recipe.steps.length >= 2,
+      recipe.description.trim() ||
+      recipe.ingredients.length >= 3 ||
+      recipe.steps.length >= 2,
     );
   }
 

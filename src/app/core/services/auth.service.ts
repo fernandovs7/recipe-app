@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, InjectionToken, signal } from '@angular/core';
 import {
   GoogleAuthProvider,
   User,
@@ -8,6 +8,35 @@ import {
   signOut,
 } from 'firebase/auth';
 import { firebaseAuth } from '../firebase.config';
+
+export interface FirebaseAuthClient {
+  getRedirectResult(): Promise<void>;
+  observeAuthState(callback: (user: User | null) => void): void;
+  loginWithGoogle(): Promise<void>;
+  logout(): Promise<void>;
+}
+
+export const FIREBASE_AUTH_CLIENT = new InjectionToken<FirebaseAuthClient>('FIREBASE_AUTH_CLIENT', {
+  providedIn: 'root',
+  factory: () => ({
+    async getRedirectResult(): Promise<void> {
+      await getRedirectResult(firebaseAuth);
+    },
+    observeAuthState(callback: (user: User | null) => void): void {
+      onAuthStateChanged(firebaseAuth, callback);
+    },
+    async loginWithGoogle(): Promise<void> {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({
+        prompt: 'select_account',
+      });
+      await signInWithPopup(firebaseAuth, provider);
+    },
+    async logout(): Promise<void> {
+      await signOut(firebaseAuth);
+    },
+  }),
+});
 
 export interface AuthUser {
   uid: string;
@@ -21,6 +50,7 @@ export interface AuthUser {
   providedIn: 'root',
 })
 export class AuthService {
+  private readonly authClient = inject(FIREBASE_AUTH_CLIENT);
   user = signal<AuthUser | null>(null);
   loading = signal(true);
   private resolveAuthReady: (() => void) | null = null;
@@ -38,27 +68,22 @@ export class AuthService {
   }
 
   async loginWithGoogle(): Promise<'popup' | 'redirect'> {
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({
-      prompt: 'select_account',
-    });
-
-    await signInWithPopup(firebaseAuth, provider);
+    await this.authClient.loginWithGoogle();
     return 'popup';
   }
 
   async logout(): Promise<void> {
-    await signOut(firebaseAuth);
+    await this.authClient.logout();
   }
 
   private async initAuth(): Promise<void> {
     try {
-      await getRedirectResult(firebaseAuth);
+      await this.authClient.getRedirectResult();
     } catch (error) {
       console.error('Google sign-in redirect failed', error);
     }
 
-    onAuthStateChanged(firebaseAuth, (user) => {
+    this.authClient.observeAuthState((user) => {
       void this.applyAuthUser(user);
     });
   }

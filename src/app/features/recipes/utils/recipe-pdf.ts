@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf';
 import type { Recipe } from '../../../core/models/recipe.model';
+import { parseRecipeStepText, RecipeStepTextRun } from './recipe-step-format';
 
 export interface RecipePdfBuildOptions {
   recipe: Recipe;
@@ -56,6 +57,94 @@ export function buildRecipePdfBlob(options: RecipePdfBuildOptions): Blob {
     }
   };
 
+  const writeFormattedStep = (
+    prefix: string,
+    text: string,
+    fontSize: number,
+    lineHeight: number,
+  ): void => {
+    const rightEdge = margin + maxW;
+    const lines = parseRecipeStepText(text);
+
+    doc.setFontSize(fontSize);
+
+    lines.forEach((line, lineIndex) => {
+      const runs: RecipeStepTextRun[] =
+        lineIndex === 0 ? [{ text: prefix, bold: false }, ...line] : line;
+      let x = margin;
+      let hasContent = false;
+      let pendingSpace = false;
+
+      const ensureLineFits = (): void => {
+        if (needsNewPage(lineHeight)) {
+          doc.addPage();
+          y = margin + 4;
+        }
+      };
+
+      const moveToNextLine = (): void => {
+        y += lineHeight;
+        ensureLineFits();
+        x = margin;
+        hasContent = false;
+        pendingSpace = false;
+      };
+
+      ensureLineFits();
+
+      for (const run of runs) {
+        doc.setFont('helvetica', run.bold ? 'bold' : 'normal');
+        const tokens = run.text.match(/\S+|\s+/g) ?? [];
+
+        for (const token of tokens) {
+          if (/^\s+$/.test(token)) {
+            pendingSpace = hasContent;
+            continue;
+          }
+
+          const wordWidth = doc.getTextWidth(token);
+          const spaceWidth = pendingSpace && hasContent ? doc.getTextWidth(' ') : 0;
+
+          if (hasContent && x + spaceWidth + wordWidth > rightEdge) {
+            moveToNextLine();
+          }
+
+          if (wordWidth > maxW) {
+            if (hasContent) {
+              moveToNextLine();
+            }
+
+            const chunks = doc.splitTextToSize(token, maxW) as string[];
+
+            chunks.forEach((chunk, chunkIndex) => {
+              doc.text(chunk, x, y);
+              x += doc.getTextWidth(chunk);
+              hasContent = true;
+
+              if (chunkIndex < chunks.length - 1) {
+                moveToNextLine();
+              }
+            });
+
+            pendingSpace = false;
+            continue;
+          }
+
+          if (pendingSpace && hasContent) {
+            x += doc.getTextWidth(' ');
+          }
+
+          doc.text(token, x, y);
+          x += wordWidth;
+          hasContent = true;
+          pendingSpace = false;
+        }
+      }
+
+      y += lineHeight;
+    });
+  };
+
   writeBlock(recipe.title, 18, 'bold', 8);
   y += 1;
 
@@ -85,7 +174,7 @@ export function buildRecipePdfBlob(options: RecipePdfBuildOptions): Blob {
 
   const sortedSteps = [...recipe.steps].sort((a, b) => a.order - b.order);
   for (const step of sortedSteps) {
-    writeBlock(`${step.order}. ${step.instruction}`, 11, 'normal', 6);
+    writeFormattedStep(`${step.order}. `, step.instruction, 11, 6);
     y += 0.5;
   }
 

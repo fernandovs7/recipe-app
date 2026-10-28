@@ -16,13 +16,10 @@ import {
   getRecipeCategoryLabel,
 } from '../../../../core/constants/recipe-categories';
 import { formatDuration } from '../../../../core/utils/format-duration';
+import { RecipeStepTextComponent } from '../../components/recipe-step-text/recipe-step-text';
 
 type QuantityFormatStyle =
-  | 'integer'
-  | 'decimal-comma'
-  | 'decimal-dot'
-  | 'fraction'
-  | 'mixed-fraction';
+  'integer' | 'decimal-comma' | 'decimal-dot' | 'fraction' | 'mixed-fraction';
 
 type ViewRecipeOrigin = 'home' | 'recipes';
 
@@ -30,7 +27,7 @@ const FRACTION_FRIENDLY_UNITS = new Set(['taza', 'cda', 'cdta', 'unidad', 'unida
 
 @Component({
   selector: 'app-view-recipe',
-  imports: [IconComponent, RouterLink, ImageComponent],
+  imports: [IconComponent, RouterLink, ImageComponent, RecipeStepTextComponent],
   templateUrl: './view-recipe.html',
   styleUrl: './view-recipe.scss',
 })
